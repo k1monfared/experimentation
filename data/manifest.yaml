@@ -1,0 +1,103 @@
+artifacts:
+- path: chapters/01-the-coin/data/loop_a_first_three.npy
+  chapter: 01-the-coin
+  kind: samples
+  seed: 4
+  sha256: 10ad63c468aa9c9e985c4be5357126e55560fd43f68d000f91037b04ea507408
+  description: 'Loop A: first three tosses (HHH chosen seed)'
+- path: chapters/01-the-coin/data/loop_a_next_seven.npy
+  chapter: 01-the-coin
+  kind: samples
+  seed: 2
+  sha256: 1ebeca695410a163a7e49e05b95f66848e553abb2b11f2086c5f5fab9c1eb782
+  description: 'Loop A: next seven tosses'
+- path: chapters/01-the-coin/data/loop_a_ten.npy
+  chapter: 01-the-coin
+  kind: samples
+  seed: 4+2
+  sha256: 04bba4320eb2861e033accd7b9e2351e9899ec383e4c663815753baa27213faa
+  description: 'Loop A: combined 10-toss sequence'
+- path: chapters/01-the-coin/data/loop_b_n100_six_seeds.npy
+  chapter: 01-the-coin
+  kind: samples
+  seed: '[101, 102, 103, 104, 105, 106]'
+  sha256: 7091bb32a959eec88843582cf568e4d3242101d88546a1c279359db2265af7d6
+  description: 'Loop B: six 100-toss fair-coin sequences'
+- path: chapters/01-the-coin/data/loop_c_n10000.npy
+  chapter: 01-the-coin
+  kind: samples
+  seed: 7
+  sha256: 1771dd203dd7d78e7bd32ddfc104ff6dda634737bf66c7418a37e65e531e2c84
+  description: 'Loop C: 10,000-toss fair-coin sequence'
+- path: chapters/01-the-coin/data/loop_d_fair.npy
+  chapter: 01-the-coin
+  kind: samples
+  seed: 21
+  sha256: 67a005c6c9e2d3276293134625590941fc9ae2cf1d0c2c3f16f7c63137c2ab77
+  description: 'Loop D: 2,000-toss fair-coin sequence (p=0.50)'
+- path: chapters/01-the-coin/data/loop_d_biased.npy
+  chapter: 01-the-coin
+  kind: samples
+  seed: 22
+  sha256: 507b1f06f9a1727054a3f96707816add554fd41dc5aadac8f6001fad86eb76cc
+  description: 'Loop D: 2,000-toss slightly-biased sequence (p=0.55)'
+- path: chapters/01-the-coin/data/posterior_n10.nc
+  chapter: 01-the-coin
+  kind: idata
+  seed: 1009
+  sha256: d9127d6a893de0c09ff109762a9f762eaf9987d100cb950d2f4d8afc8141db18
+  description: PyMC posterior on p after N=10 fair-coin tosses
+- path: chapters/01-the-coin/data/posterior_n100.nc
+  chapter: 01-the-coin
+  kind: idata
+  seed: 1099
+  sha256: d9772af194e9565bb945f02b5f6f7e9213fdcf8962b63b9009d32ee7cc1a76f3
+  description: PyMC posterior on p after N=100 fair-coin tosses
+- path: chapters/01-the-coin/data/posterior_n1000.nc
+  chapter: 01-the-coin
+  kind: idata
+  seed: 1999
+  sha256: d6d07861dcb3cd246d7d3652cacaa08cea1d7736b7768d9978572aae83c9a515
+  description: PyMC posterior on p after N=1000 fair-coin tosses
+- path: chapters/01-the-coin/data/posterior_n10000.nc
+  chapter: 01-the-coin
+  kind: idata
+  seed: 10999
+  sha256: 38c06fef5925f35d9cc917cb11527653bbf82dea3fd0ae4dcc9779ba05939eab
+  description: PyMC posterior on p after N=10000 fair-coin tosses
+- path: chapters/01-the-coin/images/loop_a_three_then_ten.png
+  chapter: 01-the-coin
+  kind: image
+  seed: derived
+  sha256: d1a6dd429d5b1f27bfe4b878c85da7f7b65f090e8d7b3c928d03ad07b2b07a3d
+  description: 'Chapter 1 figure: loop_a_three_then_ten.png'
+- path: chapters/01-the-coin/images/loop_b_six_runs_n100.png
+  chapter: 01-the-coin
+  kind: image
+  seed: derived
+  sha256: e1ba9a50e2d4ddc52525460028c7e8163f3b523eea2329dd77387af7bfe0cb05
+  description: 'Chapter 1 figure: loop_b_six_runs_n100.png'
+- path: chapters/01-the-coin/images/loop_c_running_fraction_grid.png
+  chapter: 01-the-coin
+  kind: image
+  seed: derived
+  sha256: 125277e50cd39a98826479276bfe6599ddf13fa20f465465bbd001bad47e7b6f
+  description: 'Chapter 1 figure: loop_c_running_fraction_grid.png'
+- path: chapters/01-the-coin/images/loop_d_fair_vs_biased.png
+  chapter: 01-the-coin
+  kind: image
+  seed: derived
+  sha256: 9d9979eeff032452a82486028f9bb037b3d662d148751379aaca1526bbc28822
+  description: 'Chapter 1 figure: loop_d_fair_vs_biased.png'
+- path: chapters/01-the-coin/images/posterior_tightening.png
+  chapter: 01-the-coin
+  kind: image
+  seed: derived
+  sha256: 0bf2933ee85ed6f4599b06ff53ec6fc3cd54a07f6e5e41eef9b2adaca0e7362a
+  description: 'Chapter 1 figure: posterior_tightening.png'
+- path: chapters/01-the-coin/images/two_lens_endcap.png
+  chapter: 01-the-coin
+  kind: image
+  seed: derived
+  sha256: 6d2383ef8bd132522596203f1670b99349145bb321e4d2cf5a5338c71b24df8e
+  description: 'Chapter 1 figure: two_lens_endcap.png'

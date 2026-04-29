@@ -1,0 +1,52 @@
+- experimentation
+    - A conversational journey from "is this coin fair?" to the boundary where experiments stop working and causal inference takes over. Each chapter is an inquiry, not a textbook section: try something small, observe, hunch, ask, try more, probe edges, and let the next big question hand itself to the next chapter.
+    - Frequentist and Bayesian (PyMC) lenses run in parallel from Chapter 1 onward. We are not picking sides; we are watching where the lenses agree, where they diverge, and what that means for the decisions we make.
+- How to use this repo
+    - Read the chapters in order under [chapters/](chapters/). Each chapter has:
+        - `chapter.log` -- the conversational narrative in loglog format
+        - `chapter.md` -- rendered markdown (what GitHub displays)
+        - `notebook.ipynb` -- runnable companion (uses the `expkit` library)
+        - `data/` -- generated samples and PyMC traces, all seeded
+        - `images/` -- pre-rendered figures embedded in `chapter.md`
+        - `generate.py` -- deterministic regeneration script
+    - Run the library locally:
+        - ```
+        - python -m venv .venv
+        - source .venv/bin/activate
+        - pip install -e ".[dev]"
+        - pytest -m "not slow"           # fast tests
+        - pytest                         # full tests including PyMC
+        - python scripts/regenerate_all.py
+        - ```
+- The arc
+    - Chapter 1 -- The coin: tossing a few times, then thousands of times. Both lenses, side by side. [chapters/01-the-coin/](chapters/01-the-coin/)
+    - Chapter 2 -- How sure can I be? Null hypothesis, p-value, type I/II, posterior probability, credible interval. [chapters/02-how-sure/](chapters/02-how-sure/)
+    - Chapter 3 -- What if it's biased? Power, sample size, MDE, and Bayesian stopping rules. [chapters/03-power/](chapters/03-power/)
+    - Chapter 4 -- The family of tests: exact binomial, normal-approx z, chi-square, Fisher exact, and their Bayesian counterparts. [chapters/04-test-family/](chapters/04-test-family/)
+    - Chapter 5 -- Confidence intervals as the dual of tests. Bayesian credible intervals from the same data. [chapters/05-confidence-intervals/](chapters/05-confidence-intervals/)
+    - Chapter 6 -- The Bayesian view, formalized. PyMC, priors that argue, Bayes factors. [chapters/06-bayesian/](chapters/06-bayesian/)
+    - Chapter 7 -- The six-sided die: multinomial, Dirichlet-multinomial, and multiple comparisons. [chapters/07-the-die/](chapters/07-the-die/)
+    - Chapter 8 -- From dice to A/B tests: two-proportion, two-sample t, stratification, decision rules. [chapters/08-from-dice-to-ab/](chapters/08-from-dice-to-ab/)
+    - Chapter 9 -- Wine, coffee, and the small print: who got studied, what counts as good, what got missed. [chapters/09-wine-and-the-small-print/](chapters/09-wine-and-the-small-print/)
+    - Chapter 10 -- Industry experimentation: clicks, unsubs, clickbait, and short-term-vs-long-term lies. [chapters/10-industry-experimentation/](chapters/10-industry-experimentation/)
+    - Chapter 11 -- Segmentation done right: behavioral segments matter more than demographic ones. [chapters/11-segmentation/](chapters/11-segmentation/)
+    - Chapter 12 -- Simpson's paradox: when the parts disagree with the whole. [chapters/12-simpsons-paradox/](chapters/12-simpsons-paradox/)
+    - Chapter 13 -- The metric tree: noise/signal trade-offs from clicks up to revenue. [chapters/13-metric-tree/](chapters/13-metric-tree/)
+    - Chapter 14 -- Novelty effects: three measurement schemes for the same event stream. [chapters/14-novelty/](chapters/14-novelty/)
+    - Chapter 15 -- Dilution: ITT vs per-protocol, delta method for ratio metrics. [chapters/15-dilution/](chapters/15-dilution/)
+    - Chapter 16 -- Metric quality: variance, stability, predictivity, CUPED. [chapters/16-metric-quality/](chapters/16-metric-quality/)
+    - Chapter 17 -- Attribution: first-touch, last-touch, time-decay, Bayesian multi-touch. [chapters/17-attribution/](chapters/17-attribution/)
+    - Chapter 18 -- Frequentist vs Bayesian shipping: 1,000 simulated experiments, where would each lens have shipped? [chapters/18-frequentist-vs-bayesian-shipping/](chapters/18-frequentist-vs-bayesian-shipping/)
+    - Chapter 19 -- When experiments aren't enough: hand-off to causal inference. [chapters/19-causal-handoff/](chapters/19-causal-handoff/)
+- The library: expkit
+    - `expkit` is a small Python package that grows alongside the chapters. Install it locally with `pip install -e .` and import what you need.
+    - Top-level structure
+        - `expkit.sim.*` -- generators (coin, die, abtest, novelty, dilution, user_segments)
+        - `expkit.inference.*` -- frequentist tests + Bayesian (PyMC) posteriors. Closed-form conjugate solutions sit alongside PyMC equivalents for didactic comparison.
+        - `expkit.power.*` -- power, sample size, minimum detectable effect
+        - `expkit.metrics.*` -- variance reduction, ratio-metric delta method, predictivity
+        - `expkit.attribution.*`, `expkit.novelty.*`, `expkit.segments.*`, `expkit.plot.*`, `expkit.io.*`
+- Reproducibility
+    - Every dataset and every PyMC trace is regenerated from a fixed seed. The cross-cutting [`data/manifest.yaml`](data/manifest.yaml) lists every artifact with its seed, sha256, and human description. To reproduce all of it: `python scripts/regenerate_all.py`. To re-render every chapter from its loglog source: `python scripts/render_chapters.py`.
+- Status
+    - This is a developing project. Chapter 1 is fully built (narrative + notebook + data + figures + tests). Chapters 2-19 are stubbed with their carried-over question, inquiry-loop sketch, and `expkit` modules they will need. They will be filled in incrementally.

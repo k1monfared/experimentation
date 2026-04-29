@@ -1,0 +1,17 @@
+# Chapter 7: The six-sided die
+
+## Carried from Chapter 6
+
+- Two outcomes felt cramped. Six gives us room for surprises that a coin can't deliver.
+## Inquiry loops planned
+
+- Loop A: roll a fair die 60 times. Each face should appear ~10 times. Tally the actual counts. They wobble. By how much?
+- Loop B: chi-square goodness-of-fit at N=60, 600, 6000. Compute exact multinomial p-values (or simulate them) for the smallest N where chi-square's asymptotic approximation might be off.
+- Loop C: Bayesian via PyMC with a Dirichlet-multinomial model. Posteriors on each face's probability. Probe whether one face is rigged.
+- Loop D: multiple comparisons. If we test each face individually at alpha=0.05, the family-wise error rate explodes. Bonferroni, Holm, BH (FDR). Bayesian view: posterior over the joint, no multiple-comparisons paradox.
+- Big question: instead of asking "is the die fair?", what if we have two dice and we want to know if one is different from the other? That's an A/B test.
+## expkit modules used
+
+- expkit.sim.die (NEW)
+- expkit.inference.chi2 (NEW)
+- expkit.inference.bayes (existing; expanded to Dirichlet-multinomial)

@@ -1,0 +1,23 @@
+# Chapter 19: When experiments aren't enough
+
+## Carried from Chapter 18
+
+- 18 chapters of experimentation, and we still cannot answer some of the most important questions. That's not a defect; it's where another whole discipline lives.
+## Inquiry loops planned
+
+- Loop A: cases where you can't run an experiment.
+  - Long horizons (you can't randomize 5 years of behavior).
+  - Ethical constraints (you can't randomize who gets a vaccine).
+  - Network effects (treating one user changes their friends' behavior).
+  - Pre-existing observational data.
+- Loop B: walk one example end-to-end. Take a question we tackled with experiments earlier (say, "does feature X improve retention?") and assume we only have observational logs. What goes wrong if we naively compare treated and untreated users? (Selection bias.)
+- Loop C: introduce the potential-outcomes vocabulary very briefly: ATE, ATT, selection bias decomposition. Just enough to link concepts.
+- Loop D: Bayesian instrumental variables / propensity scoring as a teaser.
+- Handoff
+  - For the actual treatment, see [`/home/k1/public/statistics/causal_inference`](/home/k1/public/statistics/causal_inference) -- the sibling repo built around the Mixtape Sessions framework. That repo runs labs, replicates published studies, and walks through the methods at proper depth.
+- Big question
+  - Now that we know when to use experiments and when to reach for causal inference, how do we structure an organization to do both well? That's a topic for a future repo.
+## expkit modules used
+
+- none new -- this chapter is mostly conceptual + a handoff
+- imports from the simulators above to construct the "looks like an experiment but isn't" example

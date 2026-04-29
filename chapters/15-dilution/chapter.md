@@ -1,0 +1,16 @@
+# Chapter 15: Dilution
+
+## Carried from Chapter 14
+
+- "In the experiment" doesn't mean "exposed to the change". A logged-in user might never visit the page where the change is. Their behavior is null evidence.
+## Inquiry loops planned
+
+- Loop A: simulate a feature on a settings page. 100% of users are randomized to treatment or control (intent-to-treat). Only 12% of them visit settings during the experiment window. Treatment effect is real among the 12%, invisible in the average.
+- Loop B: ITT vs per-protocol vs CACE (complier average causal effect). When can we trust each? Walk a Bayesian-flavored argument that per-protocol is biased without further structure.
+- Loop C: ratio metrics dilution. Revenue per session = revenue / sessions. The numerator shifts and the denominator shifts. Naive z-test is wrong. Delta method to the rescue.
+- Loop D: edge probe. What if compliance is correlated with the outcome? (User segments who are more likely to visit are also more likely to convert.)
+- Big question: even with all this care, my metric still wobbles a lot from week to week. Some metrics seem to predict the long-run; others are noise. How do I tell?
+## expkit modules used
+
+- expkit.sim.dilution (NEW)
+- expkit.metrics.delta (NEW): delta method for ratio metrics

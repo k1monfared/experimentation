@@ -1,0 +1,18 @@
+# Chapter 12: Simpson's paradox -- when the parts disagree with the whole
+
+## Carried from Chapter 11
+
+- Subgroups can move in one direction while the aggregate moves in the opposite direction. This isn't a bug in the data -- it's a feature of how proportions combine.
+## Inquiry loops planned
+
+- Loop A: build a toy. Two segments. In segment A, treatment beats control by 10pp. In segment B, treatment beats control by 5pp. But because the segment mix is different in treatment vs control (e.g. treatment got more of segment B), the aggregate shows treatment LOSING by 2pp. Plot it.
+- Loop B: slide the dials. Vary segment sizes, treatment-vs-control assignment imbalance, and within-segment effects. Map out the regions of parameter space where the sign flips, where it doesn't, and where it can.
+- Loop C: probe edge cases. When does Simpson's paradox become impossible? (Answer: equal segment mixes.) When is it most likely? (When assignment is correlated with segment.)
+- Loop D: two lenses on the paradox. Frequentist subgroup analysis -- correct, but mute on which level to trust. Bayesian hierarchical model -- expresses partial pooling and uncertainty in the aggregate vs subgroup.
+- Loop E: real-world flavor. Berkeley admissions (departments + gender). Show the original dataset (or a faithful simulation). Watch the lens.
+- Big question: which metric should we even be tracking?
+## expkit modules used
+
+- expkit.sim.user_segments
+- expkit.inference.bayes (hierarchical / partial pooling)
+- expkit.segments.behavioral

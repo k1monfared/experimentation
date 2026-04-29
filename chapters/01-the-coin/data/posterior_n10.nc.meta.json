@@ -1,0 +1,9 @@
+{
+  "meta": {
+    "model": "Bernoulli with Beta(1,1) prior",
+    "prefix_n": 10,
+    "true_p": 0.5
+  },
+  "seed": 1009,
+  "sha256": "d9127d6a893de0c09ff109762a9f762eaf9987d100cb950d2f4d8afc8141db18"
+}

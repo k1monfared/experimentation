@@ -2,6 +2,17 @@ node_modules/
 .env
 .DS_Store
 
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+expkit.egg-info/
+.pytest_cache/
+.ipynb_checkpoints/
+build/
+dist/
+
 # Local AI tooling (must never be committed)
 CLAUDE.md
 .claude/
