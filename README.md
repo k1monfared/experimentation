@@ -1,6 +1,6 @@
 # Project Name
 
-**Status**: 🔴 POC | **Mode**: 🤖 Claude Code | **Updated**: YYYY-MM-DD
+**Status**: 🔴 POC | **Updated**: YYYY-MM-DD
 
 Brief description of what this project does.
 
@@ -17,7 +17,6 @@ Instructions for setup and usage.
 ## Documentation
 
 - `STATUS.log` - Project status and progress tracking
-- `CLAUDE.md` - Claude Code instructions and conventions
 - See other documentation files as needed
 
 ## Status Legend
@@ -27,9 +26,3 @@ Instructions for setup and usage.
 - 🔵 Beta / Feature Complete
 - 🟢 Production / Active
 - ⚫ Maintenance / Template
-
-## Mode Legend
-
-- 🤖 Claude Code
-- 👤 Manual
-- 🔀 Hybrid

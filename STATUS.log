@@ -1,6 +1,5 @@
 - Project Status
     - Last Updated: YYYY-MM-DD
-    - Development Mode: [Claude Code | Manual | Hybrid]
     - Stage: Initial Setup
     - Next Milestone: [Description of next goal]
 
@@ -9,7 +8,6 @@
         - Created: YYYY-MM-DD
         - Repository initialized
         - Basic structure in place
-        - Template copied from claude_code_project_template
     - [] Proof of Concept (POC)
         - Target: YYYY-MM-DD
         - Goal: Validate core concept and technology choices
