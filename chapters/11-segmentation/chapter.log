@@ -1,13 +1,47 @@
 - Chapter 11: Segmentation done right
     - Carried from Chapter 10
-        - We saw averages hide structure. The standard industry move is to slice by country, age, gender. That's a start, and often misleading.
-    - Inquiry loops planned
-        - Loop A: simulate users with two attributes -- a demographic slice (e.g. country) and a behavioral slice (active/contributor/silent-intentional/passive-consumer). Apply the same treatment. Look at effects per demographic slice -- noisy, mostly null. Look at effects per behavioral slice -- clear and large in some, opposite in others.
-        - Loop B: connect back to the wine study. The "20-yo college kids" is a demographic slice. But the right question is "who in the population responds like a 20-yo college kid did?" -- that's a behavioral characterization.
-        - Loop C: how do we even build behavioral segments? Heuristics: tenure, weekly active rate, contribution rate, recency of first activity. Show three different segmentations on the same simulated population and the differing stories they tell.
-        - Loop D: Bayesian hierarchical model with segments as a partial-pooling level. Compare to running the test independently per segment.
-        - Big question: when subgroups disagree with the whole, sometimes they reverse the conclusion. That deserves its own chapter.
-    - expkit modules used
-        - expkit.segments.behavioral (NEW)
-        - expkit.sim.user_segments
-        - expkit.inference.bayes (hierarchical models in PyMC)
+        - The aggregate hid the most important story. Demographic slicing helps a little. Behavioral slicing helps a lot.
+- Loop A: demographic slicing vs behavioural slicing
+    - Try
+        - 5,000 users, four behavioural segments (active contributor, active consumer, silent intentional, passive consumer). Random country and age. Treatment helps contributors (+10pp), helps active consumers (+4pp), hurts silent intentionals (-3pp), is neutral on passive consumers.
+        - Slice by country (uninformative). Slice by behavioural segment (very informative).
+    - Observe
+        - By country: lifts are roughly equal across A, B, C. Country tells us nothing.
+        - By behavioural segment: contributors gain a lot, silent intentionals actually lose. The pooled lift averages everything out into something modest.
+        - ![Demographic vs behavioural](images/demographic_vs_behavioral.png)
+    - Hunch
+        - Demographic features are descriptive but rarely *the cause* of differential treatment effects. Behaviour is closer to the cause.
+- Loop B: behavioural segments have distinctive signatures
+    - Try
+        - Plot each segment's distribution along the three behaviour axes (weekly active, contribution rate, intentional navigation rate).
+    - Observe
+        - Active contributors: high on all three axes.
+        - Active consumers: high active, lower contribution, higher intent.
+        - Silent intentionals: low active rate but high intent when they do show up.
+        - Passive consumers: low everywhere.
+        - ![Segment signatures](images/segment_signature.png)
+    - Hunch
+        - These segments are not arbitrary buckets. They have visibly different signatures. Their relationship to product changes is therefore more interpretable than a country slice.
+- Loop C: three different segmentations, three stories
+    - Try
+        - Same population, same treatment. Three different segmentation schemes:
+            - tenure (new vs veteran)
+            - activity tertile (low / med / high active)
+            - behavioural label (the four-bucket scheme)
+    - Observe
+        - Tenure: minor difference. The treatment helps both new and veteran roughly equally.
+        - Activity tertile: clear gradient. High-active gain a lot; low-active are flat or slightly negative.
+        - Behavioural label: mirrors activity but adds nuance (silent intentionals look different from passive consumers despite similar activity).
+        - ![Three schemes](images/segmentation_choices.png)
+    - Hunch
+        - The segmentation is itself a modelling decision. Choosing it is choosing the lens through which to read the experiment. There is no "objective" segmentation.
+- Two-lens commentary
+    - Frequentist: typically runs a test per segment with a multiple-testing correction. Independent inference per segment.
+    - Bayesian: a hierarchical model where each segment has its own treatment effect drawn from a population-level distribution. Partial pooling. Segments with little data borrow strength from the global mean.
+    - The two views often agree directionally; the Bayesian view is more honest about uncertainty in tiny segments.
+- The big question that opens Chapter 12
+    - In the demographic-vs-behavioural figure, the *pooled* lift is positive while *some* segments are negative. Could the aggregate ever be negative when every segment is positive? Yes. That's Simpson's paradox.
+    - Big question: under what conditions do parts and the whole disagree?
+- Notebook and data
+    - Companion notebook: [`notebook.ipynb`](notebook.ipynb)
+    - Generation script: [`generate.py`](generate.py)

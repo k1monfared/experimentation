@@ -1,11 +1,35 @@
 - Chapter 17: Attribution
     - Carried from Chapter 16
-        - A user touches the product five times before converting. Which touch gets credit? Different answers, different decisions.
-    - Inquiry loops planned
-        - Loop A: simulate user journeys with five touchpoints. Apply first-touch, last-touch, linear, time-decay attribution. Compute "value per channel" under each scheme.
-        - Loop B: introduce an experiment that boosts touch #3 specifically. Which attribution scheme catches the lift? Which one misses it? Which one mis-allocates it to the wrong channel?
-        - Loop C: shifted-time perspective. The same touches at different lags. Which scheme is most stable to the lag distribution?
-        - Loop D: Bayesian attribution as a multi-touch model. Each channel has a true coefficient; the data partially identifies them. Posteriors over coefficients vs naive last-touch.
-        - Big question: we've been running experiments for 17 chapters. When do experiments fail? When do we have to do something else?
-    - expkit modules used
-        - expkit.attribution.touch (NEW)
+        - Conversions take time. Users touch your product through several channels. Whose channel deserves the credit?
+- Loop A: four schemes, same data
+    - Try
+        - Simulate 20,000 user journeys with up to 5 channel touches each (search, social, email, display, direct). True channel coefficients: direct (0.20) is most influential, search (0.10) second, then email (0.05), social (0.04), display (0.02). Conversion is logistic in the sum.
+        - Apply four attribution schemes -- first-touch, last-touch, linear, time-decay -- and see how each allocates credit.
+    - Observe
+        - First-touch overweights "discovery" channels (search, social) because journeys often start there.
+        - Last-touch overweights "closing" channels (direct) because journeys often end there.
+        - Linear divides credit evenly. Tends to look closest to the true share but blurs important differences.
+        - Time-decay leans toward last-touch but softer.
+        - ![Scheme comparison](images/scheme_comparison.png)
+    - Hunch
+        - There is no "correct" scheme. Each is an answer to a slightly different question. The differences between them are large enough to flip channel-investment decisions.
+- Loop B: treatment that uniformly bumps conversions
+    - Try
+        - Simulate a treatment that boosts conversion probability by a fixed amount, regardless of which channels were touched. Apply each scheme. Look at the *change* in credit per channel.
+    - Observe
+        - The truth: every channel should look like it gained the same share.
+        - First-touch: assigns the lift mostly to whichever channel users started on. Channels that tend to start journeys gain disproportionate credit.
+        - Last-touch: assigns the lift to the closer. Direct gains more credit than it deserves.
+        - Linear and time-decay: closer to the truth, but still distort.
+        - ![Treatment misallocation](images/treatment_misallocation.png)
+    - Hunch
+        - Even when the truth is "everything got better equally", schemes mis-allocate. This is why attribution is its own subject (and an entire industry of consultants).
+- Two-lens commentary
+    - Frequentist: attribution is a deterministic accounting choice. There is no statistical answer. The only test is "does my model recover the true coefficients on simulated data?".
+    - Bayesian: model the conversion likelihood explicitly with channel coefficients, fit posterior over coefficients, and inspect. PyMC handles this directly. The posterior over coefficients is the right object to budget against.
+- The big question that opens Chapter 18
+    - We've spent 17 chapters teaching both lenses. We've never asked: at the end of all this, would we ship things differently under one lens vs the other? On average, on which kinds of decisions, by how much?
+    - Big question: would a frequentist team and a Bayesian team disagree about what to ship -- and where, and when?
+- Notebook and data
+    - Companion notebook: [`notebook.ipynb`](notebook.ipynb)
+    - Generation script: [`generate.py`](generate.py)

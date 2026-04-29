@@ -1,13 +1,65 @@
 - Chapter 6: The Bayesian view, formalized
     - Carried from Chapter 5
-        - We have been using "posterior" intuitively for five chapters. Time to formalize.
-    - Inquiry loops planned
-        - Loop A: prior + likelihood -> posterior, using PyMC explicitly. Show the model code. Inspect the trace with arviz.
-        - Loop B: priors that argue. Beta(1,1) flat, Beta(50,50) skeptical, Beta(2,8) "I expect tails", Beta(8,2) "I expect heads". Same 6/10 data. Plot four posteriors on one chart.
-        - Loop C: when does the prior stop mattering? Re-run Loop B with N = 1000. Posteriors collapse onto each other.
-        - Loop D: Bayes factor. Fair-vs-biased model comparison. What does it mean? Compare to p-value side-by-side.
-        - Loop E: probe edge cases. What if my prior is wrong? Show a worst-case mismatched prior under tiny N -- it can mislead.
-        - Big question: every chapter so far had two outcomes (heads/tails). What changes if we have six? Or fifty?
-    - expkit modules used
-        - expkit.inference.bayes (existing); expanded with bayes_factor, model comparison helpers
-        - arviz for diagnostics
+        - We've used "posterior" and "credible interval" intuitively for five chapters. Now we lay out the framework end-to-end.
+- Loop A: prior, likelihood, posterior, in one breath
+    - The recipe
+        - You start with a *prior*: your belief about the parameter before seeing data. For a coin, that's a distribution over p in [0, 1].
+        - You collect data and write down the *likelihood*: P(data | p). For n tosses with k heads it is Binomial(n, p) evaluated at k.
+        - Bayes' rule combines them: posterior(p | data) is proportional to likelihood(data | p) * prior(p). Normalize so it integrates to 1.
+        - For Beta priors and Bernoulli likelihoods this is a closed form: Beta(a, b) prior plus k heads in n tosses gives Beta(a + k, b + n - k) posterior. Conjugate.
+        - For everything more complicated than this, we use PyMC and let the sampler do the math.
+- Loop B: priors that argue
+    - Try
+        - Same data: 6 heads in 10 tosses, then 600 in 1000. Four priors: flat Beta(1,1), skeptical Beta(50,50), tail-leaning Beta(2,8), heads-leaning Beta(8,2).
+    - Observe
+        - At 6/10 the four posteriors are quite different. The flat prior posterior is wide and centred near 0.58. The skeptical prior barely moves -- it stays close to 0.5. The tail-leaning prior pulls the posterior down to 0.43. The heads-leaning prior pulls it up to 0.67.
+        - At 600/1000 every posterior collapses to almost the same narrow blob centred at 0.60. The data has overwhelmed the prior.
+        - ![Priors argue](images/priors_argue.png)
+    - Hunch
+        - Priors are most powerful when data is scarce. With enough data, the prior choice is invisible. So:
+            - If you have lots of data, the prior almost never matters and you should just use a flat or weakly informative one for transparency.
+            - If you have little data, the prior is doing real work; you should justify it explicitly and ideally sensitivity-test (try several).
+- Loop C: PyMC and arviz, the actual workflow
+    - Try
+        - We do not need conjugate priors. PyMC handles arbitrary models. Here we run the same Bernoulli-Beta model in PyMC and confirm it gives the same answer as the closed form.
+        - The model in code:
+            - ```
+            - with pm.Model():
+            -     p = pm.Beta("p", alpha=1, beta=1)
+            -     pm.Binomial("y", n=n, p=p, observed=heads)
+            -     idata = pm.sample(draws=2000, chains=2, tune=1000, random_seed=606)
+            - ```
+        - We then inspect the trace (does the sampler actually sample? does it mix between chains?) and overlay the histogram of posterior draws on the closed-form Beta density.
+    - Observe
+        - The two chains track each other. The histogram of MCMC draws sits exactly under the closed-form curve. Sanity confirmed.
+        - ![PyMC trace and histogram vs closed form](images/pymc_trace_vs_closed_form.png)
+    - Why bother with PyMC if the closed form is right there?
+        - Because in 99% of real problems the closed form does not exist. PyMC + the same Bayesian recipe extends to: hierarchical models with partial pooling, ratios, transformations, censoring, latent variables, mixtures, anything. From here on we use PyMC where it earns its keep.
+- Loop D: Bayes factors, the Bayesian "p-value"
+    - Try
+        - Compute BF_{10}: the Bayes factor for the alternative H1 (p ~ Uniform on [0,1]) vs the null H0 (p = 0.5). It's the ratio of marginal likelihoods. > 1 means the data prefers H1, < 1 prefers H0.
+        - Run two simulated experiments side by side: one with a fair coin, one with p = 0.55. Track BF_{10} as N grows.
+    - Observe
+        - For the fair coin, BF_{10} drifts up and down near 1 forever. There's no consistent evidence against H0 because H0 is true.
+        - For the biased coin, BF_{10} grows slowly at first (small N hides the bias) and then takes off. By N = 1000 it is well past 10 (strong evidence). By N = 2000 it is past 100.
+        - ![Bayes factor](images/bayes_factor.png)
+    - Compare
+        - Frequentist analogue: a sequential p-value would also catch the bias eventually, but interpreting "p < 0.05 in this peek" requires alpha-spending machinery. The Bayes factor is interpretable directly: BF = 30 means the data is 30 times more likely under the alternative than under the null. No multiple-testing adjustment needed.
+        - Caveat: BF depends on the choice of alternative. A Uniform(0, 1) is permissive. A Beta(50, 50) alternative would be far more conservative -- it expects the coin to be near-fair under H1 too. Different alternatives, different BFs. Like the prior, this is a feature you must justify.
+- Loop E: posterior predictive -- a different question
+    - Try
+        - We have observed 50 tosses (true p = 0.6, we don't know that). What's our distribution over the number of heads in the *next* 20 tosses?
+        - That's the posterior predictive: sample p from the posterior, then sample heads ~ Binomial(20, p). It marginalizes over our uncertainty about p.
+    - Observe
+        - The predictive distribution is wider than a simple Binomial(20, p_hat). It accounts for the fact that we are not sure what p is.
+        - The mode is around 12 (since true p ~ 0.6) but the spread covers 6 through 18. If we had pretended p = 0.6 was known, we would have under-stated the spread.
+        - ![Posterior predictive](images/posterior_predictive.png)
+    - Hunch
+        - This is one of the things the Bayesian framework gives us almost for free: a coherent story about predictions, not just parameter estimation. Frequentist prediction intervals exist but are clumsier.
+- The big question that opens Chapter 7
+    - Two outcomes is cramped. What if there are six? Twelve? A hundred?
+    - We will start with the six-sided die, build the multinomial machinery, and the path naturally leads us to A/B testing in chapter 8.
+    - Big question: how do these tools generalize beyond two outcomes?
+- Notebook and data
+    - Companion notebook: [`notebook.ipynb`](notebook.ipynb)
+    - Generation script: [`generate.py`](generate.py)

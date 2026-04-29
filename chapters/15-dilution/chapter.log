@@ -1,12 +1,39 @@
 - Chapter 15: Dilution
     - Carried from Chapter 14
-        - "In the experiment" doesn't mean "exposed to the change". A logged-in user might never visit the page where the change is. Their behavior is null evidence.
-    - Inquiry loops planned
-        - Loop A: simulate a feature on a settings page. 100% of users are randomized to treatment or control (intent-to-treat). Only 12% of them visit settings during the experiment window. Treatment effect is real among the 12%, invisible in the average.
-        - Loop B: ITT vs per-protocol vs CACE (complier average causal effect). When can we trust each? Walk a Bayesian-flavored argument that per-protocol is biased without further structure.
-        - Loop C: ratio metrics dilution. Revenue per session = revenue / sessions. The numerator shifts and the denominator shifts. Naive z-test is wrong. Delta method to the rescue.
-        - Loop D: edge probe. What if compliance is correlated with the outcome? (User segments who are more likely to visit are also more likely to convert.)
-        - Big question: even with all this care, my metric still wobbles a lot from week to week. Some metrics seem to predict the long-run; others are noise. How do I tell?
-    - expkit modules used
-        - expkit.sim.dilution (NEW)
-        - expkit.metrics.delta (NEW): delta method for ratio metrics
+        - Most users in an experiment never actually see the change. Their data is null evidence about the treatment. Mixing them in dilutes the effect.
+- Loop A: ITT vs per-protocol
+    - Try
+        - Simulate a feature on a settings page. 20,000 users randomized 50/50. Only 12% of all users visit settings during the experiment window. Among visitors, treatment lifts the outcome by 10pp.
+    - Observe
+        - Intent-to-treat (ITT, all users counted): treatment - control measures around +1.2pp. Why? 12% of treatment users actually got the treatment effect, others got nothing. The headline ITT estimate is roughly 0.12 * 0.10 = 0.012.
+        - Per-protocol (visited only): treatment - control among visitors is +10pp, the true effect.
+        - ![ITT vs per-protocol](images/itt_vs_per_protocol.png)
+    - Hunch
+        - ITT is a *real* and well-defined estimand: the effect of being in the treatment group, regardless of compliance. Per-protocol is also well-defined but depends on compliance status, which can be correlated with the outcome.
+- Loop B: dilution scales with visit rate
+    - Try
+        - Sweep the visit probability from 0.02 to 0.95. For each, measure ITT and per-protocol effects.
+    - Observe
+        - ITT scales linearly with the visit rate. At 100% compliance, ITT = per-protocol.
+        - Per-protocol stays near +10pp regardless.
+        - ![Dilution sweep](images/dilution_sweep.png)
+    - Hunch
+        - The classic correction is "rescale by 1/compliance" -- the CACE (complier average causal effect). Valid under specific assumptions. Per-protocol naive subsetting is biased when compliance correlates with the outcome.
+- Loop C: ratio metrics need the delta method
+    - Try
+        - Outcome is revenue per session (a ratio). Naive: sum(revenue) / sum(sessions) for each arm, take the difference. The naive method gives a point estimate but no honest standard error -- the numerator and denominator are both random.
+        - Delta method: compute the variance of the ratio analytically using the variances of and covariance between numerator and denominator.
+    - Observe
+        - With per-session revenue lifted by 0.05, the delta method recovers diff = 0.05, se = ~0.05, z = ~1. The naive ratio difference matches but offers no inference.
+        - ![Ratio metric](images/ratio_metric.png)
+    - Hunch
+        - Most online metrics are ratio metrics (revenue per user, clicks per session). Naive z-tests on them are systematically wrong about the standard error. Delta method or bootstrap fix this.
+- Two-lens commentary
+    - Frequentist: ITT is the unbiased estimator of the policy effect. Per-protocol with proper CACE adjustment estimates the among-compliers effect. Both are answers to different questions.
+    - Bayesian: posterior over the per-visitor effect, marginalized over compliance. Cleanly expresses uncertainty in compliance.
+- The big question that opens Chapter 16
+    - Even the metrics we trust have a problem: they wobble. The same A/A test gives different effects from week to week. How much of the wobble is real signal vs random noise?
+    - Big question: how do we make our metrics less noisy?
+- Notebook and data
+    - Companion notebook: [`notebook.ipynb`](notebook.ipynb)
+    - Generation script: [`generate.py`](generate.py)

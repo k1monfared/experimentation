@@ -1,0 +1,14 @@
+{
+  "meta": {
+    "methods": [
+      "Wald",
+      "Wilson",
+      "Clopper-Pearson",
+      "Bayesian"
+    ],
+    "n": 20,
+    "n_trials": 5000
+  },
+  "seed": 123,
+  "sha256": "e17961f6a97f59c795290f9555268aff15280bb26aceb29924a06a08d529118c"
+}

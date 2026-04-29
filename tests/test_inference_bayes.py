@@ -38,6 +38,35 @@ def test_conjugate_prob_greater_than():
     assert post.prob_greater_than(0.5) == pytest.approx(0.5, abs=0.02)
 
 
+def test_bayes_factor_strong_evidence_against_null():
+    # 90/100 strongly suggests p != 0.5. BF in favor of H1 should be huge.
+    from expkit.inference.bayes import bayes_factor_point_vs_uniform
+
+    seq = np.array([1] * 90 + [0] * 10)
+    bf = bayes_factor_point_vs_uniform(seq, point=0.5)
+    assert bf > 1e10
+
+
+def test_bayes_factor_weak_data_close_to_one():
+    # 5/10 carries minimal information; BF should be O(1).
+    from expkit.inference.bayes import bayes_factor_point_vs_uniform
+
+    seq = np.array([1] * 5 + [0] * 5)
+    bf = bayes_factor_point_vs_uniform(seq, point=0.5)
+    assert 0.1 < bf < 10
+
+
+def test_posterior_predictive_shape_and_range():
+    from expkit.inference.bayes import conjugate_posterior_predictive
+
+    seq = np.array([1] * 60 + [0] * 40)
+    preds = conjugate_posterior_predictive(seq, new_n=20, n_samples=500, seed=0)
+    assert preds.shape == (500,)
+    assert (preds >= 0).all() and (preds <= 20).all()
+    # Predictive mean should be close to 0.6 * 20 = 12 (Beta(61, 41) -> mean ~0.598)
+    assert 10 < preds.mean() < 14
+
+
 @pytest.mark.slow
 def test_pymc_posterior_matches_conjugate_mean():
     seq = bernoulli_sequence(200, p=0.5, seed=0)

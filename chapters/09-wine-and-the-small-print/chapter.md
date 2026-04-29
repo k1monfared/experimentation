@@ -1,16 +1,68 @@
 # Chapter 9: Wine, coffee, and the small print
 
-## Carried from Chapter 8
+- Carried from Chapter 8
+  - The mechanics work. Now we ask: what does "wine is good for your heart" actually claim, and what is hiding in the small print?
 
-- The mechanics work. Now we ask: who was studied? what counts as "good"? what got measured? what got ignored?
-## Inquiry loops planned
+# Loop A: external validity
 
-- Loop A: simulate a study where wine's "effect on health" is measured only on 22-year-old male college students. The estimated treatment effect is real for that subgroup. Then resample as if the same effect applied to a broader population (older people, women, pregnant women, kids). It doesn't. Show the gap.
-- Loop B: define "good". A 5% reduction in resting heart rate isn't the same as "lives longer". Many studies measure proxies. Walk through three different operationalizations and which ones a 5% effect would hold for.
-- Loop C: side effects. Run the same simulation but track three outcomes (target metric, secondary outcomes, harms). Treatment helps the headline metric and hurts a side metric. Both lenses agree on the data; the *decision* depends on weighting.
-- Loop D: tradeoff analysis. Build a tiny utility function with knobs. Show that "ship/don't ship" flips depending on stakeholder priorities, even with the same posterior.
-- Big question: how do real industry teams actually decide? Spoiler: they look at clicks and unsubscribes. That has its own pathologies.
-## expkit modules used
+- Try
+  - We run a clean A/B-like study on wine vs no-wine in a sample of 22-year-old college students. We find a 5pp lift on a heart-health outcome. p < 0.01. The headline writes itself.
+  - But the world is not 22-year-old college students. We simulate the same intervention applied to a real population mix: 10% college students, 20% 40-year-olds under stress, 20% healthy 65+, 5% pregnant women, 10% teens, 35% middle-aged sedentary.
+- Observe
+  - The studied group: +5pp on the outcome. Real.
+  - 40yo under stress: -2pp. The intervention slightly hurts.
+  - 65+ healthy: +1pp. Real but tiny.
+  - Pregnant women: -10pp. Significant harm.
+  - Teens: -5pp. Harm.
+  - Middle-aged sedentary: 0. Indistinguishable from noise.
+  - ![External validity](images/external_validity.png)
+- Hunch
+  - Internal validity (does the effect hold in the studied population?) and external validity (does the effect generalize?) are different questions. Studies are usually designed for internal validity. The press release is about external validity. The gap between them is where most "wine is good for you" stories live.
 
-- expkit.sim.user_segments (NEW): heterogeneous treatment effects across populations
-- expkit.metrics.delta (eventually) for ratio outcomes
+# Loop B: what does "good" mean?
+
+- Try
+  - Run the same study; measure three different outcomes:
+    - resting heart rate (a proxy)
+    - exercise tolerance (a different proxy)
+    - all-cause mortality (the thing we actually care about)
+- Observe
+  - Resting heart rate: -3% (good), 95% CI [-5%, -1%]. Significant.
+  - Exercise tolerance: +1%, 95% CI [-1%, +3%]. Indistinguishable from noise.
+  - All-cause mortality: -0.2%, 95% CI [-1%, +0.6%]. Indistinguishable from noise on the metric that actually matters.
+  - ![Outcome choice](images/outcome_choice.png)
+- Hunch
+  - "Wine reduces resting heart rate" is true. "Wine improves health" is a leap. Choosing which outcome to publish is a decision the reader does not see.
+
+# Loop C: side effects
+
+- Try
+  - Track the target metric, a secondary metric, and a harm metric simultaneously.
+- Observe
+  - Target: +0.30 (good).
+  - Secondary 1: 0.0 (neutral).
+  - Harm: -0.40 (bad). The intervention helps the headline metric and hurts a side metric by more.
+  - ![Side effects](images/side_effects.png)
+- Hunch
+  - Trials in clinical and product domains routinely have this shape. The decision depends on weights, not on the data alone.
+
+# Loop D: tradeoff analysis
+
+- Try
+  - Build a tiny utility function: U = w * target_effect + (1 - w) * harm_effect. Sweep w from 0 to 1 and see when U switches sign.
+- Observe
+  - With target effect +0.30 and harm effect -0.40, the boundary is at w ≈ 0.57. At w < 0.57, the utility is negative (don't ship). At w > 0.57, positive (ship).
+  - Two stakeholders with different weights look at the same posterior and make different decisions.
+  - ![Tradeoff](images/tradeoff.png)
+- Hunch
+  - This is what a "decision" actually is once you take the data seriously: a posterior on each outcome, a utility weighting, and a threshold. The utility function is *not* a statistical question. It is a values question.
+
+# The big question that opens Chapter 10
+
+- Researchers face external validity, outcome-choice, side-effect, and weighting problems. So do tech companies running A/B tests. Same trap, larger scale, faster cadence, and a particular love affair with one metric: clicks.
+- Big question: what shape do these problems take in industry experimentation, where the metric is "did they click?" and the time horizon is one week?
+
+# Notebook and data
+
+- Companion notebook: [`notebook.ipynb`](notebook.ipynb)
+- Generation script: [`generate.py`](generate.py)

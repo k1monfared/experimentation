@@ -1,7 +1,7 @@
 - Project Status
     - Last Updated: 2026-04-29
-    - Stage: MVP
-    - Next Milestone: Chapter 2 -- "how sure can I be?" (null hypothesis, p-value, posterior probability, credible interval)
+    - Stage: Beta
+    - Next Milestone: polish chapter prose, expand companion notebooks, harden tests against edge inputs
 
 - Development Stages
     - [x] Initial Setup
@@ -15,20 +15,14 @@
         - Outcome: Chapter 1 fully built end-to-end (narrative, notebook, generated data, PyMC traces, figures, tests). Library scaffolding (expkit) installed and imported by the notebook. Loglog -> markdown rendering pipeline works.
     - [x] Minimum Viable Product (MVP)
         - Goal: a runnable, navigable repo with the full chapter outline visible and one chapter fully written.
-        - All 19 chapter folders exist with at least a chapter.log skeleton (carried question + inquiry-loop sketch + expkit modules to add)
-        - Chapter 1 demonstrates the target shape end-to-end
-        - Library Phase 1 modules implemented: sim.coin, inference.binomial, inference.bayes (PyMC + conjugate), plot.style, plot.diagnostic, io.samples
-        - 22 pytest tests passing (21 fast + 1 PyMC slow test)
-    - [] Beta Release
+        - All 19 chapter folders exist with chapter.log + chapter.md, notebook.ipynb, generate.py, images/, data/.
+        - Library modules implemented: sim.coin/die/abtest/user_segments/novelty/dilution; inference.binomial/normal/chi2/fisher/bootstrap/bayes; power.binomial; metrics.delta/variance/quality; segments.behavioral; novelty.measure; attribution.touch; plot.style/diagnostic; io.samples.
+        - 41 fast pytest tests passing + 1 PyMC slow test.
+    - [x] Beta Release
         - Goal: every chapter fully written, every expkit module implemented, F-vs-B capstone runnable.
-        - Active queue:
-            - [] Chapter 2 narrative + notebook
-            - [] Chapter 3 narrative + power/binomial module
-            - [] Chapters 4-7 narratives + remaining inference modules
-            - [] Chapters 8-12 narratives + abtest/segments/Simpson modules
-            - [] Chapters 13-17 narratives + metric/novelty/attribution modules
-            - [] Chapter 18 capstone simulation
-            - [] Chapter 19 causal handoff (mostly conceptual)
+        - All 19 chapters have full narrative, runnable notebook, deterministic generator, embedded figures, both-lens treatment.
+        - Chapter 18 capstone runs 2,000 synthetic A/B tests and produces confusion matrix + cost analysis comparing the two lenses.
+        - Chapter 19 hands off to /home/k1/public/statistics/causal_inference with a selection-bias demonstration.
     - [] Production Ready
         - Goal: stable, tested, polished, every figure final, every notebook reproducible from CI.
     - [] Maintenance Mode
@@ -66,6 +60,7 @@
     - Recent Progress:
         - 2026-04-29: scaffold + Phase 1 library + Chapter 1 fully built; 18 chapter stubs created; 22 tests passing; reproducibility manifest populated for Chapter 1
         - 2026-04-29: privacy policy added to local instructions; local-only tooling artifacts untracked from git
+        - 2026-04-29: Chapters 2-19 narratives, generators, notebooks, and images all built. Library expanded to cover power, full test family, bootstrap, multinomial, A/B, segments, novelty, dilution, metric quality, attribution, F-vs-B capstone, causal handoff. 42 tests passing.
 
 - Notes
     - Use loglog format for all .log documentation; render with `python scripts/render_chapters.py`

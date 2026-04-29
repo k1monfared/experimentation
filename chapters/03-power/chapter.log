@@ -1,13 +1,48 @@
 - Chapter 3: What if it's biased? (Power and sample size)
     - Carried from Chapter 2
-        - We figured out how strict our threshold should be. But strictness alone doesn't tell us if we'll detect a real bias. How many tosses does it take?
-    - Inquiry loops planned
-        - Loop A: simulate detecting p = 0.55 vs the null at increasing N. Plot the detection rate (1 - beta).
-        - Loop B: try smaller effects (0.51, 0.52, 0.53). Watch the curve flatten. Sample size scales like 1/effect^2.
-        - Loop C: pose the inverse: "what effect size can I detect with N = 1000 at 80% power?" Build the minimum-detectable-effect (MDE) tool.
-        - Loop D: Bayesian-flavored stopping rule. Run experiments until the posterior credible interval is narrower than some target, OR until the posterior probability of "p > some threshold" is decisive. How many tosses does that take on average vs the fixed-N frequentist approach?
-        - Big question: when these tests disagree, what do they actually disagree about?
-    - expkit modules used
-        - expkit.sim.coin
-        - expkit.power.binomial (NEW): power_for_proportion, mde_for_proportion
-        - expkit.inference.binomial, expkit.inference.bayes
+        - We figured out the rejection rule. We watched it catch larger biases more reliably and small biases almost never. Now: how big does N need to be to *plan* on catching a particular bias?
+- Loop A: power as a function of N
+    - Try
+        - Pick a true bias we'd like to catch (say p = 0.55 vs the null p = 0.5). For each N from 10 to 10,000, compute the probability that our two-sided alpha = 0.05 test rejects H0 if the truth is p = 0.55.
+    - Observe
+        - At N = 100 we catch it about 17% of the time. Most of the time we miss. At N = 1000 we catch it 88% of the time. At N = 10,000 we catch it essentially every time.
+        - ![Power curves](images/power_curves.png)
+    - Vocabulary
+        - That probability is *power*. It is 1 minus the false-negative rate (type II error, beta). 80% power is conventional. 95% if you really cannot afford to miss.
+        - Note the asymmetry: a strict alpha drives down false positives but does NOT drive up power. Power is set by N + the size of the effect we want to detect, not by alpha alone.
+    - Probe an edge case
+        - Small effects on the same plot. p = 0.51 is a tiny bias. Even at N = 10,000 we catch it less than 50% of the time. p = 0.70 is a huge bias; N = 50 already gives us decent power.
+- Loop B: sample size scales like 1/effect^2
+    - Try
+        - Invert the question. For each candidate truth, what is the smallest N at which we have 80% power? At 95% power?
+    - Observe
+        - p = 0.51 needs about 78,000 tosses for 80% power. p = 0.55 needs about 780. p = 0.60 needs about 200. p = 0.70 needs about 50.
+        - Halving the effect roughly quadruples the required N. This is the 1/effect^2 rule of thumb everyone quotes.
+        - ![Required N](images/required_n.png)
+    - Hunch
+        - This is why huge tech companies care about sample size. Their effects are tiny. A 0.5pp lift on a 5% baseline is real money, and detecting it needs gigantic Ns.
+- Loop C: the inverse question (MDE)
+    - Try
+        - What if N is given (we have a one-week experiment, traffic budget is fixed) and we want to know "what effects could this experiment realistically detect?". That's the minimum detectable effect, the MDE.
+    - Observe
+        - At N = 100 we can reliably detect effects of about 14 percentage points. At N = 1000 about 4.5pp. At N = 10,000 about 1.4pp. At N = 100,000 about 0.45pp.
+        - ![MDE curve](images/mde_curve.png)
+    - Hunch
+        - MDE and required-N are two questions, same machinery. The frequentist views them through the same lens.
+- Loop D: the Bayesian flavor of "how long should I run?"
+    - Try
+        - The frequentist plans N up front and stops there. The Bayesian can plan to stop when the posterior is precise enough -- "stop when the 95% credible interval has width <= 0.04". Run 200 such experiments where the truth is p = 0.55 and record the stopping N.
+    - Observe
+        - The distribution of stopping Ns has a median around 600. Some runs stop at 400 (lucky early evidence), some run to 1500. Compare to the frequentist 80%-power fixed N, which is 780 every time.
+        - ![Bayesian stopping N distribution](images/bayes_stopping.png)
+    - Compare
+        - The Bayesian stopping rule is *adaptive*. It uses the evidence as it accrues. On average it can stop earlier than a fixed-N test for the same target precision, but it also has variance in stopping time.
+        - The frequentist version of adaptive testing exists -- group sequential tests with alpha-spending -- but it is more involved and pays for the early-look option in alpha.
+    - Edge case
+        - What if I let myself "peek" without alpha-spending and stop the first time p < 0.05? I will reject far more than 5% of the time even when the truth is fair. This is "p-hacking by peeking" and it breaks the frequentist guarantee. The Bayesian view, with proper priors, is much less affected by stopping rules.
+- The big question that opens Chapter 4
+    - We have been using "the test" as if there's only one test. But there are several: exact binomial, normal-approximation z, chi-square, Fisher exact, t-test on the fraction, plus Bayesian variants. They are all looking at the same evidence. When do they agree? When do they tell different stories?
+    - Big question: same data, multiple tests -- when do they reach different conclusions?
+- Notebook and data
+    - Companion notebook: [`notebook.ipynb`](notebook.ipynb)
+    - Generation script: [`generate.py`](generate.py)

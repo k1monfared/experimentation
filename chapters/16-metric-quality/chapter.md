@@ -1,17 +1,54 @@
-# Chapter 16: Metric quality -- noise, variance, stability, predictivity
+# Chapter 16: Metric quality
 
-## Carried from Chapter 15
+- Carried from Chapter 15
+  - Even good metrics wobble. We tame the wobble.
 
-- We want metrics that move when the world moves and stay still when it doesn't.
-## Inquiry loops planned
+# Loop A: variance is a property of the metric, not the truth
 
-- Loop A: variance. Three candidate metrics for the same underlying user value. Their variance differs by 10x. Simulate the same true effect; the high-variance metric requires 10x more users to detect.
-- Loop B: variance reduction with CUPED. Use a pre-experiment covariate (last week's behavior) to soak up variance. Re-do the same detection task. Watch sample-size requirements drop.
-- Loop C: stability. Run a series of A/A tests (no real treatment). The spread of "effects" we see by chance tells us our floor.
-- Loop D: predictivity. Pair short-term and long-term metric changes from many simulated experiments. Some short-term metrics correlate with long-term outcomes. Most don't. Build a small predictivity scorer.
-- Loop E: Bayesian flavor. A hierarchical model that treats short-term reads as noisy measurements of a long-term effect.
-- Big question: my user clicks today and converts in 30 days. Who deserves the credit? (Attribution.)
-## expkit modules used
+- Try
+  - Three candidate metrics for the same underlying user value (mean 10, std 2). Each adds independent noise: A is clean, B is noisy, C is very clean.
+- Observe
+  - Same true effect would be detected at very different sample sizes for these three metrics. The high-variance metric needs ~25x more users to reach the same power as the low-variance one.
+  - ![Variance comparison](images/variance_comparison.png)
 
-- expkit.metrics.variance (NEW): CUPED, stratified estimators
-- expkit.metrics.quality (NEW): predictivity diagnostics
+# Loop B: CUPED -- regress out a pre-experiment covariate
+
+- Try
+  - We have a pre-experiment covariate (last week's activity, say) correlated with the experiment outcome. CUPED computes ``y_adj = y - theta * (x - x_mean)`` where theta is the OLS slope. The adjusted outcome has the same expectation but lower variance.
+- Observe
+  - On simulated data with a strong pre-experiment correlation, CUPED removes ~50% of the variance.
+  - ![CUPED](images/cuped.png)
+- Hunch
+  - This is free statistical power. Required investment: pre-experiment data on every user. Many companies just track this by default.
+
+# Loop C: A/A stability
+
+- Try
+  - Run 5,000 A/A tests on N=500 per arm with no real effect. Plot the distribution of measured effects.
+- Observe
+  - Mean ~ 0. Standard deviation ~ 0.063 (matches the theoretical sqrt(2/N)). Fraction of |effects| beyond 1.96 std is ~ 5% by construction.
+  - ![A/A stability](images/aa_stability.png)
+- Hunch
+  - The A/A test is the "is my pipeline broken?" sanity check. If your A/A test rejects more than 5% of the time, your assignment, your test, or your independence assumption is broken.
+
+# Loop D: predictivity scoring
+
+- Try
+  - Pair short-term metric effects with long-term metric effects across 200 simulated experiments. Three short-term metrics: a good one, a noisy one, a liar.
+- Observe
+  - Good metric: r ~ +0.6.
+  - Noisy metric: r ~ 0.0.
+  - Lying metric: r ~ -0.3.
+  - ![Predictivity grid](images/predictivity_grid.png)
+- Hunch
+  - Treat predictivity as a metric of metrics. Ship the metric whose short-term reads best predict the long-term outcomes you actually care about.
+
+# The big question that opens Chapter 17
+
+- Now imagine the user touches your product five times before converting. Which touch deserves credit? That's attribution, the last big trap.
+- Big question: when conversions take time, who gets the credit?
+
+# Notebook and data
+
+- Companion notebook: [`notebook.ipynb`](notebook.ipynb)
+- Generation script: [`generate.py`](generate.py)

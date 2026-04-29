@@ -1,17 +1,64 @@
 # Chapter 5: Confidence intervals -- the dual of tests
 
-## Carried from Chapter 4
+- Carried from Chapter 4
+  - Tests answer "can I rule out this single value of p?". Intervals invert the question: "what set of values can I NOT rule out?"
 
-- Tests answer "can I rule this out?". Intervals answer "what can't I rule out?". They are two sides of the same coin (the coin we have been tossing).
-## Inquiry loops planned
+# Loop A: five intervals on the same data
 
-- Loop A: compute Wald, Wilson, Clopper-Pearson, and bootstrap CIs at N = 10, 100, 1000 with 6/10, 60/100, 600/1000.
-- Loop B: probe near boundaries. 0/10. 10/10. Where does Wald fail? Where does Clopper-Pearson over-cover?
-- Loop C: Bayesian credible interval (uniform prior, then Jeffreys, then a strongly informative prior). Visualize the same data with three priors.
-- Loop D: simulate 10,000 fair-coin experiments. Count how often each interval contains the truth. The good ones cover at least 95% of the time.
-- Big question: instead of "ruling out", what if we want to update a belief?
-## expkit modules used
+- Try
+  - For 6/10, 60/100, 600/1000 compute five 95% intervals: Wald, Wilson, Clopper-Pearson, percentile bootstrap, Bayesian credible (Beta(1,1) prior).
+- Observe
+  - At 6/10 the intervals are wide and a little different from each other: Wald [0.30, 0.90], Wilson [0.31, 0.83], Clopper-Pearson [0.26, 0.88], bootstrap [0.30, 0.90], Bayesian [0.32, 0.81]. They all contain 0.5 -- consistent with our earlier "no signal" conclusion.
+  - At 60/100 the intervals tighten to about [0.50, 0.69]. The methods are now nearly indistinguishable. 0.5 sits exactly on the lower edge -- that's the borderline result we've been chasing.
+  - At 600/1000 the intervals collapse to about [0.57, 0.63]. 0.5 is far away.
+  - ![Method comparison](images/ci_method_comparison.png)
+- Hunch
+  - At moderate-to-large N, the choice of interval method does not matter for almost any decision. At small N or at extremes, the choices matter and the bad ones get embarrassingly wrong.
 
-- expkit.inference.binomial (existing): wilson, clopper_pearson
-- expkit.inference.bootstrap (NEW)
-- expkit.inference.bayes (existing)
+# Loop B: edge cases break Wald
+
+- Try
+  - 0/10, 10/10, 0/100, 100/100. Compute the same intervals.
+- Observe
+  - Wald at 0/10: the interval is [0, 0]. Technically you cannot rule out *anything*, but Wald says you can rule out everything. This is the famous Wald failure mode.
+  - Wilson at 0/10: [0.000, 0.278]. Sensible: I cannot say p > 0.28.
+  - Clopper-Pearson at 0/10: [0.000, 0.308]. Conservative.
+  - Bayesian at 0/10 with Beta(1, 1) prior: posterior is Beta(1, 11), 95% credible [0.002, 0.265]. Honest about uncertainty.
+  - ![Boundary failures](images/boundary_failures.png)
+- Rule of thumb
+  - Don't use Wald near boundaries. Don't use Wald at small N, period. Wilson is a good default. Clopper-Pearson is safe but conservative. Bayesian with a flat prior matches Clopper-Pearson very closely. Bootstrap is fine when you don't have a closed-form analytic option.
+
+# Loop C: priors that argue
+
+- Try
+  - 60 heads in 100 tosses, viewed through three different priors: flat Beta(1,1), skeptical Beta(50,50), tail-leaning Beta(2,8).
+- Observe
+  - Flat prior posterior: Beta(61, 41), centred at 0.598, 95% CI roughly [0.50, 0.69].
+  - Skeptical prior posterior: Beta(110, 90), centred at 0.55, 95% CI roughly [0.48, 0.62]. The data moved us, but only halfway -- the prior was strong.
+  - Tail-leaning prior posterior: Beta(62, 48), centred at 0.564. It's harder to drag a "I expected tails" prior all the way to 0.6 with only 100 tosses.
+  - ![Three priors](images/three_priors.png)
+- Hunch
+  - Priors are a feature, not a bug. They make assumptions explicit. The frequentist's *implicit* prior (in this setting, "no prior, p is whatever value the test is asking about") is not less of an assumption -- it's just less visible.
+
+# Loop D: do these intervals actually cover the truth?
+
+- Try
+  - Simulate 5,000 fair-coin experiments at N = 20. For each one, compute Wald, Wilson, Clopper-Pearson, and Bayesian 95% intervals. Count how often each contains the true p = 0.5.
+- Observe
+  - Wald: about 87% coverage. Below the nominal 95%.
+  - Wilson: about 95% coverage. Right on target.
+  - Clopper-Pearson: about 98% coverage. Conservative -- it over-covers on purpose.
+  - Bayesian (flat prior): about 95% coverage. (Frequentist coverage of a Bayesian interval depends on the prior + data.)
+  - ![Coverage simulation](images/coverage_simulation.png)
+- Hunch
+  - "95%" only means what you think it means if the construction is honest about the model. Wald isn't, at small N. Wilson is. Clopper-Pearson is, at the price of being conservative.
+
+# The big question that opens Chapter 6
+
+- We've used "posterior" half a dozen times. Time to make it formal: a prior, a likelihood, a posterior, a credible interval, a Bayes factor. Up to now we've used the closed-form Beta-binomial conjugate result. From here on we use PyMC because most real models don't have a closed form.
+- Big question: what does the Bayesian framework actually look like, taken seriously and end-to-end?
+
+# Notebook and data
+
+- Companion notebook: [`notebook.ipynb`](notebook.ipynb)
+- Generation script: [`generate.py`](generate.py)

@@ -100,3 +100,45 @@ def posterior_summary(idata) -> dict:
         "ci_95_high": float(np.quantile(p_samples, 0.975)),
         "prob_greater_half": float(np.mean(p_samples > 0.5)),
     }
+
+
+def bayes_factor_point_vs_uniform(seq: np.ndarray, point: float = 0.5) -> float:
+    """Bayes factor for a point H0 (p = ``point``) vs the uniform-p alternative.
+
+    Computes BF_{10} = P(data | H1) / P(data | H0) where H1 is "p ~ Uniform(0, 1)".
+    Both marginal likelihoods have closed form in this conjugate setting.
+    """
+    from scipy.special import betaln, gammaln
+
+    seq_arr = np.asarray(seq, dtype=int)
+    k = int(seq_arr.sum())
+    n = int(seq_arr.size)
+    if not 0.0 < point < 1.0:
+        raise ValueError("point must lie in (0, 1)")
+    log_lik_h0 = k * np.log(point) + (n - k) * np.log(1.0 - point)
+    # Beta(1,1) prior gives marginal P(data | H1) = B(k+1, n-k+1) / B(1, 1) = B(k+1, n-k+1)
+    log_lik_h1 = betaln(k + 1, n - k + 1)
+    # B(1, 1) = 1, so this is correct as-is. Add a sanity gammaln-based check.
+    _ = gammaln  # keep import used
+    return float(np.exp(log_lik_h1 - log_lik_h0))
+
+
+def conjugate_posterior_predictive(
+    seq: np.ndarray,
+    new_n: int,
+    prior_alpha: float = 1.0,
+    prior_beta: float = 1.0,
+    n_samples: int = 5000,
+    seed: int | None = None,
+) -> np.ndarray:
+    """Posterior predictive over the count of heads in ``new_n`` future tosses.
+
+    Draws p ~ posterior, then heads ~ Binomial(new_n, p). Returns an array of
+    ``n_samples`` predicted head counts.
+    """
+    rng = np.random.default_rng(seed)
+    seq_arr = np.asarray(seq, dtype=int)
+    a = prior_alpha + int(seq_arr.sum())
+    b = prior_beta + int(seq_arr.size - seq_arr.sum())
+    p_draws = rng.beta(a, b, size=n_samples)
+    return rng.binomial(new_n, p_draws)

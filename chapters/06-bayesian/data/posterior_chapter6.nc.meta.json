@@ -1,0 +1,9 @@
+{
+  "meta": {
+    "n": 200,
+    "p_true": 0.55,
+    "prior": "Beta(1,1)"
+  },
+  "seed": 606,
+  "sha256": "dbeb4a01916c5c287ccd8f9053c16f3654d870606afec93d47d64be3f18a0687"
+}

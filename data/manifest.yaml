@@ -101,3 +101,418 @@ artifacts:
   seed: derived
   sha256: 6d2383ef8bd132522596203f1670b99349145bb321e4d2cf5a5338c71b24df8e
   description: 'Chapter 1 figure: two_lens_endcap.png'
+- path: chapters/02-how-sure/images/sampling_distribution_n100.png
+  chapter: 02-how-sure
+  kind: image
+  seed: derived
+  sha256: 98f41bd24d5b49ebe5060ef79cdbb5715cdd77752e5b229d02d28b8d9c70671f
+  description: 'Chapter 2 figure: sampling_distribution_n100.png'
+- path: chapters/02-how-sure/images/decision_curves.png
+  chapter: 02-how-sure
+  kind: image
+  seed: derived
+  sha256: 1125ee8482514292a63e8f3174a210c64832cf4c796ee1257359e61ede8466a4
+  description: 'Chapter 2 figure: decision_curves.png'
+- path: chapters/02-how-sure/images/alpha_sweep.png
+  chapter: 02-how-sure
+  kind: image
+  seed: derived
+  sha256: d399daaebc4c88d909d5d8326bb5aa7d3c0c027d1657796b07075758110c0825
+  description: 'Chapter 2 figure: alpha_sweep.png'
+- path: chapters/02-how-sure/images/rejection_rates.png
+  chapter: 02-how-sure
+  kind: image
+  seed: derived
+  sha256: 1c4efc0201ddc8bb2e9e22ba3063a9e5193c48b723c10aa69babf903bf5fa601
+  description: 'Chapter 2 figure: rejection_rates.png'
+- path: chapters/02-how-sure/data/rejection_rates_grid.npy
+  chapter: 02-how-sure
+  kind: samples
+  seed: 200
+  sha256: 6a05668a1f6ec71c884d9ba357f693e91594cc061c99f9fd6e539b8b42435561
+  description: 'Loop D: empirical rejection rates across (truth, N) grid'
+- path: chapters/03-power/images/power_curves.png
+  chapter: 03-power
+  kind: image
+  seed: derived
+  sha256: 9c9fb87f740a5b0752bc179ddcd5ba5f747ca084eed835f75aa65773537097aa
+  description: 'Chapter 3 figure: power_curves.png'
+- path: chapters/03-power/images/required_n.png
+  chapter: 03-power
+  kind: image
+  seed: derived
+  sha256: 681c0964e74ede9775a8b15112c56611a5b8569bf9417f6f4e8c5c504749aac8
+  description: 'Chapter 3 figure: required_n.png'
+- path: chapters/03-power/images/mde_curve.png
+  chapter: 03-power
+  kind: image
+  seed: derived
+  sha256: 53f4bf4f6b1ec7050e387fa2ee6826c4a2bc29da940eaa9863cc270122e6c808
+  description: 'Chapter 3 figure: mde_curve.png'
+- path: chapters/03-power/images/bayes_stopping.png
+  chapter: 03-power
+  kind: image
+  seed: derived
+  sha256: b16656be01b47d286dcebec3025bd540dbfc1b689c5217a2f3e71b9f80bdd577
+  description: 'Chapter 3 figure: bayes_stopping.png'
+- path: chapters/03-power/data/bayes_stopping_ns.npy
+  chapter: 03-power
+  kind: samples
+  seed: 42
+  sha256: e7a730eedaf2527a9918e18a4154ab68caf2fab838a6f302a6a9e1fd0576d27a
+  description: 'Loop D: per-run Bayesian stopping N'
+- path: chapters/04-test-family/images/pvalue_grid.png
+  chapter: 04-test-family
+  kind: image
+  seed: derived
+  sha256: 41af6cf6a1f68257cd441e9d3ada067e79f526829e2e7ba871bfa38eb910c751
+  description: 'Chapter 4 figure: pvalue_grid.png'
+- path: chapters/04-test-family/images/normal_vs_exact.png
+  chapter: 04-test-family
+  kind: image
+  seed: derived
+  sha256: b9e73ddee26bcdb86985f5862c585574c365e304969a6658453683a1cca62da7
+  description: 'Chapter 4 figure: normal_vs_exact.png'
+- path: chapters/04-test-family/images/edge_cases.png
+  chapter: 04-test-family
+  kind: image
+  seed: derived
+  sha256: 0dd82ac0cb6ccf5caf9e90ff38dab0ac98971d95ecae1dbd73d9b04d8e6bf40e
+  description: 'Chapter 4 figure: edge_cases.png'
+- path: chapters/04-test-family/images/bayes_alongside.png
+  chapter: 04-test-family
+  kind: image
+  seed: derived
+  sha256: 42f8b7f474b4447320cde8dc94be2fa51437625868c1a093d9260c3e4b01be19
+  description: 'Chapter 4 figure: bayes_alongside.png'
+- path: chapters/05-confidence-intervals/images/ci_method_comparison.png
+  chapter: 05-confidence-intervals
+  kind: image
+  seed: derived
+  sha256: 65cb0144b564c661c67ef49289f6b0b5e89080f860c2d86a6e0a435d5d98b071
+  description: 'Chapter 5 figure: ci_method_comparison.png'
+- path: chapters/05-confidence-intervals/images/boundary_failures.png
+  chapter: 05-confidence-intervals
+  kind: image
+  seed: derived
+  sha256: d45a3dff793d6507ba30babaaa67eaca450770fd639da97821675b03ed635e14
+  description: 'Chapter 5 figure: boundary_failures.png'
+- path: chapters/05-confidence-intervals/images/three_priors.png
+  chapter: 05-confidence-intervals
+  kind: image
+  seed: derived
+  sha256: 8017106433eb3a040fae17f120826f27ae9fdde797a6f709fd789fd7b8abfa57
+  description: 'Chapter 5 figure: three_priors.png'
+- path: chapters/05-confidence-intervals/images/coverage_simulation.png
+  chapter: 05-confidence-intervals
+  kind: image
+  seed: derived
+  sha256: 97d5dfab6cef9be4c7a10f09441d3db290041656c8ca63d6cff3488ae4f3b5ff
+  description: 'Chapter 5 figure: coverage_simulation.png'
+- path: chapters/05-confidence-intervals/data/coverage_rates.npy
+  chapter: 05-confidence-intervals
+  kind: samples
+  seed: 123
+  sha256: e17961f6a97f59c795290f9555268aff15280bb26aceb29924a06a08d529118c
+  description: 'Loop D: empirical coverage rates'
+- path: chapters/06-bayesian/data/posterior_chapter6.nc
+  chapter: 06-bayesian
+  kind: idata
+  seed: 606
+  sha256: dbeb4a01916c5c287ccd8f9053c16f3654d870606afec93d47d64be3f18a0687
+  description: Chapter 6 PyMC posterior on p (200 tosses, p=0.55)
+- path: chapters/06-bayesian/images/priors_argue.png
+  chapter: 06-bayesian
+  kind: image
+  seed: derived
+  sha256: a998105a6cb823ec04311f624e4d4405ebab36a8e1da64bba2df0924d8dc5ab2
+  description: 'Chapter 6 figure: priors_argue.png'
+- path: chapters/06-bayesian/images/pymc_trace_vs_closed_form.png
+  chapter: 06-bayesian
+  kind: image
+  seed: derived
+  sha256: 1b24cbd22f6ffa73ade6c63bacb2a0d0ccb91ddc0d12b75e99177ed453af1c10
+  description: 'Chapter 6 figure: pymc_trace_vs_closed_form.png'
+- path: chapters/06-bayesian/images/bayes_factor.png
+  chapter: 06-bayesian
+  kind: image
+  seed: derived
+  sha256: 72395f91406b60972ac08a89e744d52d43d2c231055812198c994a29fedb6007
+  description: 'Chapter 6 figure: bayes_factor.png'
+- path: chapters/06-bayesian/images/posterior_predictive.png
+  chapter: 06-bayesian
+  kind: image
+  seed: derived
+  sha256: 991d2d36e8183e1df9387e85424ca2b016f9cffeb5561e5263c927c580400705
+  description: 'Chapter 6 figure: posterior_predictive.png'
+- path: chapters/07-the-die/images/count_wobble.png
+  chapter: 07-the-die
+  kind: image
+  seed: derived
+  sha256: 6c06c9187accae9d28f871bf35835ab3ad1915fe3e506d05692a64c583b1f1d2
+  description: 'Chapter 7 figure: count_wobble.png'
+- path: chapters/07-the-die/images/chi2_pvalues.png
+  chapter: 07-the-die
+  kind: image
+  seed: derived
+  sha256: a53536ee2d7a4b6c8d57a9386399a631a9674e7c06f64a54e7f18f62adac3ae6
+  description: 'Chapter 7 figure: chi2_pvalues.png'
+- path: chapters/07-the-die/images/dirichlet_posterior.png
+  chapter: 07-the-die
+  kind: image
+  seed: derived
+  sha256: 18f926bb9631d1f652f4a56c237356c282b9a98f27112910d5622d6c1630a1c8
+  description: 'Chapter 7 figure: dirichlet_posterior.png'
+- path: chapters/07-the-die/images/multiple_comparisons.png
+  chapter: 07-the-die
+  kind: image
+  seed: derived
+  sha256: e2995a3a2c91b46adfd9ea75ea279840f10f66491ed5d7ab3e2450d62b7e0118
+  description: 'Chapter 7 figure: multiple_comparisons.png'
+- path: chapters/07-the-die/data/chi2_pvalues_grid.npy
+  chapter: 07-the-die
+  kind: samples
+  seed: 72
+  sha256: a5cc0d563c15f15931c5beb8211ab7aade1bf1424c09a54e748b274a2a6af5ba
+  description: 'Loop B: chi-square p-values for fair vs loaded die at varying N'
+- path: chapters/08-from-dice-to-ab/images/two_arm_binary.png
+  chapter: 08-from-dice-to-ab
+  kind: image
+  seed: derived
+  sha256: c96c1c84c18ff1c61eddf0644f4bcbaf8ba02c6e595ef252dc57d07d14c3dd17
+  description: 'Chapter 8 figure: two_arm_binary.png'
+- path: chapters/08-from-dice-to-ab/images/continuous_outcome.png
+  chapter: 08-from-dice-to-ab
+  kind: image
+  seed: derived
+  sha256: 36a6671e42a4961eebdeb846e6943aa81263f32bcc76ef411c603aaf6534332c
+  description: 'Chapter 8 figure: continuous_outcome.png'
+- path: chapters/08-from-dice-to-ab/images/stratified_vs_pooled.png
+  chapter: 08-from-dice-to-ab
+  kind: image
+  seed: derived
+  sha256: 22507e63e1bb431dc2143b4ba51abc5cf29591dc1279abf6e1386a1cfe745d3c
+  description: 'Chapter 8 figure: stratified_vs_pooled.png'
+- path: chapters/08-from-dice-to-ab/images/decision_rule.png
+  chapter: 08-from-dice-to-ab
+  kind: image
+  seed: derived
+  sha256: 938411779a766f3cc14af937b7218e19ed4284d9a7f01fd6004f6d7dba831d08
+  description: 'Chapter 8 figure: decision_rule.png'
+- path: chapters/09-wine-and-the-small-print/images/external_validity.png
+  chapter: 09-wine-and-the-small-print
+  kind: image
+  seed: derived
+  sha256: 017b383f6a18a89124f5405ff6fe07927f2132e00e5bc89b8be907e3d658d9a8
+  description: 'Chapter 9 figure: external_validity.png'
+- path: chapters/09-wine-and-the-small-print/images/outcome_choice.png
+  chapter: 09-wine-and-the-small-print
+  kind: image
+  seed: derived
+  sha256: 7790cc0d0eb3f643f31104f2865a2b674a3cfa32510d94fba6c4441d0fbe50e9
+  description: 'Chapter 9 figure: outcome_choice.png'
+- path: chapters/09-wine-and-the-small-print/images/side_effects.png
+  chapter: 09-wine-and-the-small-print
+  kind: image
+  seed: derived
+  sha256: c4bd1ae1a52eb038ae4b5f03086e51139eeba99a3a8c014b0918062711a2a4c2
+  description: 'Chapter 9 figure: side_effects.png'
+- path: chapters/09-wine-and-the-small-print/images/tradeoff.png
+  chapter: 09-wine-and-the-small-print
+  kind: image
+  seed: derived
+  sha256: afab660cb25cda950ba634d324a345f799e7070db2c156bde5c3a62e6fb6b9fb
+  description: 'Chapter 9 figure: tradeoff.png'
+- path: chapters/11-segmentation/images/demographic_vs_behavioral.png
+  chapter: 11-segmentation
+  kind: image
+  seed: derived
+  sha256: e279d1e1520c611ad1cd64fb0144e9424f04328cc8f405fb41bd8459eb01a15f
+  description: 'Chapter 11 figure: demographic_vs_behavioral.png'
+- path: chapters/11-segmentation/images/segment_signature.png
+  chapter: 11-segmentation
+  kind: image
+  seed: derived
+  sha256: ab2a29cb90ccb10e5f61a7493cac566649e5937a518bc67d3378cc66fbec0248
+  description: 'Chapter 11 figure: segment_signature.png'
+- path: chapters/11-segmentation/images/segmentation_choices.png
+  chapter: 11-segmentation
+  kind: image
+  seed: derived
+  sha256: 25769001f25cfbf1150cbe71254a3ec1f7056e1d859b15122d9df8bb06c3791f
+  description: 'Chapter 11 figure: segmentation_choices.png'
+- path: chapters/12-simpsons-paradox/images/paradox_construction.png
+  chapter: 12-simpsons-paradox
+  kind: image
+  seed: derived
+  sha256: 019f28b10c84645cb97fe06a92f9f04386c4bb62b9e00bc02c43f0a68c4c409f
+  description: 'Chapter 12 figure: paradox_construction.png'
+- path: chapters/12-simpsons-paradox/images/paradox_sweep.png
+  chapter: 12-simpsons-paradox
+  kind: image
+  seed: derived
+  sha256: ca4640aec52fc5ceca756d9f363cd8552bbf977f925f6f096211758602da63a7
+  description: 'Chapter 12 figure: paradox_sweep.png'
+- path: chapters/12-simpsons-paradox/images/paradox_impossible.png
+  chapter: 12-simpsons-paradox
+  kind: image
+  seed: derived
+  sha256: 5e312094a63ff685c667f3db87cb1fd7ada96b2aa461c4d58ed59534c2bf5602
+  description: 'Chapter 12 figure: paradox_impossible.png'
+- path: chapters/12-simpsons-paradox/images/berkeley_style.png
+  chapter: 12-simpsons-paradox
+  kind: image
+  seed: derived
+  sha256: 4fdcf9feb0fa3bac8bf5325c66106805bd2305c4e43ab531bcd426b96f1dd7b0
+  description: 'Chapter 12 figure: berkeley_style.png'
+- path: chapters/12-simpsons-paradox/data/paradox_sweep.npy
+  chapter: 12-simpsons-paradox
+  kind: samples
+  seed: 0
+  sha256: 7ba3938cc540c02d5abc9708f5ac6219ef9ab828960084db2a8e08e3f40a30f5
+  description: 'Loop B: paradox sweep over assignment imbalance'
+- path: chapters/13-metric-tree/images/metric_tree.png
+  chapter: 13-metric-tree
+  kind: image
+  seed: derived
+  sha256: 70921ac7d7833489a426b438596bbae356ddbd33443a9c2ed3b928c2134a74b0
+  description: 'Chapter 13 figure: metric_tree.png'
+- path: chapters/13-metric-tree/images/noise_vs_speed.png
+  chapter: 13-metric-tree
+  kind: image
+  seed: derived
+  sha256: a0af4b466b418e7345f185412d9b115db38c8803c2dde5333947738505fc1312
+  description: 'Chapter 13 figure: noise_vs_speed.png'
+- path: chapters/13-metric-tree/images/predictivity.png
+  chapter: 13-metric-tree
+  kind: image
+  seed: derived
+  sha256: e32f5264be66fd6b97ffeab7f4c1b879b687253140bf4d405f78d3cbec83e502
+  description: 'Chapter 13 figure: predictivity.png'
+- path: chapters/13-metric-tree/images/proxy_lies.png
+  chapter: 13-metric-tree
+  kind: image
+  seed: derived
+  sha256: f8def6cd18f87e52455e25ca16c563b45538ac071521e8dfbab1d2fe956c7ff0
+  description: 'Chapter 13 figure: proxy_lies.png'
+- path: chapters/13-metric-tree/data/predictivity_pairs.npy
+  chapter: 13-metric-tree
+  kind: samples
+  seed: 0
+  sha256: ce9ef2a9bb5ca00f6607e89cb6d687df2cbf12c925e0033891b98cccf6223f16
+  description: 'Loop C: short-term vs long-term effect pairs across 200 simulated
+    experiments'
+- path: chapters/14-novelty/data/novelty_event_log.parquet
+  chapter: 14-novelty
+  kind: samples
+  seed: 140
+  sha256: 74500bf2a9a244352136fcfbd4421fcadefe2184fe5ed0c983d3a04be7f97035
+  description: 'Loop A: novelty event log (2,000 users, 40 days)'
+- path: chapters/14-novelty/images/three_views.png
+  chapter: 14-novelty
+  kind: image
+  seed: derived
+  sha256: 72775b75b5886e1952ee795cdba81d08fb4e081af05d587dce5d3b88525a545d
+  description: 'Chapter 14 figure: three_views.png'
+- path: chapters/14-novelty/images/decay_shapes.png
+  chapter: 14-novelty
+  kind: image
+  seed: derived
+  sha256: f614207fbc36ca283c83ad4dc5dfe5a68bc099ad393f363c350fdbcdd7081743
+  description: 'Chapter 14 figure: decay_shapes.png'
+- path: chapters/15-dilution/images/itt_vs_per_protocol.png
+  chapter: 15-dilution
+  kind: image
+  seed: derived
+  sha256: 69b883f6b7c110a7439ea3406abfae61075ddd16b08fcd2c7b0046f185b044e3
+  description: 'Chapter 15 figure: itt_vs_per_protocol.png'
+- path: chapters/15-dilution/images/dilution_sweep.png
+  chapter: 15-dilution
+  kind: image
+  seed: derived
+  sha256: 936af8b2c7e3609e55ab2460ccf76054c37815f3f3c3ada6012b8132c307f91c
+  description: 'Chapter 15 figure: dilution_sweep.png'
+- path: chapters/15-dilution/images/ratio_metric.png
+  chapter: 15-dilution
+  kind: image
+  seed: derived
+  sha256: d4f2e0936a220757af03f1cf0068542186a40caa019dbf4797c4c16dfa572a39
+  description: 'Chapter 15 figure: ratio_metric.png'
+- path: chapters/16-metric-quality/images/variance_comparison.png
+  chapter: 16-metric-quality
+  kind: image
+  seed: derived
+  sha256: 05697960358a741c684b112ebe5aa53060ef0ed372d16bee2972a9a35e465b77
+  description: 'Chapter 16 figure: variance_comparison.png'
+- path: chapters/16-metric-quality/images/cuped.png
+  chapter: 16-metric-quality
+  kind: image
+  seed: derived
+  sha256: 12b7cb3811aec21445faba8a086798f39dc00b967d441610aefae846ee32fe90
+  description: 'Chapter 16 figure: cuped.png'
+- path: chapters/16-metric-quality/images/aa_stability.png
+  chapter: 16-metric-quality
+  kind: image
+  seed: derived
+  sha256: 166b44c8d4c9bc67ec4369476d1d1a51f8f6db3f6bfef70b2f54fa3309813118
+  description: 'Chapter 16 figure: aa_stability.png'
+- path: chapters/16-metric-quality/images/predictivity_grid.png
+  chapter: 16-metric-quality
+  kind: image
+  seed: derived
+  sha256: 62e83a57343c972330b65c370d9fa6b677f7b4ffc57a6bd5851aca2df521c89a
+  description: 'Chapter 16 figure: predictivity_grid.png'
+- path: chapters/17-attribution/images/scheme_comparison.png
+  chapter: 17-attribution
+  kind: image
+  seed: derived
+  sha256: 6fb763219853e0ce01b00a4c170d7505bd58c5d2a33bd9fee3e959fe42e41be8
+  description: 'Chapter 17 figure: scheme_comparison.png'
+- path: chapters/17-attribution/images/treatment_misallocation.png
+  chapter: 17-attribution
+  kind: image
+  seed: derived
+  sha256: 2a08f6320c79393da94f2b1dfbe74acbce4be1fd04796252a8b475a52b7c24ad
+  description: 'Chapter 17 figure: treatment_misallocation.png'
+- path: chapters/18-frequentist-vs-bayesian-shipping/data/ship_decisions.csv
+  chapter: 18-frequentist-vs-bayesian-shipping
+  kind: samples
+  seed: 180
+  sha256: b110b9d34e0cc5a023e9c88daf15cd717fd0ffdfc4e99b2dcf097053bd4e6414
+  description: 'Loop A-E: 2,000 simulated A/B tests with frequentist + Bayesian decisions'
+- path: chapters/18-frequentist-vs-bayesian-shipping/images/ship_by_truth.png
+  chapter: 18-frequentist-vs-bayesian-shipping
+  kind: image
+  seed: derived
+  sha256: f18ba002c5ef7767566236146eedf1aa684c17377943f6f5c8a3fa31ed24bac7
+  description: 'Chapter 18 figure: ship_by_truth.png'
+- path: chapters/18-frequentist-vs-bayesian-shipping/images/confusion_matrix.png
+  chapter: 18-frequentist-vs-bayesian-shipping
+  kind: image
+  seed: derived
+  sha256: 433d2b0ebf09463509f8dac879dcab217c851f1c9b630f6cc656d976ce3f3e99
+  description: 'Chapter 18 figure: confusion_matrix.png'
+- path: chapters/18-frequentist-vs-bayesian-shipping/images/cost_analysis.png
+  chapter: 18-frequentist-vs-bayesian-shipping
+  kind: image
+  seed: derived
+  sha256: 3d4ca73c6714a2a1829b003dfc7c385f03f8131be21318f7e56e2c2a26135820
+  description: 'Chapter 18 figure: cost_analysis.png'
+- path: chapters/18-frequentist-vs-bayesian-shipping/images/joint_decision.png
+  chapter: 18-frequentist-vs-bayesian-shipping
+  kind: image
+  seed: derived
+  sha256: 376aba524991098c2ca86f20c843e27351b8a649cee5a33260fe7c814237a859
+  description: 'Chapter 18 figure: joint_decision.png'
+- path: chapters/19-causal-handoff/images/selection_bias.png
+  chapter: 19-causal-handoff
+  kind: image
+  seed: derived
+  sha256: 37fd6074073eeadc28d81d461a67484ade177df03cb3c000505cc62c97d761f4
+  description: 'Chapter 19 figure: selection_bias.png'
+- path: chapters/19-causal-handoff/images/when_experiments_fail.png
+  chapter: 19-causal-handoff
+  kind: image
+  seed: derived
+  sha256: eacf5687c8e88034d2847490b490c0bbfc796bf31819da5ec301e1de9dd6349c
+  description: 'Chapter 19 figure: when_experiments_fail.png'

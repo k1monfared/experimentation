@@ -1,0 +1,9 @@
+{
+  "meta": {
+    "n_runs": 200,
+    "target_ci_width": 0.04,
+    "truth": 0.55
+  },
+  "seed": 42,
+  "sha256": "e7a730eedaf2527a9918e18a4154ab68caf2fab838a6f302a6a9e1fd0576d27a"
+}

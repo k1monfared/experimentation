@@ -1,16 +1,51 @@
 # Chapter 13: The metric tree
 
-## Carried from Chapter 12
+- Carried from Chapter 12
+  - Which metric should we even be measuring? The answer is structural, not statistical.
 
-- You can't even ask "did the parts agree with the whole?" until you decide what "the whole" is. That's the metric tree.
-## Inquiry loops planned
+# Loop A: the tree
 
-- Loop A: draw the tree. Top-level company outcome (e.g. annual revenue, retention). First-layer proxies (DAU, conversion). Lower-layer (CTR, page-load time). Bottom-layer (clicks, scrolls). Each layer is a noisier, faster proxy.
-- Loop B: noise vs signal trade-off per layer. Simulate measurement at each level. The top-level metric needs months and is the truth. Bottom-level metrics tick by the minute but don't predict the truth.
-- Loop C: predictivity. Run 200 simulated experiments. For each one, record the short-term metric change AND the long-term metric change. Plot the correlation. It's noisy but real for some metrics, near-zero for others.
-- Loop D: when does a proxy lie to you? Walk through three concrete simulated cases. (clickbait link from Chapter 10 reappears.)
-- Big question: a proxy can lie. How does this lie evolve over time? Does the lie get smaller, or bigger, or change shape?
-## expkit modules used
+- Try
+  - Sketch a four-layer tree. Top: company outcome (retention, revenue). Below: first-layer proxies (DAU, conversion, churn). Below: session-level metrics (sessions/week, time/session). Bottom: click-level events (CTR, scroll depth, dwell).
+- ![Metric tree](images/metric_tree.png)
 
-- expkit.metrics.quality (NEW)
-- expkit.sim.abtest with multi-metric outputs
+# Loop B: noise vs measurement speed
+
+- Observe
+  - Click-level: cheap to read in a day, but a 4% lift in clicks doesn't always mean a 4% lift in retention.
+  - First-layer proxies: a 1-week experiment can give you a noisy read on conversion.
+  - Top-level: revenue and retention need months of data and have huge noise relative to the effect we're hoping to see.
+  - ![Noise vs speed](images/noise_vs_speed.png)
+- Hunch
+  - The bottom of the tree gives quick clean reads of *something*, but that something might not be the truth. The top gives the truth, slowly.
+
+# Loop C: predictivity
+
+- Try
+  - Simulate 200 experiments. Each has a true latent effect. We measure a short-term metric (noisy proxy) and a long-term metric (less noisy, closer to the truth).
+- Observe
+  - Pearson r between short and long is around 0.5. R^2 around 0.25.
+  - Most of the time the short-term metric points the right way. Some experiments diverge sharply.
+  - ![Predictivity](images/predictivity.png)
+- Hunch
+  - "Predictive validity" is a property of metric pairs, not individual metrics. Some short-term metrics ARE predictive of long-term outcomes; others are not. Choosing your headline metric is choosing this correlation.
+
+# Loop D: proxies that lie
+
+- Try
+  - Three candidate proxies for the same true effect: a clean one, a noisy-but-correct one, and a lying one (anti-correlated with truth).
+- Observe
+  - Clean proxy r ~ 0.7. Noisy r ~ 0.4. Lying r ~ -0.3.
+  - ![Proxy lies](images/proxy_lies.png)
+- Hunch
+  - You can verify which is which only by tracking the long-term metric anyway. The proxy economy is built on faith that the proxies you chose actually predict.
+
+# The big question that opens Chapter 14
+
+- Even when we have a good metric, the experiment can lie. The most famous flavour: the metric goes up at first, then settles.
+- Big question: when does a real-looking lift turn out to be a temporary novelty bump?
+
+# Notebook and data
+
+- Companion notebook: [`notebook.ipynb`](notebook.ipynb)
+- Generation script: [`generate.py`](generate.py)
