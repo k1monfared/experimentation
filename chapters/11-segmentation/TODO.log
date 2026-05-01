@@ -1,0 +1,42 @@
+- TODO: statistical review of Chapter 11 - Segmentation done right
+    - Date: 2026-04-30
+    - Summary
+        - Two rounds of critic/defender on chapter.log, chapter.md, generate.py, notebook.ipynb, expkit/segments/behavioral.py, and expkit/inference/bayes.py.
+        - The narrative arc and figures are solid: demographic slicing flat, behavioural slicing reveals heterogeneity, hierarchical Bayesian model recovers per-segment effects.
+        - The main statistical gaps are honesty about how segments and effects are constructed (median splits, baked-in lifts), under-explanation of the non-centered parameterization, and missing quantification of shrinkage and the frequentist counterpart.
+    - Items
+        - Disclose that behavioural labels come from median splits with a cascade rule
+            - In Loop B, add one sentence: thresholds in label_behavioral are simple medians on each of the three axes, applied as a cascade (default passive_consumer, override to active_contributor if high_active and high_contrib, then active_consumer if high_active and not high_contrib and high_intent, then silent_intentional if not high_active and high_intent).
+            - State the consequence: segment sizes are unbalanced. The notebook shows passive_consumer 1898, silent_intentional 1249, active_contributor 1228, active_consumer 625 out of 5000. This matters when comparing per-segment power and when interpreting the "tiny segments borrow strength" claim in Loop D.
+            - One line on motivation: medians are chosen for definedness on any input, not from a domain rule. A real product would tune cuts.
+        - Frame the per-segment lifts in Loop A and Loop D as simulator ground truth, not as discovered effects
+            - In Loop A "Try", say explicitly that +10pp, +4pp, -3pp, and 0 are the lifts injected by the simulator. The chapter currently reads as if these values are observed.
+            - In Loop D "Observe", reframe "tracks its true value" as "recovers the simulator-injected values within posterior uncertainty". This sets up the model as evaluated against known truth, which is the actual point.
+            - Acknowledge sampling noise: the notebook prints empirical per-segment lifts of +0.066, +0.129, -0.040, and +0.030 for one realization, which differ from the injected +0.10, +0.04, -0.03, 0.0. The hierarchical posterior should land closer to the injected values than the empirical point estimates. That gap is the headline of partial pooling and currently goes unstated.
+        - Explain why the model uses a non-centered parameterization
+            - One short paragraph in Loop D before the model shorthand: when tau is small, the centered form effect[s] ~ Normal(mu, tau) creates a narrow neck (the "funnel") that NUTS struggles with because the geometry changes scale with tau. The non-centered form effect[s] = mu + tau * z[s] with z[s] ~ Normal(0, 1) keeps the latent space at unit scale and lets tau vary freely. This avoids divergences, especially when between-segment heterogeneity is small.
+            - Reference: Betancourt and Girolami on hierarchical models (cite by topic, not by URL, to keep the chapter self-contained).
+        - Quantify the shrinkage instead of asserting it qualitatively
+            - Add a small numeric block (in the notebook and a sentence in chapter.md) reporting:
+                - posterior mean and 95 percent CI for tau (population scale of effects)
+                - per-segment shrinkage = (independent point estimate - posterior mean) / (independent point estimate - mu_posterior_mean), computed on the logit scale or the probability scale, for each segment
+                - an explicit "with n thousands per segment, shrinkage is X percent; with n hundred per segment shrinkage would be much larger" is fine, but only if backed by a quick rerun at smaller n in the notebook.
+            - Optional small extension: add a second hierarchical fit at n_per_segment around 100 to make the regularization visible. Keep the first fit as the baseline so the contrast is concrete.
+        - Name the frequentist counterparts and their tradeoffs
+            - In the two-lens commentary, name the two standard frequentist routes:
+                - per-segment two-proportion z test or chi-square with Bonferroni or Holm correction (independent inference, pays a power tax)
+                - a single logistic regression with arm, segment, and arm:segment interaction terms, reading off interaction coefficients (one model, no multiple-testing correction needed in the same way, but interpretation is on the logit scale and depends on the contrast coding)
+            - One line on when each is appropriate: the per-segment route is fine when segments are pre-registered and few; the interaction route is preferable when segments are many or when post-hoc.
+            - This is narrative only, not a new figure, so it stays in scope.
+        - Note that Loop C uses a different generative process from Loops A and D
+            - Loop C injects heterogeneity continuously through weekly_active_rate (treatment_p = base + (rate - 0.4) * 0.3), while Loops A and D inject heterogeneity discretely through behavioural segment.
+            - Add one sentence at the start of Loop C: "The generative process here is different from Loop A. Treatment effect varies smoothly with weekly_active_rate, and we look at how three segmentation schemes summarize that heterogeneity."
+            - Without this, the reader compares lifts across loops and sees inconsistent magnitudes for the "same" segments.
+        - Minor: pooled lift number in chapter.md
+            - Loop A says "pooled lift averages everything out into something modest". The notebook prints +0.033 for one seed. Worth either citing the number directly or keeping the language but explaining that the pooled value depends on segment proportions, which depend on the median-split cascade. Both are fine; the current text is just hand-wavy.
+    - Out of scope
+        - Replacing median splits with a clustering-based segmentation (k-means, GMM on the three behavioural axes). This is a Chapter 11 v2 topic; current chapter is about segmentation as a modelling decision, not about how to learn segments.
+        - Running and benchmarking the frequentist regression with arm * segment interactions side by side. A mention is enough; the worked example belongs with Chapter 7 (test family) or a later regression chapter.
+        - Adding a posterior predictive check or LOO comparison between the hierarchical model and the no-pooling baseline. Useful but heavier than this chapter needs.
+        - Adding hierarchical priors that depend on demographics (partial pooling across both behaviour and country). This is the Chapter 12 hand-off territory and would dilute the current chapter's main contrast.
+        - Reworking the simulator so segment sizes are balanced. The imbalance is a feature of median-split cascades and is worth showing, not hiding.

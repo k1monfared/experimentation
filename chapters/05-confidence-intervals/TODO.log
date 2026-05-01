@@ -1,0 +1,44 @@
+- TODO: statistical review of Chapter 5 - Confidence intervals
+    - Date: 2026-04-30
+    - Summary
+        - Two rounds of critic/defender on chapter.log, chapter.md, generate.py, notebook.ipynb.
+        - Numerical interval values reproduce from code (e.g. Wald at 6/10 is 0.6 +/- 1.96 * sqrt(0.6*0.4/10) = [0.296, 0.904], rounds to the quoted [0.30, 0.90]).
+        - Loop D figure shows N=20 only, but the narrative talks about N=10 and N=5 falling below nominal. The text is right about the phenomenon but the figure does not show it.
+        - The chapter never states the single most-important interpretation point in the field: a frequentist CI is a property of the procedure, not a probability statement about the parameter, while a Bayesian credible interval is a probability statement about the parameter under the prior. The two-lens framing demands this be named.
+        - Coverage at p = 0.5 is the most forgiving point for Wald. Wald's coverage oscillates badly as p varies (Brown, Cai, DasGupta 2001). A coverage-vs-p sweep at fixed N is needed to honestly show where Wald lies.
+        - Bootstrap percentile is presented as a benign fallback. The known caveat (percentile bootstrap is biased on skewed sampling distributions and near boundaries, BCa exists exactly for this) is not mentioned.
+    - Items
+        - HIGH: state the interpretation difference between frequentist CI and Bayesian credible interval
+            - Add a short callout (3 to 5 sentences) at the top of Loop A or as a separate "What does 95% mean?" subsection.
+            - Frequentist 95% CI: under repeated experiments, 95% of the constructed intervals would contain the true p. The interval [0.30, 0.90] does NOT mean "p is in [0.30, 0.90] with probability 0.95". p is fixed; the interval is the random object.
+            - Bayesian 95% credible interval: given the prior and the data, p falls in [0.32, 0.81] with posterior probability 0.95. This IS a probability statement about p.
+            - Tie this back to chapter.log Loop A and chapter.md Loop A.
+        - HIGH: extend Loop D coverage simulation to a grid of N
+            - Currently render_coverage_simulation runs at N=20 only. The chapter claims "Drop to N=10 or N=5 and Wald's coverage falls visibly below the nominal 95%" but no figure shows this.
+            - Edit generate.py render_coverage_simulation to sweep N in {5, 10, 20, 50, 100}, each with 5000 trials at p=0.5, and plot one bar group per N or a small-multiples panel.
+            - Update Loop D narrative in chapter.log and chapter.md to reference what the new figure actually shows.
+        - HIGH: add a coverage-vs-p sweep at fixed N
+            - Wald coverage at p=0.5 hides the failure mode. The standard demonstration sweeps p from 0.01 to 0.99 at fixed N (e.g. N=30) and plots empirical coverage as a function of p for each method.
+            - Add render_coverage_vs_p in generate.py: for each p in a grid, simulate 2000 to 5000 binomials, compute coverage for Wald, Wilson, Clopper-Pearson, Bayesian. Plot four lines.
+            - Add as a new sub-loop in Loop D or a Loop D' titled "where exactly does Wald lie?". The narrative point is: Wald's coverage oscillates in p, dipping well below 0.95 at small p and large p, while Wilson stays close to nominal across the range and Clopper-Pearson stays at or above nominal everywhere.
+        - MEDIUM: acknowledge percentile bootstrap bias
+            - In Loop A or Loop B add one sentence: percentile bootstrap is biased on skewed sampling distributions, particularly near 0 or 1, which is why BCa (bias-corrected and accelerated) exists. For symmetric, non-boundary cases it is fine.
+            - Do not implement BCa here (out of scope, belongs in expkit/inference/bootstrap.py).
+        - MEDIUM: align trial count between notebook and generate.py
+            - generate.py uses 5000 trials, notebook.ipynb Loop D uses 2000. Bump notebook to 5000 so the table the reader sees matches the chapter narrative, and so the Monte Carlo SE is small enough (~0.003) to claim three decimal places.
+        - MEDIUM: name the Wald failure regimes precisely
+            - Current text: "Don't use Wald near boundaries. Don't use Wald at small N, period." This is correct but vague. Sharper version: Wald is unreliable when N * p_hat < 5 or N * (1 - p_hat) < 5, and is degenerate (collapses to a single point) when p_hat is exactly 0 or 1.
+            - Edit Loop B "Rule of thumb" to give the n*p_hat heuristic.
+        - LOW: soften "Bayesian with a flat prior matches Clopper-Pearson very closely"
+            - With Beta(1,1) the lower edge at 0/10 is 0.002, Clopper-Pearson is 0.000; upper is 0.265 vs 0.308. They agree in shape, not "very closely". The Jeffreys prior Beta(0.5, 0.5) matches Clopper-Pearson more tightly.
+            - Edit Loop B "Rule of thumb" to say "shape-similar but Bayesian Beta(1,1) is a bit narrower; Jeffreys Beta(0.5, 0.5) matches more tightly".
+        - LOW: clarify what "0.5 sits exactly on the lower edge" means at 60/100
+            - The Wilson lower bound at 60/100 is approximately 0.502, not 0.500. The narrative "exactly on the lower edge" is rhetorical, fine for the loglog tone, but consider "just barely above 0.5" for accuracy.
+        - LOW: add seed and trial-count provenance to coverage figure caption
+            - generate.py uses rng = default_rng(123), n_trials=5000. Mention in the figure title or caption so a reader reproducing gets the same numbers.
+    - Out of scope
+        - Implementing BCa bootstrap. Belongs in expkit/inference/bootstrap.py with its own tests. This chapter only needs to mention the caveat.
+        - Profile-likelihood, score, or arcsine intervals. The five chosen are enough.
+        - Multi-parameter or non-binomial CIs (means, variances, ratios). Later chapters.
+        - PyMC for Loop C posteriors. Closed-form Beta is correct and the chapter explicitly hands the PyMC framing to Chapter 6.
+        - Hypothesis-test inversion derivation (the algebraic identity CI = {p_0 : test does not reject p_0}). Could be a future appendix; the chapter currently states the duality verbally, which is enough at this stage.

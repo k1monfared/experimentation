@@ -1,0 +1,64 @@
+- TODO: statistical review of Chapter 12 - Simpson's paradox
+    - Date: 2026-04-30
+    - Summary
+        - Two rounds of critic vs defender on four issues raised by reviewer.
+        - Outcome: three issues accepted with concrete edits, one issue partially accepted (citation), one numerical claim flagged for verification.
+        - The chapter is technically sound on the arithmetic and on the hierarchical model, but underplays the causal framing and overstates one universal claim about randomization.
+    - Items
+        - Item 1: causal vs statistical framing of the paradox
+            - Round 1
+                - Critic: Loop A's Hunch reduces the paradox to "a numerical fact about weighted averages" and adds "it is not a paradox in any deep sense". Pearl's framing (Causality, 2009; "Simpson's Paradox: An Anatomy", 1999) is that the resolution is not arithmetic, it is causal. Which table to report depends on the DAG: if the segment is a confounder of treatment and outcome, condition on it. If it is a mediator on the causal path from treatment to outcome, do not condition on it. The arithmetic alone cannot tell you which is right.
+                - Defender: accept. Loop E's Hunch already gestures at this ("the right answer depends on which causal question you're asking"), but Loop A's framing actively contradicts it. Edit needed to align the two.
+            - Round 2
+                - Critic: also note that Loop F's "the hierarchical model dissolves Simpson's paradox by construction" is true only when the segment is the right thing to condition on. If segment is a mediator, conditioning destroys the causal estimand.
+                - Defender: accept. The "dissolves" claim should be qualified.
+            - Action
+                - Loop A Hunch: add a sentence after "weighted averages": "But which weighted average is the right one to report is a causal question, not an arithmetic one. We come back to this in Loop E."
+                - Loop F Hunch: change "dissolves Simpson's paradox by construction" to "dissolves Simpson's paradox when the segment is a confounder we want to adjust for. If the segment is a mediator on the causal path from treatment to outcome, conditioning on it would remove part of the effect we are trying to measure. The model needs the right DAG, not just the segment label."
+                - Add one short paragraph between Loop D and Loop E titled "Aside: confounder or mediator?" with a two-DAG sketch (treatment to segment to outcome vs treatment to outcome with segment as a side cause). Two sentences each. No new figure required.
+        - Item 2: hierarchical model and unobserved confounders
+            - Round 1
+                - Critic: Loop F implies the hierarchical model recovers truth as long as segment label is fed in. In observational data the segment label may itself be correlated with unobserved confounders (selection effects, time, geography). The model recovers the within-segment effect, not the causal effect, unless segment captures all confounding.
+                - Defender: accept. The chapter's setup (Loop A) is a synthetic A/B test where the assignment mechanism is the only thing that varies, so the recovery is real for that data. But the language in Loop F overgeneralizes.
+            - Round 2
+                - Critic: also flag that with only two segments the partial-pooling prior on tau is barely identified. The script already compensates with target_accept=0.99 and tune=3000. Worth a one-line caveat in the chapter so the reader does not copy this pattern into a two-cluster problem and trust the tau posterior.
+                - Defender: accept the tau caveat. It is a real reproducibility note.
+            - Action
+                - Loop F Observe: append "Caveat: this synthetic data has no unobserved confounders by construction. In observational data, segment captures only the confounding it is correlated with. The model recovers the within-segment effect, not the causal effect, unless segment exhausts the confounding."
+                - Loop F Try: append "Note: with only two segments the population variance tau is barely identified by the data. The sampler needs high target_accept and long tuning. With more segments this gets easier."
+        - Item 3: "random assignment prevents Simpson's paradox by construction"
+            - Round 1
+                - Critic: Loop C's Rule of thumb says random assignment prevents the paradox by construction. This is true in expectation. Finite-sample chance imbalance can still produce a sign flip, especially with small N or strong segment-by-baseline interaction. The chapter's own Loop C histogram for the balanced case will show some draws not at exactly +0.05. Worth checking whether any balanced runs flip sign.
+                - Defender: accept the qualification. "By construction" is too strong. "In expectation, and with high probability for moderate N" is more honest.
+            - Round 2
+                - Critic: a quick check: Loop C runs 50 trials at N=10000 with balanced assignment. At that N the sampling variability is small, so probably none flip. But the rule of thumb the reader will carry is "randomization prevents Simpson", and they will apply it to N=200 experiments where it is not safe.
+                - Defender: agree. Add a one-line note covering small-N case.
+            - Action
+                - Loop C Rule of thumb: change "Random assignment ... prevents Simpson's paradox by construction" to "Random assignment with sufficient N makes Simpson's paradox vanishingly unlikely. In expectation it is impossible. With small N and strong segment-by-baseline interaction, finite-sample imbalance can still produce a sign flip on a single experiment. Stratified or block-randomized assignment removes even this risk."
+                - Optional: extend Loop C's simulation to include an N=200 condition and show the balanced histogram now has visible sign flips. One extra panel, no new logic.
+        - Item 4: Berkeley citation
+            - Round 1
+                - Critic: Loop E uses synthetic numbers but calls itself "Berkeley-style". The actual paper is Bickel, Hammel, O'Connell (1975), "Sex Bias in Graduate Admissions: Data from Berkeley", Science 187:398-404. The chapter should cite it so the reader can go to the source. The synthetic numbers are fine for pedagogy as long as they are labeled as illustrative.
+                - Defender: accept the citation. Reject inserting the real Berkeley table: it has six departments and the numbers are messier; the synthetic two-department version is cleaner for the inquiry-loop format.
+            - Round 2
+                - Critic: at minimum a footnote-style line at the start of Loop E. "Inspired by Bickel, Hammel, O'Connell, Science 1975. Numbers below are synthetic for clarity; the real data has six departments and the same qualitative pattern."
+                - Defender: accept exactly that wording.
+            - Action
+                - Loop E Try: prepend the citation line before "Two departments. ..."
+        - Item 5: numerical claim to verify
+            - Round 1
+                - Critic: Loop A claims "control overall ~0.69, treatment overall ~0.39" and Loop F says "the naive aggregate ... gives -16pp". These should be cross-checked: with the stated weights (segment A 20% pop, baseline 0.80; segment B 80% pop, baseline 0.20; treatment shares 0.20 in A, 0.80 in B; +5pp lift each), the analytic naive aggregate is computable.
+                - Defender: do the arithmetic. Of N total, segment A has 0.2N, segment B has 0.8N. Controls in A: 0.8 of 0.2N = 0.16N at p=0.80. Controls in B: 0.2 of 0.8N = 0.16N at p=0.20. Pooled control mean = (0.16*0.80 + 0.16*0.20)/0.32 = 0.50. Treatments in A: 0.04N at p=0.85. Treatments in B: 0.64N at p=0.25. Pooled treatment mean = (0.04*0.85 + 0.64*0.25)/0.68 = (0.034 + 0.160)/0.68 = 0.2853. Aggregate diff = 0.2853 - 0.50 = -0.2147, i.e. -21pp. Chapter says -16pp (Loop F) and implies -30pp (Loop A: 0.39 - 0.69 = -0.30).
+                - The three numbers (chapter Loop A "~0.69 vs ~0.39", chapter Loop F "-16pp", and analytic -21pp) do not agree. One of them is wrong. The difference is large enough to be worth checking.
+            - Round 2
+                - Critic: the analytic calculation assumes the chapter's stated weights exactly. Possibilities: (a) the figure used different weights than stated; (b) Loop A's "~0.69, ~0.39" is approximate from one finite-sample run with seed=1200 and N=20000; (c) Loop F's "-16pp" is from a different parameterization or a different run.
+                - Defender: regenerate the figure and read off the actual numbers, then update the prose to match. This is a 5-minute fix in the notebook, not a structural change.
+            - Action
+                - Run generate.py and read the actual aggregate diff for both Loop A and Loop F. Update the prose in chapter.log and chapter.md to the actual three-decimal values. If the analytic -21pp is right, both the "0.69 vs 0.39" and the "-16pp" need updating.
+    - Out of scope
+        - DAG-based formal causal inference (do-calculus, backdoor criterion, instruments). Pearl's full framework belongs in a later chapter or a sidebar; this chapter is correct to stay at the inquiry-loop level.
+        - Reanalysis of the actual 1975 Berkeley dataset. Synthetic two-department version is the right pedagogical choice.
+        - Multilevel models with more than two segments and continuous covariates. Chapter 11 territory.
+        - Lord's paradox, ecological fallacy, and other related but distinct phenomena. Worth a one-line forward pointer at most.
+        - Frequentist tests for the existence of Simpson reversal (Cornfield conditions, etc.). Out of scope for an inquiry-style chapter.
+        - Changes to the expkit hierarchical_segmented_posterior implementation. The model is fine; only the chapter's claims about it need adjustment.

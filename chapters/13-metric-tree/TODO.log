@@ -1,0 +1,32 @@
+- TODO: statistical review of Chapter 13 - The metric tree
+    - Date: 2026-04-30
+    - Summary
+        - Two rounds of critic / defender on Loops A through D and the supporting figures and code in chapter.md, generate.py, notebook.ipynb.
+        - The narrative is sound and on-pattern for the inquiry loop, but four statistical and framing issues need edits before the chapter is treated as final. None of the issues invalidate the chapter's argument; they tighten the claims it is allowed to make.
+        - Defender accepts most edits, narrows two, and rejects one item as out of scope for this chapter (it belongs in Chapter 16 on metric quality).
+    - Items
+        - Loop C: correlation coefficient choice (accepted)
+            - Critic: Pearson r assumes roughly linear, homoscedastic pairs. Short-term vs long-term metric pairs in real experiments are often monotone but non-linear (saturating, threshold). The chapter quotes a single Pearson r without discussing the assumption.
+            - Defender: agree. Add a one-line note in Loop C that for monotone non-linear relationships Spearman rho is the safer choice, and report both r and rho in the figure caption and in the predictivity helper output.
+            - Action: extend expkit.metrics.quality.predictivity to also return spearman_rho, update chapter.md and generate.py caption, add a sentence in the Hunch of Loop C: "Pearson assumes linearity; for monotone non-linear pairs, report Spearman as well."
+        - Loop C: predictivity reported as a point estimate (accepted)
+            - Critic: a single Pearson r is a point estimate. A high-r metric pair with wide stability variation across experiment slices is worse than a moderate-r highly stable one. The chapter does not show uncertainty on r.
+            - Defender: agree. Add a bootstrap confidence interval on r across the 200 simulated experiments and display it in the figure legend. Also add a paragraph noting that "predictive validity" is a distribution, not a number.
+            - Action: in render_predictivity_simulation, bootstrap r over 1000 resamples, show 95 percent CI in the legend, save the bootstrap distribution to data/. Update Loop C Hunch.
+        - Loop B: noise vs measurement speed panel uses synthetic CV values (accepted, narrower)
+            - Critic: the four CV values 0.04, 0.10, 0.30, 1.20 and the day counts 1, 7, 30, 180 are made up. The reader cannot tell whether these are illustrative or empirical, and the y-axis label "relative noise (CV) per measurement" reads as if these are measured.
+            - Defender: agree. Label the panel as schematic. Reword title to "schematic: lower-level metrics tend to be faster and cleaner". Add a caption sentence "Numbers are illustrative, not measured. Real values vary by product."
+            - Action: title edit and caption edit in generate.py and chapter.md.
+        - Loop D: lying proxy lacks a mechanism and lacks a real-world anchor (accepted, narrower)
+            - Critic: c = -0.5 * truth + noise is an arbitrary sign flip. The chapter does not explain why a proxy would be anti-correlated. Real cases include clicks rising while revenue falls when bounce rate dominates, time-on-page rising when users get confused, engagement rising on outrage content while retention falls.
+            - Defender: agree on adding a mechanism. One real-world example is enough; we do not want a long aside here. Goodhart and the substitution effect belong in Chapter 16 (metric quality), reference forward.
+            - Action: add a sentence to Loop D Observe: "Anti-correlation is not theoretical. Clicks can rise while revenue falls when bounce rate dominates; time-on-page can rise when users are stuck rather than engaged. Chapter 16 examines the mechanism." Keep the simulation as-is but mention the mechanism in the figure caption.
+        - relative_noise on near-zero means (accepted)
+            - Critic: the notebook prints relative noise of 13.0 and 63.1 for short_term and long_term metrics. These values are a numerical artifact of dividing by means near zero (truths are drawn from N(0, 0.02)). They are misleading and undermine the claim that long-term is "less noisy".
+            - Defender: agree, this is a real bug in the demo. The noise discussion should compare standard deviations directly, or use SNR against a fixed non-zero baseline. The relative_noise helper is fine in general; it is wrong for centered effect sizes around zero.
+            - Action: in the notebook and in any chapter text, replace relative_noise on these arrays with a direct standard deviation comparison, or add a baseline mean before computing CV. Add a guard or docstring note in expkit.metrics.quality.relative_noise that it is undefined for zero-centered data. This issue should also be raised against Chapter 16 if relative_noise is used there.
+    - Out of scope
+        - Goodhart's law and the formal Lucas critique: a longer treatment belongs in Chapter 16 (metric quality) or Chapter 17 (attribution), not here. Loop D should reference forward, not expand.
+        - Causal identification of why a proxy lies (confounding, mediation): this is Chapter 19 territory.
+        - Model-based predictivity (regressing long-term on short-term with covariates, partial correlation): out of scope for Chapter 13. The chapter is descriptive about the metric tree, not predictive modelling.
+        - Multi-metric headline aggregation (overall evaluation criterion, OEC) and how to combine proxies: this is Chapter 16.

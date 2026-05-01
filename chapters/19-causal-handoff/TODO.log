@@ -1,0 +1,16 @@
+- TODO: statistical review of Chapter 19 - Causal handoff
+    - Date: 2026-04-30
+    - Summary
+        - Handoff chapter, intentionally conceptual. The one quantitative artefact (5,000-user selection-bias sim, naive diff approx +1.10 vs true ATE 0.30) is correctly set up: latent propensity is a confounder of both treatment and outcome, treatment effect is constant at +0.30, so under Rubin's decomposition SDO = ATE + selection bias (HTE-bias term vanishes because effect is homogeneous), giving 0.30 + 0.80 = 1.10. Loop C defines selection bias as E[Y(0)|T=1] - E[Y(0)|T=0], which matches the ~+0.80 the notebook attributes to it. So the labeling is internally consistent.
+        - Loop A bullets (long horizons, ethics, network effects, observational data, one-time events) are accurate at the bullet level. No claims overshoot what bullets support.
+        - Loop C vocabulary is correct: potential outcomes, ATE, selection bias, identification all defined consistently with Rubin.
+    - Items
+        - Minor: notebook prints "selection bias is responsible for ~+0.80" without restating Loop C's narrow definition. A reader who maps "selection bias" to survey-sampling selection effect may be confused. One-line link from notebook back to Loop C's formula would tighten it.
+        - Minor: chapter never uses the word "confounder" by name even though propensity is a textbook confounder (common cause of T and Y). A single sentence in Loop B - "propensity is a confounder, a common cause of both treatment assignment and outcome" - would make the structural claim explicit and ease the handoff to the sibling repo.
+        - Minor: network-effects bullet says "the independence assumption built into our z-tests, t-tests, and Bayesian models is violated". That conflates SUTVA (a potential-outcomes assumption about no-interference) with iid sampling assumptions in the test statistics. Both are real issues under interference, but they are distinct. Worth disambiguating in one phrase, or simplifying to "interference violates the no-spillover assumptions our methods rely on".
+    - Out of scope
+        - Pearl / DAG framing absent. Chapter uses Rubin potential-outcomes only. Defensible because the sibling causal_inference repo follows the Mixtape (Cunningham) framework which is potential-outcomes-first; DAG depth belongs there, not here.
+        - No worked decomposition of SDO into ATE + selection bias + HTE bias term. Defensible: the chapter is a teaser, not a methods chapter, and HTE bias vanishes in the homogeneous-effect sim anyway.
+        - No demonstration of any correction method (matching, IPW, regression adjustment, IV, RDD, DiD, synthetic controls). Explicitly the job of the handoff repo.
+        - No discussion of estimands beyond ATE (ATT, ATU, LATE, CATE). Belongs in the sibling repo.
+        - "Central problem causal inference solves" reads strong but is framed as a hunch in inquiry style, which is consistent with the chapter convention.

@@ -1,0 +1,28 @@
+- TODO: statistical review of Chapter 18 - F vs B shipping
+    - Date: 2026-04-30
+    - Summary
+        - The capstone simulator runs 2,000 synthetic A/B tests with true_diff drawn from Normal(0, 0.01), then compares two decision rules: frequentist (p<0.05 AND direction>0) and Bayesian (P(diff > MMU=0.005) > 0.95). The narrative is sharp and the four loops (ship-by-truth, confusion matrix, cost analysis, joint rule) are well-shaped. Two-round critic-defender turns up four substantive issues: an unstated population caveat, a non-apples-to-apples rule comparison (F has no MMU gate, B has one), point estimates without uncertainty bands, and a constant-per-decision cost model that ignores effect-size-weighted value. Plus one straightforward simulator bug: every Bayesian draw is reseeded to 0, correlating the posterior noise across all 2,000 runs.
+    - Items
+        - Apples-to-apples rules (high)
+            - Loop B's own hunch concedes the Bayesian rule is "F's rule plus a meaningfulness gate". Differences attributed to "frequentist vs Bayesian" are partly differences between "with-MMU vs without-MMU".
+            - Add a matched comparison: either (a) a frequentist rule with one-sided 0.025 plus a practical-significance gate (point estimate > MMU), or (b) a Bayesian rule with MMU=0 and 95% credibility, then re-render Loop A and Loop B for the matched rules. Keep the original mismatched comparison too, but label it as "rules in the wild" and add the matched panel as "lens-only" so readers can separate the two effects.
+        - Population caveat (high)
+            - The chapter never says "results are averaged over a Normal(0, 1pp) population of true effects". Normal(0, 0.01) puts ~38% of mass within +/- MMU and ~95% within +/- 0.02, which drives both the "murky middle" framing and the cost-analysis numbers.
+            - Add a short paragraph after Loop A: results are population-averaged and population-specific; in any one experiment the choice of lens reflects priors and stakes, not aggregate frequencies. Optionally re-run with one alternative population (e.g. mixture of zeros and a discrete +1pp spike) and note how the confusion matrix changes.
+        - Simulator bug: reseeded Bayesian draws (high)
+            - generate.py line 69: `local = np.random.default_rng(0)` inside the per-run loop. Every Bayesian decision uses the same fixed seed for its 4000 Beta draws, so the Monte-Carlo noise in P(diff > MMU) is correlated across runs. With 4000 draws the bias is small (~0.008 SE on a posterior probability), but it can flip borderline decisions and is methodologically wrong.
+            - Fix: spawn a per-run RNG from the outer rng, e.g. `local = np.random.default_rng(rng.integers(0, 2**30))`, and rerun. Re-check the confusion-matrix counts after the fix; the F-only-ship cell (currently 29) is most likely to shift.
+        - Numerical claim mismatch in chapter text (high)
+            - chapter.log line 41 / chapter.md line 52 say "at 2pp+, joint ships at >95%". Notebook Loop E table shows true_diff in (+0.020, +0.050] with n=45 and joint = 0.60. The text overstates by a wide margin.
+            - Either reconcile the text against the actual data or oversample the upper tail (importance-weighted population, or a separate dense-grid run for the rate-by-truth panels) so the 95% claim is supported.
+        - Uncertainty bands (medium)
+            - Loop A's ship-rate-by-truth lines and Loop E's joint-rule curves are drawn from binned means with cells of ~125 runs (some far smaller in the tails). Add binomial 95% CIs (Wilson) as shaded bands so the reader sees that the divergence in the murky middle is real signal and not bin noise.
+            - Loop C's bar chart reports four point rates (f_fp, f_miss, b_fp, b_miss) each from 2,000 trials. SE on each is roughly 0.005-0.01. Add the SE as text labels or a small note in the cost-analysis caption.
+        - Effect-weighted utility (medium)
+            - Current cost = c1 * P(false ship) + c2 * P(missed real win), constant per decision. In practice a missed +2pp win is worth ten times a missed +0.2pp win, and shipping a +0pp change costs little.
+            - Add a Loop C variant: cost = c1 * E[max(0, -true_diff) | shipped] + c2 * E[max(0, true_diff - MMU) | not shipped], or equivalently sum the effect-weighted regret. Keep the constant-cost panel for intuition; show the effect-weighted panel alongside. Reject going further (full business model with revenue per user, time horizons, ramp-up curves) - out of scope for this capstone.
+    - Out of scope
+        - Replacing the conjugate Beta with PyMC for this chapter (the conjugate is exactly the "show both" path the project supports; keep PyMC for chapters that need it).
+        - Multi-period or sequential-decision business models.
+        - Sensitivity sweeps over n_per_arm, MMU, alpha, and credibility level (mentioned in Loop D for the prior; expanding the full grid is its own chapter).
+        - Causal-inference framing for cases where randomization fails (Chapter 19 territory; the current "big question" handoff is fine).

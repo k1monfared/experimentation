@@ -1,0 +1,61 @@
+- TODO: statistical review of Chapter 6, Bayesian formalized
+    - Date: 2026-04-30
+    - Summary
+        - Two rounds of critic + defender on chapter.log, chapter.md, generate.py, notebook.ipynb.
+        - Chapter narrative is sound on the prior, likelihood, posterior recipe, and the conjugate Beta-Binomial path is correct.
+        - Concrete issues found in three buckets: numerical claims that disagree with what the code actually produces, statistical mis-statements about Bayes factors and priors, and missing diagnostics commentary that the chapter teases ("does the sampler actually sample? does it mix?") but never delivers.
+    - Items
+        - HIGH, numerical mismatch in Loop B posterior centres
+            - chapter.md and chapter.log say "tail-leaning prior pulls the posterior down to 0.43" and "heads-leaning prior pulls it up to 0.67" for 6/10 data.
+            - Verified: Beta(2,8) + 6/10 yields Beta(8,12), posterior mean 0.400, mode 0.389. Beta(8,2) + 6/10 yields Beta(14,6), posterior mean 0.700, mode 0.722.
+            - Edit: replace 0.43 with 0.40 and 0.67 with 0.70. Either use the mean throughout, or say "centred" and use the mode (0.39 and 0.72), but be consistent.
+            - Defender: accept. Numbers should match what the figure shows; readers will inspect the panel.
+        - HIGH, Bayes factor numerical claim is off by orders of magnitude
+            - chapter.md says "By N = 1000 it is well past 10. By N = 2000 it is past 100."
+            - Verified with the same seed used in generate.py (rng = default_rng(0), p=0.55): BF_10 at N=1000 is approximately 970, at N=2000 approximately 2.9e5, at N=1500 approximately 1.6e4.
+            - Edit: replace with "By N = 1000 it is past 100. By N = 2000 it is past 10000." Or, better, cite exact N at which BF first crosses 10 and 100, computed from the trace. Even better, point out that BF growth at fixed true effect scales roughly as exp(c * N), which is why log-scale axes are necessary on the figure.
+            - Defender: accept. Understating the evidence by 1000x undersells the section's punchline.
+        - HIGH, Bayes factor section omits the prior-on-the-alternative caveat at the moment of definition
+            - The chapter does mention the BF depends on the alternative ("Caveat: BF depends on the choice of alternative") but it is buried after the demo and the framing "the Bayesian p-value" is misleading. A Bayes factor is not interpretable without the prior on the alternative parameter; the choice of Uniform(0,1) on H1 is itself a modelling decision that imports a heavy "smearing" of mass into regions far from 0.5.
+            - Edit: in Loop D under "Try", expand to: "We have to declare a prior over p under H1. We pick Uniform(0,1) here, which is uninformative but spreads mass into p=0.05 and p=0.95 just as much as p=0.5. That is a strong, often unwarranted, alternative. A Beta(2,2) or a Beta-shaped local alternative around 0.5 would give very different BF curves. The BF is not 'the' Bayes factor; it is the Bayes factor under this specific prior on H1."
+            - Reference Lindley's paradox in one line: with a vague-enough prior on H1 the BF can favour H0 even when frequentist evidence points to H1.
+            - Defender: accept. This is the single biggest pedagogical gap.
+        - HIGH, MCMC convergence diagnostics promised but not delivered
+            - chapter.md teases "does the sampler actually sample? does it mix between chains?" then resolves with "the two chains track each other" and a histogram, with no R-hat, no ESS, no divergence count.
+            - generate.py uses pm.sample defaults; idata is saved but no diagnostic numbers are reported in chapter or notebook.
+            - Edit: in Loop C, after the trace plot, add one sentence with the actual numbers, e.g., "R-hat = 1.00 on p, ESS_bulk approximately 3000, 0 divergences." Mention briefly what each means: R-hat near 1.00 says the chains agree on the marginal, ESS counts effectively-independent draws, divergences flag funnel-like geometry the sampler could not handle. Use arviz.summary(idata) to compute, and add the numbers to chapter.md from the saved idata.
+            - Out of scope, but flag for ROADMAP Area 9 stretch goal: a "what does a bad trace look like" detour.
+            - Defender: accept narrow scope (one sentence with three numbers and a one-line gloss). Full divergence walk-through belongs in the ROADMAP "MCMC diagnostics mini-chapter".
+        - MEDIUM, "uninformative" prior framing for Beta(1,1) is too strong
+            - The chapter calls Beta(1,1) "flat" and uses it as the default. Flat on p is not invariant under reparameterization; on the log-odds scale it is heavy in the middle. Jeffreys prior for the binomial proportion is Beta(0.5, 0.5), which is invariant. Neither is "the" uninformative prior; the choice depends on what you want to be invariant under.
+            - Edit: in Loop A, change "Beta(1, 1) prior is uniform on [0, 1]" to "Beta(1, 1) is uniform on the natural scale; Jeffreys prior is Beta(0.5, 0.5), which is uniform on the arcsine-transformed scale and invariant under reparameterization. Both are common 'default' choices; the right one depends on what you want to be invariant to. We use Beta(1, 1) throughout for transparency and to keep the exposition simple."
+            - Defender: accept. Two sentences, no extra figures.
+        - MEDIUM, posterior-predictive numerical claims do not match the code
+            - chapter.md says "The mode is around 12 (since true p ~ 0.6) but the spread covers 6 through 18."
+            - Reproduced with bernoulli_sequence(50, p=0.6, seed=11) and the conjugate posterior predictive: heads observed = 33/50, posterior mean = 0.654, predictive mode = 13, 95% interval = [8, 18], 90% interval = [9, 17].
+            - The story "if we had pretended p = 0.6 was known" is also strained because the posterior actually centres near 0.65, not 0.60, on this realization. The point about extra spread relative to a point estimate still holds but the numbers are off.
+            - Edit: replace with "The mode is around 13 with 95% of the predictive mass between 8 and 18 heads. If we had plugged in the posterior-mean point estimate p_hat = 0.65 and used Binomial(20, 0.65), the 95% interval would be roughly [8, 17] -- visibly narrower because it ignores our remaining uncertainty about p."
+            - Or, simpler, increase n in the demo from 50 to 200 so the posterior actually centres near 0.6 and the existing prose holds.
+            - Defender: accept; either pick the "fix the numbers" path (one paragraph rewrite) or the "fix the demo" path (change one argument in generate.py and rerun). The latter is cleaner.
+        - MEDIUM, "credible interval" is not yet contrasted with frequentist coverage in this chapter
+            - The carried-from-Chapter-5 line says "we have used credible interval intuitively for five chapters". But the chapter does not pin down the difference here: a 95% credible interval is "I assign 95% posterior mass to this interval given my prior and data", a 95% frequentist confidence interval is "across infinite repetitions of the experiment, the procedure traps the true p in 95% of intervals". They coincide numerically for Beta(1,1) priors with moderate-to-large N but mean different things.
+            - Edit: in Loop A, after defining the posterior, add a short paragraph: "A 95% credible interval is 'I think p is in this range with 95% posterior probability'. A 95% confidence interval is 'this procedure, run on hypothetical replications, would trap the true p 95% of the time'. They give the same numbers in many simple problems, including this one with a flat prior, but the statements they license are different."
+            - Defender: accept; one paragraph, ties the two-lens promise tighter.
+        - LOW, Loop C code block in chapter.md has lost its indentation
+            - chapter.md renders the model code as bullet items rather than a fenced code block (lines starting with "- with pm.Model():"). The .log file uses correct loglog code-block syntax.
+            - Edit: regenerate chapter.md from chapter.log (loglog converts triple-backtick fenced blocks correctly when nested with the right indentation).
+            - Defender: accept; mechanical fix.
+        - LOW, BF panel labels can be tighter
+            - The figure's y-axis says "Bayes factor (uniform alt vs point H0: p = 0.5)". The reader has to read this twice to know which way large means. Consider "BF_10 (large = data favours alternative)".
+            - Edit: tighten the y-axis label and add a horizontal stripe at BF = 1/10 to indicate "strong evidence for H0" symmetrically.
+            - Defender: accept.
+        - LOW, generate.py manifest saving is conditional on optional artifacts
+            - render_pymc_diagnostic() writes the InferenceData and adds to manifest. render_priors_argue, render_bayes_factor, render_posterior_predictive do not save trace data. That is fine for figures, but the BF curve numerics (the y-values plotted) would be useful as a CSV/parquet under data/ for the manifest, since the chapter quotes specific N -> BF numbers in the prose.
+            - Edit: save bfs_fair, bfs_biased, ns to data/bayes_factor_curve.parquet (or .csv) and add to manifest. This also lets the notebook reload them for inline assertions.
+            - Defender: accept; small reproducibility win, fits ROADMAP Area 1 spirit.
+    - Out of scope
+        - Lindley's paradox demo as its own loop. One line of caveat in Loop D is enough for this chapter; the full demo belongs in a stretch-goal companion.
+        - Reparameterization-invariance discussion of Jeffreys prior beyond the two-sentence note above. Belongs in a measure-theoretic appendix if at all.
+        - Replacing the Beta(1,1) default project-wide. The library and downstream chapters use Beta(1,1) consistently; switching to Jeffreys would be a breaking change with pedagogical cost. Document the choice, do not change it.
+        - Sequential-testing alpha-spending machinery. The Loop D "Compare" block correctly notes that the BF avoids it; a full treatment is out of scope for this chapter.
+        - Adding hierarchical models here. The expkit module already exposes hierarchical_segmented_posterior; demonstrating it is the job of Chapter 11 / 12 per ROADMAP Area 2.

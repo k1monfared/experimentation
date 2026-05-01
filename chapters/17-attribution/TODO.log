@@ -1,0 +1,27 @@
+- TODO: statistical review of Chapter 17 - Attribution
+    - Date: 2026-04-30
+    - Summary
+        - Two rounds of critic/defender on the attribution chapter (heuristic schemes plus a Bayesian logistic regression model). The heuristic-vs-truth Loops A and B are sound, framed correctly as accounting choices, and the misallocation demo lands. The Bayesian Loop C/D fits a well-specified model on data generated from the same model, which makes it a recovery check rather than a real test of the method. The chapter already names the linear-additive caveat at the end, but it omits three concrete identifiability concerns that a careful reader will spot: well-specification framing, order-blind covariates, multicollinearity under co-occurring channels, and an explicit identification-power check at n = 20,000.
+        - Items below are accepted edits. The "out of scope" section captures things deferred to Chapter 18 or later because they would change the chapter's scope rather than tighten its claims.
+    - Items
+        - Add explicit "well-specified simulator" framing to Loop C
+            - The simulator generates conversions from a logistic model in channel touch counts. The PyMC model fits exactly that functional form. The recovery result is therefore a sanity check on the fitter, not evidence that Bayesian logistic attribution recovers truth in the wild.
+            - Edit: in the Loop C "Try" or "Hunch" block, add one sentence: "Because we generated journeys from a logistic-additive model and fit a logistic-additive model, this is a recovery check, not a test of the method against real journeys."
+        - Mention order-blindness and the "first/last as features" fix
+            - Touch-count covariates collapse the journey to a bag of channels. First-touch and last-touch schemes are answering a question the Bayesian model literally cannot see, since the design matrix discards order.
+            - Edit: in the "Loop C/D Hunch" block where sequence is named, add: "If the analyst believes first-touch or last-touch positions carry information, add binary first_is_X and last_is_X columns to the design matrix. The model can then estimate a position effect on top of the count effect."
+        - Add a multicollinearity caveat
+            - When two channels nearly always co-occur (for example email and direct in journeys driven by lifecycle messaging), the posterior on each individual coefficient widens even when the sum is well identified. Heuristic schemes give a single number per channel and hide this; the posterior makes it visible.
+            - Edit: in the two-lens commentary, add a bullet: "When channels co-occur strongly, individual coefficient posteriors widen and may overlap zero even though the joint effect is large. The Bayesian model surfaces this; the heuristics silently split credit anyway."
+        - Add a brief identification-power check at n = 20,000
+            - The figure shows 95% CIs that bracket truth but does not report widths. For display (true 0.02) and social (true 0.04), the CI half-width should be small enough to separate them from zero, otherwise the recovery story is weaker than the figure suggests.
+            - Edit: in `generate.py` after `idata = pm.sample(...)`, compute and print the posterior 95% CI half-width for each channel. In the chapter, after the left-panel observation, add: "At n = 20,000 the 95% CI half-width is roughly X for the strongest channel and Y for the weakest. The two lowest-coefficient channels are still separated from zero, so the recovery is not borderline." Replace X and Y with the printed numbers.
+            - Optional: report bulk ESS and R-hat for the `coef` parameter in a one-line note so readers see the diagnostic exists without turning the chapter into a methods section.
+        - Tighten the "true share" comparison in Loop D
+            - The right panel normalises clipped posterior means and calls that "share". This is a reasonable proxy but it is not the share of conversions caused by each channel; it is the share of logit-scale weight. Heuristics partition credit on the probability scale, the Bayesian column partitions on the logit scale, so the comparison is apples-to-oranges by a small but nonzero amount.
+            - Edit: add a one-line footnote in the Loop D Observe block: "Heuristic shares partition observed credit on the probability scale; the Bayesian share normalises non-negative logit-scale coefficients. They are comparable in spirit, not identically scaled."
+    - Out of scope
+        - Rebuilding the simulator with sequence-dependent or interaction effects to actually break the model. That is the natural Chapter 18 setup and would change this chapter's scope.
+        - Posterior predictive checks on held-out journeys. Useful, but Chapter 17's job is the attribution comparison, not full Bayesian workflow.
+        - Comparison against marketing-mix models or shapley-value attribution. Out of scope for an inquiry chapter; could be a sidebar later.
+        - Causal identification under unmeasured confounding (for example, users who would have converted anyway choose direct as their last touch). The chapter's "Bayesian gives causal" claim is conditional on the simulator, and the well-specified caveat above is the right place to flag this without opening the full causal-inference can.
