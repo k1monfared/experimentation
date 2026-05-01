@@ -44,6 +44,15 @@
 - Chapter 18 -- Frequentist vs Bayesian shipping: 1,000 simulated experiments, where would each lens have shipped? [chapters/18-frequentist-vs-bayesian-shipping/](chapters/18-frequentist-vs-bayesian-shipping/)
 - Chapter 19 -- When experiments aren't enough: hand-off to causal inference. [chapters/19-causal-handoff/](chapters/19-causal-handoff/)
 
+# Interactive playground
+
+- Self-contained HTML+JS widgets that let you play with the central knob of each chapter without installing anything. Open [`playground/index.html`](playground/index.html) directly in your browser, or serve the repo locally and visit `/playground/`.
+- Widgets so far:
+  - [Chapter 1 sandbox](playground/01-coin-sandbox.html) -- toss a coin one at a time, in tens, in hundreds. Running fraction + Wilson CI + Bayesian posterior all live.
+  - [Chapter 6 prior tuner](playground/06-prior-tuner.html) -- drag a Beta prior and observed (k, N), watch the posterior re-render.
+  - [Chapter 12 Simpson sandbox](playground/12-simpsons-sandbox.html) -- two segments, drag the assignment imbalance, make the paradox happen.
+  - [Chapter 18 shipping simulator](playground/18-shipping-simulator.html) -- loads the saved 2,000 simulated A/B tests; drag the cost ratio, watch which lens is cheaper.
+
 # The library: expkit
 
 - `expkit` is a small Python package that grows alongside the chapters. Install it locally with `pip install -e .` and import what you need.
@@ -60,4 +69,5 @@
 
 # Status
 
-- This is a developing project. Chapter 1 is fully built (narrative + notebook + data + figures + tests). Chapters 2-19 are stubbed with their carried-over question, inquiry-loop sketch, and `expkit` modules they will need. They will be filled in incrementally.
+- All 19 chapters are fully built: narrative, runnable notebook, deterministic generator, embedded figures, and PyMC traces where the chapter calls for one. The expkit library covers simulation, frequentist + Bayesian inference, power, metrics, segments, novelty, and attribution. 112 fast tests pass plus a slow PyMC convergence test.
+- See [STATUS.log](STATUS.log) for the staged delivery breakdown and [ROADMAP.md](ROADMAP.md) for what's still on the wishlist.

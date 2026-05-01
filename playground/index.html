@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>experimentation - playground</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+<h1>Playground</h1>
+<p>Single-page widgets that let you play with the central knob of each chapter. Each one re-implements just the bit of math it needs in JavaScript so it runs in your browser with no setup.</p>
+
+<div class="panel">
+  <h2>Chapter 1 - The coin (sandbox)</h2>
+  <p>One slider on the true bias <em>p</em>. Toss one at a time, in tens, in hundreds. Watch the running fraction settle and the Bayesian posterior tighten on the same picture.</p>
+  <p><a href="01-coin-sandbox.html">open &rarr;</a></p>
+</div>
+
+<div class="panel">
+  <h2>Chapter 6 - Prior tuner</h2>
+  <p>Drag a Beta(<em>a</em>, <em>b</em>) prior. Set the observed <em>k</em> heads in <em>N</em> tosses. Watch the posterior re-render. Crank <em>N</em> up and see the prior get drowned out.</p>
+  <p><a href="06-prior-tuner.html">open &rarr;</a></p>
+</div>
+
+<div class="panel">
+  <h2>Chapter 12 - Simpson's paradox sandbox</h2>
+  <p>Two segments. Drag the segment sizes and the per-segment treatment shares. Watch the aggregate sign flip while every segment stays positive.</p>
+  <p><a href="12-simpsons-sandbox.html">open &rarr;</a></p>
+</div>
+
+<div class="panel">
+  <h2>Chapter 18 - Shipping cost simulator</h2>
+  <p>Loads 2,000 simulated A/B tests and lets you drag the cost ratio (FP cost vs miss cost). Watch which lens has lower expected cost per decision under the chosen risk profile.</p>
+  <p><a href="18-shipping-simulator.html">open &rarr;</a></p>
+</div>
+
+<div class="panel muted">
+  <h2>More widgets queued</h2>
+  <p>Ch.5 CI sweeper, Ch.14 novelty triple-view, Ch.3 power slider. See <a href="../ROADMAP.md">ROADMAP.md</a>.</p>
+</div>
+
+<footer><a href="../README.md">&larr; back to repo</a></footer>
+</main>
+</body>
+</html>

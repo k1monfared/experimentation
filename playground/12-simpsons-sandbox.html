@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chapter 12 - Simpson's paradox sandbox</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+<h1>Chapter 12 sandbox: make the paradox happen</h1>
+<p>Two segments, each with its own baseline conversion rate. Treatment lifts <em>each segment</em> by a fixed amount. The aggregate (treatment - control across the whole population) depends on which segment got more of the treatment.</p>
+<p>Move the sliders. The within-segment effects stay positive. Watch the aggregate cross zero.</p>
+
+<div class="panel">
+  <div class="controls">
+    <label>segment A fraction of population
+      <input id="frac-a" type="range" min="0.05" max="0.95" step="0.01" value="0.20">
+      <span class="value" id="frac-a-val">0.20</span>
+    </label>
+    <label>baseline A
+      <input id="base-a" type="range" min="0.01" max="0.99" step="0.01" value="0.80">
+      <span class="value" id="base-a-val">0.80</span>
+    </label>
+    <label>baseline B
+      <input id="base-b" type="range" min="0.01" max="0.99" step="0.01" value="0.20">
+      <span class="value" id="base-b-val">0.20</span>
+    </label>
+    <label>per-segment lift (treatment effect)
+      <input id="lift" type="range" min="-0.20" max="0.20" step="0.005" value="0.05">
+      <span class="value" id="lift-val">+0.050</span>
+    </label>
+    <label>treatment share in segment A
+      <input id="share-a" type="range" min="0.05" max="0.95" step="0.01" value="0.20">
+      <span class="value" id="share-a-val">0.20</span>
+    </label>
+    <label>treatment share in segment B
+      <input id="share-b" type="range" min="0.05" max="0.95" step="0.01" value="0.80">
+      <span class="value" id="share-b-val">0.80</span>
+    </label>
+  </div>
+
+  <canvas id="bars" width="860" height="320"></canvas>
+
+  <div class="legend">
+    <span><span class="swatch" style="background:#1f77b4"></span>segment A</span>
+    <span><span class="swatch" style="background:#d62728"></span>segment B</span>
+    <span><span class="swatch" style="background:#2ca02c"></span>aggregate (naive)</span>
+    <span><span class="swatch" style="background:#888"></span>true within-segment lift</span>
+  </div>
+
+  <dl class="readout">
+    <dt>segment A: control / treatment / diff</dt><dd id="r-a">-</dd>
+    <dt>segment B: control / treatment / diff</dt><dd id="r-b">-</dd>
+    <dt>aggregate (naive): control / treatment / diff</dt><dd id="r-agg">-</dd>
+    <dt>paradox?</dt><dd id="r-paradox">-</dd>
+  </dl>
+</div>
+
+<p class="muted">The chapter narrative: <a href="../chapters/12-simpsons-paradox/chapter.md">chapters/12-simpsons-paradox/chapter.md</a>. Source for the simulator: <a href="../expkit/sim/user_segments.py">expkit/sim/user_segments.py</a>.</p>
+
+<footer><a href="index.html">&larr; playground index</a></footer>
+</main>
+
+<script src="lib.js"></script>
+<script>
+(function () {
+  const W = window.expkitWidget;
+  const C = W.palette;
+
+  const ids = ["frac-a", "base-a", "base-b", "lift", "share-a", "share-b"];
+  function getNum(id) { return parseFloat(document.getElementById(id).value); }
+  function setVal(id, v, fmt) { document.getElementById(id + "-val").textContent = fmt(v); }
+
+  function clamp01(x) { return Math.max(0.0001, Math.min(0.9999, x)); }
+
+  function render() {
+    const fA = getNum("frac-a");
+    const fB = 1 - fA;
+    const baseA = getNum("base-a");
+    const baseB = getNum("base-b");
+    const lift = getNum("lift");
+    const shareA = getNum("share-a");
+    const shareB = getNum("share-b");
+    setVal("frac-a", fA, v => v.toFixed(2));
+    setVal("base-a", baseA, v => v.toFixed(2));
+    setVal("base-b", baseB, v => v.toFixed(2));
+    setVal("lift", lift, v => (v >= 0 ? "+" : "") + v.toFixed(3));
+    setVal("share-a", shareA, v => v.toFixed(2));
+    setVal("share-b", shareB, v => v.toFixed(2));
+
+    // Per-segment expected rates
+    const cA = baseA;
+    const tA = clamp01(baseA + lift);
+    const cB = baseB;
+    const tB = clamp01(baseB + lift);
+    const diffA = tA - cA;
+    const diffB = tB - cB;
+
+    // Per-segment population sizes
+    const NA = fA, NB = fB;
+    const NA_t = NA * shareA, NA_c = NA * (1 - shareA);
+    const NB_t = NB * shareB, NB_c = NB * (1 - shareB);
+
+    // Aggregate weighted means
+    const aggC = (NA_c * cA + NB_c * cB) / (NA_c + NB_c);
+    const aggT = (NA_t * tA + NB_t * tB) / (NA_t + NB_t);
+    const aggDiff = aggT - aggC;
+
+    // Render bar chart
+    const canvas = document.getElementById("bars");
+    const w = 860, h = 320;
+    const ctx = W.fitCanvas(canvas, w, h);
+    W.clearCanvas(ctx, w, h);
+    const ax = W.makeAxes(ctx, w, h, { xmin: -0.5, xmax: 2.5, ymin: -0.25, ymax: 0.25, padL: 70 });
+    W.drawAxes(ctx, ax, w, h, { ylabel: "treatment - control", title: "per-segment effect vs naive aggregate" });
+    W.plotHLine(ctx, ax, h, 0, "#bbb");
+    W.plotHLine(ctx, ax, h, lift, C.muted, [3, 4]);
+
+    function bar(xCenter, value, color, label) {
+      const bw = 0.36;
+      const yTop = ax.sy(Math.max(0, value));
+      const yBot = ax.sy(Math.min(0, value));
+      const xL = ax.sx(xCenter - bw / 2);
+      const xR = ax.sx(xCenter + bw / 2);
+      ctx.fillStyle = W.hexToRgba(color, 0.85);
+      ctx.fillRect(xL, yTop, xR - xL, yBot - yTop);
+      ctx.fillStyle = "#222"; ctx.font = "12px system-ui, sans-serif"; ctx.textAlign = "center";
+      ctx.fillText(label, (xL + xR) / 2, h - ax.padB + 16);
+      ctx.fillText(value.toFixed(3), (xL + xR) / 2, value >= 0 ? yTop - 4 : yBot + 14);
+    }
+    bar(0, diffA, C.frequentist, "segment A");
+    bar(1, diffB, C.bayesian,    "segment B");
+    bar(2, aggDiff, C.highlight, "aggregate");
+
+    document.getElementById("r-a").textContent = `${cA.toFixed(3)} / ${tA.toFixed(3)} / ${diffA >= 0 ? "+" : ""}${diffA.toFixed(3)}`;
+    document.getElementById("r-b").textContent = `${cB.toFixed(3)} / ${tB.toFixed(3)} / ${diffB >= 0 ? "+" : ""}${diffB.toFixed(3)}`;
+    document.getElementById("r-agg").textContent = `${aggC.toFixed(3)} / ${aggT.toFixed(3)} / ${aggDiff >= 0 ? "+" : ""}${aggDiff.toFixed(3)}`;
+
+    const paradox = (diffA > 0 && diffB > 0 && aggDiff < 0) || (diffA < 0 && diffB < 0 && aggDiff > 0);
+    const el = document.getElementById("r-paradox");
+    if (paradox) {
+      el.textContent = "yes - segments and aggregate disagree";
+      el.style.color = "#d62728";
+      el.style.fontWeight = "bold";
+    } else if (Math.abs(aggDiff - lift) < 0.005) {
+      el.textContent = "no - assignment balanced enough";
+      el.style.color = "#888";
+      el.style.fontWeight = "normal";
+    } else {
+      el.textContent = "no (but aggregate is biased)";
+      el.style.color = "#888";
+      el.style.fontWeight = "normal";
+    }
+  }
+
+  ids.forEach(id => document.getElementById(id).addEventListener("input", render));
+  render();
+})();
+</script>
+</body>
+</html>

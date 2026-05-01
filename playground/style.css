@@ -1,0 +1,94 @@
+:root {
+  --bg: #fafafa;
+  --fg: #222;
+  --muted: #888;
+  --frequentist: #1f77b4;
+  --bayesian: #d62728;
+  --highlight: #2ca02c;
+  --panel: #ffffff;
+  --panel-border: #e6e6e6;
+  --max-width: 900px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0; padding: 0;
+  background: var(--bg); color: var(--fg);
+  font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+main {
+  max-width: var(--max-width);
+  margin: 2rem auto;
+  padding: 0 1.25rem;
+}
+
+h1 { font-size: 1.6rem; margin: 0 0 0.5rem; }
+h2 { font-size: 1.15rem; margin: 1.5rem 0 0.5rem; }
+
+p { margin: 0.5rem 0; }
+
+.muted { color: var(--muted); font-size: 0.9rem; }
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-radius: 6px;
+  padding: 1rem;
+  margin: 1rem 0;
+}
+
+.controls {
+  display: flex; flex-wrap: wrap; gap: 1rem; align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.controls label {
+  display: flex; flex-direction: column; min-width: 9rem;
+  font-size: 0.85rem; color: var(--muted);
+}
+
+.controls input[type="range"] { width: 12rem; }
+.controls .value { font-variant-numeric: tabular-nums; color: var(--fg); }
+
+button {
+  font: inherit;
+  padding: 0.4rem 0.9rem;
+  border: 1px solid var(--panel-border);
+  background: var(--panel);
+  border-radius: 4px;
+  cursor: pointer;
+}
+button:hover { border-color: var(--fg); }
+button.primary { background: var(--frequentist); color: white; border-color: var(--frequentist); }
+button.primary:hover { background: #195e92; }
+button.danger  { background: #efefef; }
+
+canvas { display: block; max-width: 100%; }
+
+.readout {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.25rem 1rem;
+  font-size: 0.95rem;
+  font-variant-numeric: tabular-nums;
+  margin-top: 0.5rem;
+}
+.readout dt { color: var(--muted); }
+.readout dd { margin: 0; }
+
+.legend {
+  display: flex; flex-wrap: wrap; gap: 0.75rem;
+  font-size: 0.85rem; margin-top: 0.5rem;
+}
+.legend .swatch {
+  display: inline-block; width: 0.8rem; height: 0.8rem;
+  border-radius: 2px; margin-right: 0.3rem; vertical-align: middle;
+}
+
+footer { margin: 3rem 0 1rem; color: var(--muted); font-size: 0.85rem; }
+footer a { color: var(--muted); }
+
+a { color: var(--frequentist); }
+a:hover { color: #195e92; }

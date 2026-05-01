@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chapter 6 - Prior tuner</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+<h1>Chapter 6 sandbox: priors that argue</h1>
+<p>Pick a Beta(<em>a</em>, <em>b</em>) prior. Pick observed data (<em>k</em> heads in <em>N</em> tosses). Watch the posterior re-render. Crank <em>N</em> up and see the prior get drowned out.</p>
+
+<div class="panel">
+  <div class="controls">
+    <label>prior alpha
+      <input id="a" type="range" min="0.5" max="100" step="0.5" value="1">
+      <span class="value" id="a-val">1.0</span>
+    </label>
+    <label>prior beta
+      <input id="b" type="range" min="0.5" max="100" step="0.5" value="1">
+      <span class="value" id="b-val">1.0</span>
+    </label>
+    <label>observed k (heads)
+      <input id="k" type="range" min="0" max="2000" step="1" value="6">
+      <span class="value" id="k-val">6</span>
+    </label>
+    <label>observed N
+      <input id="n" type="range" min="0" max="2000" step="1" value="10">
+      <span class="value" id="n-val">10</span>
+    </label>
+  </div>
+
+  <canvas id="plot" width="860" height="320"></canvas>
+  <div class="legend">
+    <span><span class="swatch" style="background:#888"></span>prior</span>
+    <span><span class="swatch" style="background:#d62728"></span>posterior</span>
+    <span><span class="swatch" style="background:#1f77b4"></span>observed proportion k/N</span>
+  </div>
+
+  <dl class="readout">
+    <dt>prior</dt><dd id="r-prior">-</dd>
+    <dt>posterior</dt><dd id="r-post">-</dd>
+    <dt>posterior mean</dt><dd id="r-mean">-</dd>
+    <dt>posterior 95% CI</dt><dd id="r-ci">-</dd>
+    <dt>P(p &gt; 0.5)</dt><dd id="r-pp">-</dd>
+  </dl>
+
+  <p class="muted">Try the textbook scenarios:</p>
+  <div class="controls">
+    <button id="preset-flat">flat prior, 6/10</button>
+    <button id="preset-skeptical">skeptical Beta(50,50), 6/10</button>
+    <button id="preset-tails">expects-tails Beta(2,8), 6/10</button>
+    <button id="preset-large-n">flat prior, 600/1000</button>
+  </div>
+</div>
+
+<p class="muted">Chapter narrative: <a href="../chapters/06-bayesian/chapter.md">chapters/06-bayesian/chapter.md</a>. Source for the closed-form posterior: <a href="../expkit/inference/bayes.py">expkit/inference/bayes.py</a>.</p>
+
+<footer><a href="index.html">&larr; playground index</a></footer>
+</main>
+
+<script src="lib.js"></script>
+<script>
+(function () {
+  const W = window.expkitWidget;
+  const C = W.palette;
+
+  function setSliders(a, b, k, n) {
+    document.getElementById("a").value = a;
+    document.getElementById("b").value = b;
+    document.getElementById("k").value = k;
+    document.getElementById("n").value = n;
+    render();
+  }
+
+  function render() {
+    const a0 = parseFloat(document.getElementById("a").value);
+    const b0 = parseFloat(document.getElementById("b").value);
+    let k = parseInt(document.getElementById("k").value, 10);
+    let n = parseInt(document.getElementById("n").value, 10);
+    if (k > n) { k = n; document.getElementById("k").value = k; }
+    document.getElementById("a-val").textContent = a0.toFixed(1);
+    document.getElementById("b-val").textContent = b0.toFixed(1);
+    document.getElementById("k-val").textContent = k;
+    document.getElementById("n-val").textContent = n;
+
+    const aPost = a0 + k, bPost = b0 + (n - k);
+
+    const canvas = document.getElementById("plot");
+    const w = 860, h = 320;
+    const ctx = W.fitCanvas(canvas, w, h);
+    W.clearCanvas(ctx, w, h);
+
+    const xs = [], priorY = [], postY = [];
+    let ymax = 0.0001;
+    const steps = 401;
+    for (let i = 0; i < steps; i++) {
+      const x = i / (steps - 1); xs.push(x);
+      const yp = W.betaPdf(x, a0, b0); priorY.push(yp); if (yp > ymax) ymax = yp;
+      const yq = W.betaPdf(x, aPost, bPost); postY.push(yq); if (yq > ymax) ymax = yq;
+    }
+    const ax = W.makeAxes(ctx, w, h, { xmin: 0, xmax: 1, ymin: 0, ymax: ymax * 1.1 });
+    W.drawAxes(ctx, ax, w, h, { xlabel: "p", ylabel: "density", title: `Beta(${a0}, ${b0}) prior + ${k}/${n} -> Beta(${aPost}, ${bPost})` });
+    if (n > 0) W.plotVLine(ctx, ax, h, k / n, C.frequentist);
+    W.plotVLine(ctx, ax, h, 0.5, C.muted, [2, 3]);
+    W.plotLine(ctx, ax, xs, priorY, C.muted, 1.5);
+    // Shade posterior 95% CI
+    const lo = W.betaIcdf(0.025, aPost, bPost), hi = W.betaIcdf(0.975, aPost, bPost);
+    const bxs = [], blo = [], bhi = [];
+    for (let i = 0; i < xs.length; i++) {
+      bxs.push(xs[i]); blo.push(0);
+      bhi.push(xs[i] >= lo && xs[i] <= hi ? postY[i] : 0);
+    }
+    W.plotBand(ctx, ax, bxs, blo, bhi, C.bayesian, 0.18);
+    W.plotLine(ctx, ax, xs, postY, C.bayesian, 2.0);
+
+    const mean = aPost / (aPost + bPost);
+    const pgtHalf = 1 - W.betaI(0.5, aPost, bPost);
+    document.getElementById("r-prior").textContent = `Beta(${a0.toFixed(1)}, ${b0.toFixed(1)})`;
+    document.getElementById("r-post").textContent = `Beta(${aPost.toFixed(1)}, ${bPost.toFixed(1)})`;
+    document.getElementById("r-mean").textContent = mean.toFixed(4);
+    document.getElementById("r-ci").textContent = `[${lo.toFixed(4)}, ${hi.toFixed(4)}]`;
+    document.getElementById("r-pp").textContent = pgtHalf.toFixed(4);
+  }
+
+  ["a", "b", "k", "n"].forEach(id => document.getElementById(id).addEventListener("input", render));
+  document.getElementById("preset-flat").addEventListener("click", () => setSliders(1, 1, 6, 10));
+  document.getElementById("preset-skeptical").addEventListener("click", () => setSliders(50, 50, 6, 10));
+  document.getElementById("preset-tails").addEventListener("click", () => setSliders(2, 8, 6, 10));
+  document.getElementById("preset-large-n").addEventListener("click", () => setSliders(1, 1, 600, 1000));
+
+  render();
+})();
+</script>
+</body>
+</html>
