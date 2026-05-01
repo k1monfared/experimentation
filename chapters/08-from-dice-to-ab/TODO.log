@@ -47,15 +47,15 @@
         - O5. Power calculator alignment work (pooled vs unpooled SE in expkit.power.binomial): tracked separately under library test coverage.
         - O6. Notebook expansion to mirror every loop: ROADMAP Area 3 priority chapter, separate task.
     - Book-level review additions (added 2026-04-30)
-        - "MMU" is introduced here for the first time but never given a back-pointer in Chapter 18 where it carries the capstone
+        - [APPLIED] "MMU" is introduced here for the first time but never given a back-pointer in Chapter 18 where it carries the capstone
             - Where: chapter.log Loop D "Note on MMU"
             - Why: Chapter 18 uses MMU = 0.5pp throughout the simulator without re-defining it. A reader landing on Chapter 18 cold (or returning after a break) needs a one-line back-reference.
             - Edit: at the bottom of the "Note on MMU" bullet add "We carry this acronym to Chapter 18 where the capstone simulator runs both lenses with the same MMU."
-        - CMH forward reference does not land cleanly
+        - [APPLIED] CMH forward reference does not land cleanly
             - Where: chapter.log Loop C Hunch ("we will revisit this in chapter 11 when we talk about behavioural segmentation, and chapter 12 when subgroups openly contradict the pool")
             - Why: neither Chapter 11 nor Chapter 12 actually uses Cochran-Mantel-Haenszel. They use stratified per-segment z-tests and hierarchical Bayes instead. The forward pointer makes a promise the receivers do not keep.
             - Edit: change to "the canonical frequentist combiner is Cochran-Mantel-Haenszel; we do not run it in this book (Chapters 11 and 12 reach for hierarchical Bayes instead, and per-segment z-tests when the lens is frequentist)." This sets honest expectations.
-        - Carried-from-Chapter-7 wording skips the verbatim handoff
+        - [APPLIED] Carried-from-Chapter-7 wording skips the verbatim handoff
             - Where: chapter.log lines 2-3
             - Why: Chapter 7's big question is "how do we go from 'is this one thing fair?' to 'is this thing different from that thing?'" and Chapter 8's carried-from rephrases it. Tight, but a single quoted echo would help readers feel the seam.
             - Edit: prepend the verbatim Chapter 7 question, then continue with the existing reframe.

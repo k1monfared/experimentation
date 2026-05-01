@@ -1,7 +1,7 @@
 # Chapter 12: Simpson's paradox -- when the parts disagree with the whole
 
 - Carried from Chapter 11
-  - Subgroups can move in one direction while the aggregate moves the other. We make it concrete.
+  - Under what conditions do parts and the whole disagree? Subgroups can move in one direction while the aggregate moves the other. We make it concrete.
 
 # Loop A: build the paradox
 
@@ -81,6 +81,7 @@
 # The big question that opens Chapter 13
 
 - We've spent five chapters arguing about which segment, which metric, which lens. We have not asked the deeper question: which metric *should* we be measuring in the first place?
+- We have argued about which segment, which lens, and which weight. We have never asked which metric is the right one in the first place. That is a structural question, not a statistical one.
 - Big question: how do company-level outcomes connect to the experiment-level metrics we read in week one?
 
 # Notebook and data

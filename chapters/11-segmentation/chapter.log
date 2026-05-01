@@ -45,12 +45,14 @@
     - Frequentist: two standard routes.
         - Per-segment two-proportion z test or chi-square, with Bonferroni or Holm correction across the segments. Independent inference per segment. Pays a multiple-testing power tax that grows with the number of segments. Appropriate when segments are pre-registered and few.
         - One logistic regression on the whole table with arm, segment, and arm:segment interaction terms. Read the per-segment effect off the interaction coefficients. One model, no Bonferroni in the same form. Interpretation lives on the logit scale and depends on contrast coding. Preferable when segments are many or when the analysis is post-hoc.
+        - Cochran-Mantel-Haenszel is the classical combiner; we do not run it here because the per-segment + correction route is what most teams use, and the logistic-regression-with-interactions route generalizes more naturally.
     - Bayesian: a hierarchical model where each segment has its own treatment effect drawn from a population-level distribution. Partial pooling. Segments with little data borrow strength from the global mean.
     - The two views often agree directionally. The Bayesian view is more honest about uncertainty in tiny segments, and partial pooling replaces the explicit multiple-testing correction with a regularization toward the population.
 - Loop D: hierarchical Bayesian model with PyMC
     - Frame
         - Loop D is a *recovery* exercise. The simulator bakes in the lifts +10, +4, -3, 0 by segment. We test whether the hierarchical model can recover those known values within its posterior uncertainty, and how it differs from the no-pooling per-segment estimates that simply read off the empirical lifts. This is a controlled check, not a discovery.
     - Try
+        - This is the kind of model Chapter 6 was preparing us for: no closed-form, partial pooling, the sampler does the work.
         - We fit a hierarchical model: each segment has a logit baseline and a treatment effect drawn from a population-level Normal(mu, tau). We use a non-centered parameterization for the per-segment effects.
         - Why non-centered: in the centered form effect[s] ~ Normal(mu, tau), the latent space rescales with tau, so when tau is small the joint posterior pinches into a narrow neck (the "funnel") whose curvature changes with tau. NUTS has to take very small steps inside the neck and large steps outside it, which produces divergences and biased posterior tails. The non-centered form effect[s] = mu + tau * z[s] with z[s] ~ Normal(0, 1) keeps the latent z at unit scale regardless of tau, so the geometry is well-conditioned even when tau is near 0. Standard hierarchical-modelling guidance (see Betancourt and Girolami on hierarchical model geometry).
         - The model in shorthand:

@@ -1,6 +1,6 @@
 - Chapter 12: Simpson's paradox -- when the parts disagree with the whole
     - Carried from Chapter 11
-        - Subgroups can move in one direction while the aggregate moves the other. We make it concrete.
+        - Under what conditions do parts and the whole disagree? Subgroups can move in one direction while the aggregate moves the other. We make it concrete.
 - Loop A: build the paradox
     - Try
         - Two segments. Segment A is small (20% of the population) with high baseline (80%). Segment B is large (80% of the population) with low baseline (20%). Treatment lifts each segment by exactly 5pp.
@@ -64,6 +64,7 @@
         - The hierarchical model dissolves Simpson's paradox when the segment is a confounder we want to adjust for, *and* the model is correctly specified with the right segment label. If the segment is a mediator on the causal path from treatment to outcome, conditioning on it would remove part of the effect we are trying to measure. The model needs the right DAG, not just the segment label. The paradox lives in the *aggregation* you choose to report, and by writing down a per-segment model you have already made that choice consciously.
 - The big question that opens Chapter 13
     - We've spent five chapters arguing about which segment, which metric, which lens. We have not asked the deeper question: which metric *should* we be measuring in the first place?
+    - We have argued about which segment, which lens, and which weight. We have never asked which metric is the right one in the first place. That is a structural question, not a statistical one.
     - Big question: how do company-level outcomes connect to the experiment-level metrics we read in week one?
 - Notebook and data
     - Companion notebook: [`notebook.ipynb`](notebook.ipynb)

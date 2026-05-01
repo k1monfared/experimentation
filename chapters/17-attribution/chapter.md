@@ -35,15 +35,27 @@
 - Frequentist: attribution is a deterministic accounting choice. There is no statistical answer. The only test is "does my model recover the true coefficients on simulated data?".
 - Bayesian: model the conversion likelihood explicitly with channel coefficients, fit posterior over coefficients, and inspect. PyMC handles this directly. The posterior over coefficients is the right object to budget against.
 
-# Loop C and D: the Bayesian model
+# Loop C: the Bayesian model
 
 - Try
   - Logistic regression in PyMC: P(convert) = sigmoid(intercept + sum_c coef[c] * count[c]) where count[c] is the number of times user touched channel c. Weakly informative priors on the coefficients (Normal(0, 0.5) on the logit scale). Sample with NUTS over the 20,000 simulated journeys.
+  - The model spec, in the Chapter 6 idiom:
+    - ```
+    - with pm.Model():
+    - intercept = pm.Normal("intercept", 0, 2)
+    - coef = pm.Normal("coef", 0, 0.5, shape=K)
+    - p = pm.math.invlogit(intercept + pm.math.dot(counts, coef))
+    - pm.Bernoulli("y", p=p, observed=converted)
+    - idata = pm.sample(draws=1000, tune=1000, chains=4)
+    - ```
   - Because we generated journeys from a logistic-additive model and fit a logistic-additive model, this is a recovery check, not a test of the method against real journeys. Real customer journeys violate the assumption that channels combine additively in their touch counts. Sequence matters in practice, channels can interact, and the linear-additive form discards both.
-- Observe (left panel)
+- Observe (coefficient recovery)
   - The posterior 95% credible intervals on the channel coefficients bracket the true values for every channel. direct's coefficient sits highest (true 0.20), search second (0.10), email (0.05), social (0.04), display (0.02). The model recovers the underlying causal structure.
   - At n = 20,000 the 95% CI half-width is roughly 0.040 for the strongest channel (direct) and around 0.036 to 0.038 for the weaker channels (email, social, display). The two lowest-coefficient channels (display at true 0.02, social at true 0.04) sit with posterior means at 0.052 and 0.058 and HDIs that exclude zero, so the recovery is not borderline. Bulk ESS is roughly 2,500 to 3,300 across coefficients with R-hat at 1.00, so the diagnostic is clean.
-- Observe (right panel)
+
+# Loop D: scheme comparison via posterior
+
+- Observe (heuristics vs posterior shares)
   - Take the posterior coefficient means, clip to non-negative, normalize, and treat as a relative-weight comparison. Compare to first-touch, last-touch, linear, and time-decay shares.
   - The Bayesian relative weights match the *true* relative weights closely. The four heuristics each diverge: first-touch overweights first-channel-of-journey distributions (search and social), last-touch overweights direct (the closer), linear blurs everything toward equal, time-decay sits between linear and last-touch.
   - Footnote on scales: heuristic shares partition observed credit on the probability scale, while the Bayesian column normalises non-negative logit-scale coefficients. The two are comparable in spirit as relative weights, but the chart should be read as a comparison of relative weights rather than identically scaled probabilities.
@@ -56,8 +68,8 @@
 
 # The big question that opens Chapter 18
 
-- We've spent 17 chapters teaching both lenses. We've never asked: at the end of all this, would we ship things differently under one lens vs the other? On average, on which kinds of decisions, by how much?
-- Big question: would a frequentist team and a Bayesian team disagree about what to ship -- and where, and when?
+- We have spent 17 chapters teaching both lenses on inference questions. Attribution had no frequentist inference at all, only deterministic accounting versus a Bayesian likelihood. The capstone question goes the other way: across the inference chapters, where the two lenses both apply, would two teams have actually shipped different products?
+- Big question: across the 17 chapters of inference work, would a frequentist team and a Bayesian team have reached different shipping decisions, and where, and how often?
 
 # Notebook and data
 

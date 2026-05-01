@@ -63,6 +63,8 @@
 - Compare
   - The frequentist tests asked "is the data surprising under p = 0.5?" The Bayesian asks "is p = 0.5 plausible given the data?" At 6/10 and at very large N the two lenses agree on shape and on action.
   - At 60/100 the lenses agree on shape (both call it borderline), but the frequentist family itself splits at the alpha = 0.05 line: exact says 0.057 (do not reject), z and chi-square say 0.046 (reject), Fisher says 0.20 (do not reject). The Bayesian credible interval has its lower bound just at 0.50. Reasonable analysts would disagree about action.
+- Forward pointer
+  - Each of these tests has a confidence-interval dual. Chapter 5 turns the same five families inside-out into intervals, with bootstrap added as a non-parametric default.
 
 # The big question that opens Chapter 5
 

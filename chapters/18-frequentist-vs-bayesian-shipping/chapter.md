@@ -8,7 +8,7 @@
 - Try
   - Run 2,000 synthetic A/B tests. For each, draw a true effect from Normal(0, 1pp). Run a 2,000-per-arm experiment. Apply two decision rules:
     - Frequentist (rule in the wild): ship if (p < 0.05) AND (point estimate > 0).
-    - Bayesian: ship if P(treatment - control > MMU) > 0.95, where MMU = 0.5pp.
+    - Bayesian: ship if P(treatment - control > MMU) > 0.95, where MMU = 0.5pp. (MMU is the minimum meaningful uplift, introduced in Chapter 8: an organizational or economic threshold below which we do not care.)
 - A note on apples-to-apples
   - The two rules above are the ones teams write down in practice, but they aren't structurally matched. The frequentist rule has no meaningfulness gate, the Bayesian one does. Some of the gap we see below is "frequentist vs Bayesian", some is "no-MMU vs MMU".
   - To separate the two effects, the simulator also records a matched frequentist rule, ship if (p < 0.05) AND (point estimate > MMU). An equivalent matched Bayesian rule would be P(diff > 0) > 0.95. We keep the original mismatched comparison as "rules in the wild" and show the matched comparison as "lens-only" so the reader can read off both stories.
@@ -33,6 +33,8 @@
   - ![Confusion matrix](images/confusion_matrix.png)
 - Hunch
   - The Bayesian rule is roughly "F's rule plus a meaningfulness gate". It is more conservative, and the matched-rule comparison from Loop A makes that explicit.
+- On Bayes factors, deliberately omitted
+  - Chapter 6 introduced the Bayes factor as a third way to weigh evidence (BF_10 > 10, > 30, > 100 as "strong", "very strong", "decisive"). We deliberately do not include a BF-based shipping rule in this capstone. Under the prior-on-H1 fragility flagged in Chapter 6, a BF rule is sensitive to a modeling choice (the prior on the alternative) that production teams rarely document or revisit, so its ship-rate-vs-truth curve would mostly tell us about that hidden knob rather than about the lens. We keep the comparison to two rules a team would actually write down.
 
 # Loop C: cost analysis
 
@@ -48,9 +50,9 @@
 - Hunch
   - There is no globally better lens. Which rule is "right" depends on whether your organization fears bad ships more than missed wins, or vice versa, and on how much you value large wins relative to small ones.
 
-# Loop D: prior sensitivity
+# Aside: prior sensitivity
 
-- With a Beta(1, 1) flat prior the two rules look like the above. With a strongly skeptical Beta(50, 50) prior, the Bayesian becomes much more conservative -- it almost never ships at all unless the effect is huge. With a permissive prior, it ships almost as often as the frequentist. The prior is the knob.
+- This is an aside, not a full loop, no figure and no run-the-simulator pass. With a Beta(1, 1) flat prior the two rules look like the above. With a strongly skeptical Beta(50, 50) prior, the Bayesian becomes much more conservative, it almost never ships at all unless the effect is huge. With a permissive prior, it ships almost as often as the frequentist. The prior is the knob. A proper Try / Observe / Hunch sweep across these three priors is left for follow-up work; expanding this aside into a full loop would mean rerunning the simulator for each prior and adding a ship-rate-by-truth panel per prior.
 
 # Loop E: joint rule
 

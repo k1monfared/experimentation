@@ -31,15 +31,16 @@
         - Model-based predictivity (regressing long-term on short-term with covariates, partial correlation): out of scope for Chapter 13. The chapter is descriptive about the metric tree, not predictive modelling.
         - Multi-metric headline aggregation (overall evaluation criterion, OEC) and how to combine proxies: this is Chapter 16.
     - Book-level review additions (added 2026-04-30)
-        - Two-lens promise broken: this chapter has no Bayesian counterpart in any loop
+        - Two-lens promise broken: this chapter has no Bayesian counterpart in any loop [APPLIED]
             - Where: chapter.log Loops A through D
             - Why: the README and the project narrative rule say from Chapter 1 onward every loop applies both lenses. Chapter 13 only does point-estimate Pearson r and bootstrap CI on r. There is no Bayesian framing of predictivity (e.g., a posterior over the correlation, or a hierarchical fit across metric pairs) anywhere in the chapter.
             - Edit: add one short Bayesian sub-bullet in Loop C, two sentences max: "A Bayesian counterpart puts a prior on rho and yields a posterior over the correlation directly. With 200 paired experiments the posterior is centred near 0.29 and a 95% HDI of roughly [0.16, 0.42], close to the bootstrap CI but with a posterior interpretation. Chapter 16's predictivity scoring carries this forward."
-        - Forward reference to Chapter 16 ("examines the mechanism in depth") does not land
+        - Forward reference to Chapter 16 ("examines the mechanism in depth") does not land [APPLIED]
             - Where: chapter.log Loop D ("Chapter 16 examines the mechanism in depth")
             - Why: Chapter 16 examines metric-quality (variance, CUPED, A/A, predictivity) but does not work through the actual mechanism by which clicks rise while revenue falls. The promise undersells what Chapter 16 does and oversells what it covers.
             - Edit: change to "Chapter 16 picks up the predictivity-of-proxies thread; the bounce-rate / clickbait mechanism itself is a Goodhart's-law issue and is referenced rather than worked out in this book."
-        - "Schematic" figure in Loop B breaks tonal consistency
+        - "Schematic" figure in Loop B breaks tonal consistency [SKIPPED]
             - Where: chapter.log Loop B Observe ("![Noise vs speed (schematic)]") and the existing TODO note labelling it schematic
             - Why: every other chapter uses simulator-derived numbers (with seeds and manifest entries). Chapter 13 alone has a schematic CV-vs-time figure. The asymmetry undermines reader trust in the rest of the chapter.
             - Edit: either replace the schematic figure with a small simulator-driven panel (sample three metric streams with different CVs at three time horizons; the noise floor as a function of n falls predictably), or label *every* figure in the chapter as schematic where appropriate so the convention is clear. Currently only this one is flagged.
+            - Skip reason: requires either a generate.py run (forbidden by instruction) or a cross-chapter convention change touching every chapter's figure-labelling policy. Both fall outside the in-scope edit set.

@@ -27,15 +27,18 @@
         - Comparison against marketing-mix models or shapley-value attribution. Out of scope for an inquiry chapter; could be a sidebar later.
         - Causal identification under unmeasured confounding (for example, users who would have converted anyway choose direct as their last touch). The chapter's "Bayesian gives causal" claim is conditional on the simulator, and the well-specified caveat above is the right place to flag this without opening the full causal-inference can.
     - Book-level review additions (added 2026-04-30)
-        - "Loop C and D" merged-header is unique in the book
+        - [APPLIED] "Loop C and D" merged-header is unique in the book
             - Where: chapter.log line 30 ("Loop C and D: the Bayesian model")
             - Why: every other chapter uses single-letter loop labels (Loop A, Loop B, ..., or numbered sub-loops like Loop D'). Merging them implies the section maps to two loops but treats them as one.
             - Edit: split into "Loop C: the Bayesian model" (Try + first Observe block) and "Loop D: scheme comparison via posterior" (second Observe block + Hunch). Or rename to a single "Loop C: the Bayesian model" and treat what is currently Observe-right-panel as a sub-bullet within Loop C.
-        - Forward reference to Chapter 18: chapter ends asking whether the two lenses disagree on shipping decisions
+            - Note: split into Loop C (Try + coefficient recovery Observe) and Loop D (heuristics-vs-posterior Observe + Hunch). The Hunch block stays at the end of Loop D because its caveats apply to the comparison. Renamed Observe sub-headers from "(left panel)" / "(right panel)" to "(coefficient recovery)" / "(heuristics vs posterior shares)" to match the new section split.
+        - [APPLIED] Forward reference to Chapter 18: chapter ends asking whether the two lenses disagree on shipping decisions
             - Where: chapter.log lines 47-49 (big question)
             - Why: this is fine narratively, but Chapter 17's body never actually applies a frequentist attribution lens (because frequentist attribution = deterministic accounting, no inference). The chapter says so explicitly. Yet the big-question framing implies a frequentist-vs-Bayesian tension that the chapter did not actually develop.
             - Edit: rephrase the big question to flow more naturally from this chapter's content: "We have spent 17 chapters teaching both lenses on inference questions. Attribution had no frequentist inference at all. The capstone question goes the other way: across the inference chapters, would two teams have actually shipped different products?" This makes the pivot honest.
-        - PyMC model spec drops a piece Chapter 6 promised would be shown
+            - Note: rephrased to make the pivot explicit. Attribution is named as the chapter where frequentist inference did not apply, and the capstone question is scoped to the inference chapters where both lenses do apply.
+        - [APPLIED] PyMC model spec drops a piece Chapter 6 promised would be shown
             - Where: chapter.log Loop C/D Try (the model description, no priors block)
             - Why: Chapter 6 sets up the workflow as "write the model, sample, inspect the posterior". Chapter 17 names the priors but does not show the full model in code-block form like Chapter 6 does (with `with pm.Model(): ... pm.sample(...)`). Other chapters that use PyMC (Chapters 6, 11) do show the block. Inconsistency.
             - Edit: add a short PyMC code block to Loop C "Try" mirroring the Chapter 6 block, with `pm.Normal("intercept", 0, 2)`, `pm.Normal("coef", 0, 0.5, shape=K)`, `pm.Bernoulli("y", p=invlogit(...), observed=...)`, and `pm.sample(...)`. Three lines of model spec is enough.
+            - Note: code block added inside Loop C "Try" using the loglog fenced-code idiom (one ```python line, body lines as bullets, closing ``` line). Variables are `counts` (the journey-by-channel touch matrix) and `converted` (the binary outcome). Model name `model` matches the Chapter 6 convention.

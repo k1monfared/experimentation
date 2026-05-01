@@ -1,6 +1,6 @@
 - Chapter 8: From dice to A/B tests
     - Carried from Chapter 7
-        - One die, one population: the question was "is this fair?". Two variants of anything: the question becomes "is variant B different from variant A?". That's an A/B test, the workhorse of online experimentation.
+        - "How do we go from 'is this one thing fair?' to 'is this thing different from that thing?'" One die, one population: the question was "is this fair?". Two variants of anything: the question becomes "is variant B different from variant A?". That's an A/B test, the workhorse of online experimentation.
 - Loop A: two-arm binary outcome
     - Try
         - Two website variants. Control converts at 5%, treatment at 6%. We allocate N users to each arm and compute the two-proportion z-test and the Bayesian posterior on the difference. The Bayesian side uses uniform Beta(1, 1) priors on each arm's conversion rate.
@@ -34,10 +34,10 @@
         - Pooled (N = 4000): the casual group dominates, so the pooled effect looks like the casual effect. The power-user group, where the absolute lift is the same but the relative lift is much smaller, gets washed out.
         - ![Stratified vs pooled](images/stratified_vs_pooled.png)
     - Hunch
-        - Pooling discards information. The canonical frequentist combiner that respects the strata is the Cochran-Mantel-Haenszel test; we will revisit this in chapter 11 when we talk about behavioural segmentation, and chapter 12 when subgroups openly contradict the pool (Simpson's paradox).
+        - Pooling discards information. The canonical frequentist combiner that respects the strata is the Cochran-Mantel-Haenszel test; we do not run it in this book (Chapters 11 and 12 reach for hierarchical Bayes instead, and per-segment z-tests when the lens is frequentist).
 - Loop D: decision rule, both lenses
     - Note on MMU
-        - MMU (minimum meaningful uplift) is an organizational and economic choice about what effect size is worth shipping, not a Bayesian invention. Either lens can use it. The frequentist analogue is "ship if the point estimate exceeds MMU and the lower bound of the 95% CI exceeds 0" (or, more strictly, "lower 95% CI bound > MMU", a one-sided non-inferiority style rule).
+        - MMU (minimum meaningful uplift) is an organizational and economic choice about what effect size is worth shipping, not a Bayesian invention. Either lens can use it. The frequentist analogue is "ship if the point estimate exceeds MMU and the lower bound of the 95% CI exceeds 0" (or, more strictly, "lower 95% CI bound > MMU", a one-sided non-inferiority style rule). We carry this acronym to Chapter 18 where the capstone simulator runs both lenses with the same MMU.
     - Try
         - Frequentist rule (the simple version we compare here): "ship if p < 0.05 and direction positive". Note the freq lens could also adopt MMU via a one-sided CI rule; we pick the simpler version to make the contrast visible.
         - Bayesian rule: "ship if P(treatment - control > MMU) > 0.95", where MMU is 0.5pp.

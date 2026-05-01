@@ -63,15 +63,15 @@
         - Sequential-testing alpha-spending machinery. The Loop D "Compare" block correctly notes that the BF avoids it; a full treatment is out of scope for this chapter.
         - Adding hierarchical models here. The expkit module already exposes hierarchical_segmented_posterior; demonstrating it is the job of Chapter 11 / 12 per ROADMAP Area 2.
     - Book-level review additions (added 2026-04-30)
-        - "Likelihood principle" is referenced in Chapter 3 but never gets the formal definition Chapter 6 is the natural home for
+        - [APPLIED] "Likelihood principle" is referenced in Chapter 3 but never gets the formal definition Chapter 6 is the natural home for
             - Where: chapter.log Loop A "The recipe" through Loop B
             - Why: Chapter 3 Loop D Edge case names "the likelihood principle" without explanation. Chapter 6 is "Bayesian, formalized" and is the right place to put the definition. Currently it does not.
             - Edit: add one bullet near the end of Loop A with a one-sentence statement: "Notice an immediate consequence: the posterior depends on the data only through the likelihood. The stopping rule, the design, and any data we did not see do not enter. This is the likelihood principle, the reason a Bayesian posterior survives optional stopping in Chapter 3." Back-reference Chapter 3 explicitly.
-        - Bayes factor is introduced here but never reused in any later chapter
+        - [APPLIED] Bayes factor is introduced here but never reused in any later chapter
             - Where: chapter.log Loop D
             - Why: the chapter spends a HIGH-priority pedagogical investment on BFs (with Lindley's paradox caveat), and then no later chapter uses one. Chapter 18 (the capstone) compares lenses on the *posterior probability* rule, not the Bayes factor.
             - Edit: add a one-line forward pointer at the end of Loop D acknowledging this: "We will not use Bayes factors in the rest of the book; the prior-on-H1 fragility makes them a poor decision tool at scale, and the posterior-probability rule is what we use in Chapters 8 and 18." If the project intends BFs to appear later, instead extend Chapter 18 to add a BF column to the simulator.
-        - PyMC engine commitment is set up here but not honored in Chapters 8, 12, 17 (per ROADMAP Area 2)
+        - [APPLIED] PyMC engine commitment is set up here but not honored in Chapters 8, 12, 17 (per ROADMAP Area 2)
             - Where: chapter.log Loop C "Why bother with PyMC if the closed form is right there?" promises PyMC takes over
             - Why: the project narrative rule says PyMC is the canonical Bayesian engine. After Chapter 6, only Chapters 11 and 14 use a hierarchical PyMC model. Chapter 8 (two-arm A/B) keeps Beta closed-form; Chapter 12's hierarchical recovery exists but only in the simpsons-like fit; Chapter 17 has a PyMC logistic model already. Chapter 6's lead-in oversells how often we will see PyMC.
             - Edit: soften the "From here on we use PyMC where it earns its keep" sentence to: "We use PyMC where it earns its keep -- closed-form Beta when there is one (Chapters 7, 8), hierarchical PyMC when partial pooling matters (Chapters 11, 12), logistic-additive PyMC for attribution (Chapter 17). The closed-form path is not abandoned; it is shown alongside whenever both are tractable."

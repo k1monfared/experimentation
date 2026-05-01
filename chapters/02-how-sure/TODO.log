@@ -37,15 +37,17 @@
         - The two-sided vs one-sided framing at the test level (binomtest two-sided vs posterior P(p>0.5) one-sided) is a real conceptual issue but addressing it via a symmetric Bayesian quantity (2*min(tail, 1-tail)) is captured under the HIGH Loop B item; deeper treatment belongs in Chapter 7+ where the two lenses are formalized.
         - Reproducibility seed audit -> grid file sha256 matches manifest; not a content issue for this chapter.
     - Book-level review additions (added 2026-04-30)
-        - Cross-chapter handoff: "carried from Chapter 1" paraphrases the previous big question instead of carrying it forward verbatim
+        - [APPLIED] Cross-chapter handoff: "carried from Chapter 1" paraphrases the previous big question instead of carrying it forward verbatim
             - Where: chapter.log lines 2-3
             - Why: the project narrative rule asks the carried-over line to track the previous chapter's big question closely. Chapter 1's big question is "how sure can I really be?" but Chapter 2 opens by repeating the 6-of-10 numerical setup without quoting that question.
             - Edit: prepend the verbatim question at the top of the carried-from bullet, e.g. "We asked: how sure can I really be? In Chapter 1 we hand-waved with two different answers. Now we make them precise."
-        - Forward reference to "Bayes factor" lands without a placeholder
+        - [APPLIED] Forward reference to "Bayes factor" lands without a placeholder
             - Where: chapter.log mentions p-values, type I/II, posterior probability, credible interval. Chapter 1's big-question sketch in chapter.log line 82 promises Chapter 2 will introduce the Bayes factor; Chapter 2 does not, and only Chapter 6 does.
             - Why: a reader who follows the inquiry breadcrumb expects the Bayes factor here. Either the promise in Chapter 1 is wrong, or Chapter 2 should at least name and defer it.
             - Edit: in Chapter 2's Bayesian-take or in the Loop B Compare step, add one sentence: "We will meet the Bayes factor in Chapter 6, when we formalize the Bayesian framework end-to-end." Coordinate with Chapter 1 TODO so its Loop D / big-question recap stops promising the Bayes factor here.
-        - Notation drift compared with later chapters
+            - Note: Chapter 2 deferral sentence added in Loop B Compare. The Chapter 1 recap edit (removing the Bayes factor promise) is cross-chapter and was not applied here.
+        - [SKIPPED: requires cross-chapter coordination] Notation drift compared with later chapters
             - Where: chapter.log uses "P(p > 0.5)" and "p_hat" implicitly; Chapter 4 uses "hat-p", Chapter 5 uses "p_hat"
             - Why: the notation chosen in Chapter 1/2 should be the canonical form everywhere downstream.
             - Edit: pick one form (suggest "hat-p" since most chapters use it) and use it consistently throughout Chapter 2's Loop A and Loop B prose; flag the same edit in Chapters 4 and 5.
+            - Note: Chapter 2 prose does not currently use either symbol, so there is nothing to standardize within Chapter 2 alone. The substantive edit lives in Chapters 4 and 5 (and the canonical choice is established in Chapter 1, which uses p_hat). Out of scope for a chapter-02-only pass.

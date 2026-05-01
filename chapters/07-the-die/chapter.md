@@ -30,6 +30,7 @@
 # Loop C: Dirichlet-multinomial, the Bayesian counterpart
 
 - Try
+  - The Beta-binomial of Chapters 1-5 generalizes naturally: K outcomes instead of 2, Dirichlet prior with K parameters instead of Beta with 2, the conjugacy still holds.
   - The conjugate analogue of Beta-binomial in the multinomial world is Dirichlet-multinomial. With a Dirichlet(1, 1, 1, 1, 1, 1) prior and observed counts, the posterior is Dirichlet(1 + c1, 1 + c2, ..., 1 + c6).
   - Plot the posterior marginal for each face on the same axes for the loaded-die data with N = 600.
 - Observe

@@ -6,7 +6,10 @@
 # Loop A: external validity
 
 - Try
-  - We run a clean A/B-like study on wine vs no-wine in a sample of 22-year-old college students. We find a 5pp lift on a heart-health outcome. p < 0.01. The headline writes itself.
+  - We run a clean A/B-like study on wine vs no-wine in a sample of 22-year-old college students, 1000 per arm. We pin down both lenses on the same data:
+    - Frequentist two-proportion z (using expkit.inference.normal.two_proportion_z) on the simulated cohort gives treatment 0.465, control 0.392, point estimate +0.073, z = 3.30, p = 0.001. Reject the null.
+    - Bayesian Beta-Bernoulli posteriors per arm (Beta(1, 1) prior, expkit.inference.bayes.coin_posterior_conjugate) and 200000 Monte Carlo draws on the difference give posterior mean +0.073, 95% credible interval [+0.030, +0.116], P(diff > 0) = 0.9995.
+    - Both lenses agree: in the 22yo cohort the lift is real. The headline writes itself.
   - But the world is not 22-year-old college students. We simulate the same intervention applied to a real population mix: 10% college students, 20% 40-year-olds under stress, 20% healthy 65+, 5% pregnant women, 10% teens, 35% middle-aged sedentary.
 - Observe
   - The studied group: +5pp on the outcome. Real.
@@ -21,6 +24,9 @@
   - Each bar is an average treatment effect within the segment, the mean lift across people in that group, not the effect any one individual would experience.
 - Hunch
   - Internal validity (does the effect hold in the studied population?) and external validity (does the effect generalize?) are different questions. Studies are usually designed for internal validity. The press release is about external validity. The gap between them is where most "wine is good for you" stories live. Statisticians call this the transportability or reference-class problem, and there is a formal literature on when an internally valid effect can be carried to a new population.
+- Two-lens commentary
+  - Frequentist transportability is a subgroup-test framing. Run a separate two-proportion z (or chi-square with a multiple-comparison correction) per segment, then either weight the per-segment estimates by the target population's segment shares to get a population-average lift, or refuse to extrapolate at all when any segment confidence interval is on the wrong side of zero. The studied cohort gave p = 0.001, but the same machinery applied per segment in the universe sample produces a positive estimate in some bars and a negative one in others. The frequentist verdict is one report card per segment, no smoothing.
+  - Bayesian transportability puts a posterior on the population-average lift, treating the target population's segment mix as a known weighting and the per-segment effects as draws from a hierarchical population. With six segments and one of them (pregnant women) showing -10pp ground truth, the posterior on the population-weighted lift is centred well below the studied +5pp; with diffuse-enough priors and the universe segment shares from the simulator, the credible interval easily straddles zero. Same data, two answers: the frequentist gives "significant in the studied cohort, mixed across the universe", the Bayesian gives "one number with honest uncertainty, and that number is much smaller than the headline".
 
 # Loop B: what does "good" mean?
 
@@ -62,6 +68,7 @@
 - Hunch
   - This is what a "decision" actually is once you take the data seriously: a posterior on each outcome, a utility weighting, and a threshold. The utility function is *not* a statistical question. It is a values question.
   - One caveat for later: the curve above plugs point estimates into U. Proper expected utility is E[U(theta)] integrated over the joint posterior of target and harm effects, which Chapter 6's Bayesian machinery makes possible and a later chapter on decision theory will treat directly.
+  - Bridge to industry: these four traps, studied population, outcome choice, side effects, weights, show up in tech experiments too, just with click-rates substituting for heart rates and engagement substituting for mortality. Chapter 10 walks the same four traps in industry dress, no new analysis, just a change of costume.
 
 # The big question that opens Chapter 10
 

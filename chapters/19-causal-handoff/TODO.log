@@ -15,15 +15,15 @@
         - No discussion of estimands beyond ATE (ATT, ATU, LATE, CATE). Belongs in the sibling repo.
         - "Central problem causal inference solves" reads strong but is framed as a hunch in inquiry style, which is consistent with the chapter convention.
     - Book-level review additions (added 2026-04-30)
-        - SUTVA defined here a second time, with different wording from Chapter 15
+        - [APPLIED] SUTVA defined here a second time, with different wording from Chapter 15
             - Where: chapter.log Loop A network-effects bullet ("This breaks SUTVA (the Stable Unit Treatment Value Assumption), which says treating one unit doesn't change the potential outcomes of others.")
             - Why: Chapter 15 first defines SUTVA in the CACE conditions as "no interference between users, one version of treatment". Chapter 19 redefines it. The two glosses are compatible but not identical.
-            - Edit: standardize on one definition: "SUTVA (Stable Unit Treatment Value Assumption): no interference between units, and one version of treatment per unit." Use the same phrasing here and back-reference Chapter 15: "(introduced in Chapter 15 in the CACE conditions)."
-        - "Potential outcomes (Rubin causal model)" introduced here without note that it has been used implicitly throughout the book
+            - Edit: standardize on one definition: "SUTVA (Stable Unit Treatment Value Assumption): no interference between units, and one version of treatment per unit." Use the same phrasing here and back-reference Chapter 15: "(introduced in Chapter 15 in the CACE conditions)." -> Loop A network-effects bullet now uses the standardized one-line definition and back-references Chapter 15.
+        - [APPLIED] "Potential outcomes (Rubin causal model)" introduced here without note that it has been used implicitly throughout the book
             - Where: chapter.log Loop C
             - Why: chapters 9, 11, 14, 15 all reason in potential-outcomes language (per-segment effect, ITT, average treatment effect within a segment) without naming the framework. Naming it only at the end loses the chance to teach the reader the lens they have already been using.
-            - Edit: in Loop C, after "Potential outcomes (Rubin causal model). Each unit has Y(0) and Y(1).", add one sentence: "We have been using this framework implicitly since Chapter 8: every 'treatment effect' in this book is a difference between the outcome under treatment and the outcome under control for the same unit. Now we name it."
-        - "Inquiry loop" structure dissolves at the end
+            - Edit: in Loop C, after "Potential outcomes (Rubin causal model). Each unit has Y(0) and Y(1).", add one sentence: "We have been using this framework implicitly since Chapter 8: every 'treatment effect' in this book is a difference between the outcome under treatment and the outcome under control for the same unit. Now we name it." -> Sentence added in Loop C after the Y(0)/Y(1) line.
+        - [APPLIED] "Inquiry loop" structure dissolves at the end
             - Where: chapter.log Loops A, C, plus "Handoff" plus "Closing thought"
             - Why: every other chapter ends with an explicit "big question" that hands off to the next chapter. This is the last chapter so there is no next, but the structure of the handoff and closing-thought is asymmetric with the rest of the book. The carried-over question is also missing the verbatim Chapter 18 question.
-            - Edit: reframe the close as "Big question handed to the reader: when do experiments stop being enough, in your domain?" so the inquiry-loop convention closes cleanly. Also at the top of the chapter, prepend the Chapter 18 question verbatim before "Eighteen chapters of experiments."
+            - Edit: reframe the close as "Big question handed to the reader: when do experiments stop being enough, in your domain?" so the inquiry-loop convention closes cleanly. Also at the top of the chapter, prepend the Chapter 18 question verbatim before "Eighteen chapters of experiments." -> Closing-thought now ends with the reader-facing big question; carried-from-Chapter-18 block now opens with the verbatim Chapter 18 question.

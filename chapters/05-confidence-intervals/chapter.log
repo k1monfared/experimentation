@@ -16,7 +16,7 @@
     - Hunch
         - At moderate-to-large N, the choice of interval method does not matter for almost any decision. At small N or at extremes, the choices matter and the bad ones get embarrassingly wrong.
     - A note on the percentile bootstrap
-        - The percentile bootstrap is a benign default in symmetric, non-boundary cases like 60/100. It is biased on skewed sampling distributions and near 0 or 1, which is exactly where Wald already fails. The bias-corrected and accelerated (BCa) variant exists for those regimes; we use the simpler percentile form here and flag the caveat.
+        - The percentile bootstrap is a benign default in symmetric, non-boundary cases like 60/100. It is biased on skewed sampling distributions and near 0 or 1, which is exactly where Wald already fails. The bias-corrected and accelerated (BCa) variant exists for those regimes; we use the simpler percentile form here and flag the caveat. We will use this idea again in Chapters 8, 13, and 16, each time on a different statistic.
 - Loop B: edge cases break Wald
     - Try
         - 0/10, 10/10, 0/100, 100/100. Compute the same intervals.
@@ -27,8 +27,8 @@
         - Bayesian at 0/10 with Beta(1, 1) prior: posterior is Beta(1, 11), 95% credible [0.002, 0.265]. Honest about uncertainty.
         - ![Boundary failures](images/boundary_failures.png)
     - Rule of thumb
-        - Don't use Wald near boundaries. Don't use Wald at small N. A sharper version of "small": Wald is unreliable when N * p_hat < 5 or N * (1 - p_hat) < 5, and is degenerate (collapses to a single point) when p_hat is exactly 0 or 1.
-        - Wilson is a good default. Clopper-Pearson is safe but conservative. Bayesian with a flat Beta(1, 1) prior is shape-similar to Clopper-Pearson but a bit narrower; the Jeffreys prior Beta(0.5, 0.5) matches Clopper-Pearson more tightly. Bootstrap (percentile) is fine when you don't have a closed-form analytic option, with the caveat above for skewed or boundary cases.
+        - Don't use Wald near boundaries. Don't use Wald at small N. A sharper version of "small": Wald is unreliable when N * hat-p < 5 or N * (1 - hat-p) < 5, and is degenerate (collapses to a single point) when hat-p is exactly 0 or 1.
+        - Wilson is a good default. Clopper-Pearson is safe but conservative. Bayesian with a flat Beta(1, 1) prior is shape-similar to Clopper-Pearson but a bit narrower; the Jeffreys prior Beta(0.5, 0.5) matches Clopper-Pearson more tightly (Chapter 6 introduces Jeffreys priors formally; here we just need the comparison). Bootstrap (percentile) is fine when you don't have a closed-form analytic option, with the caveat above for skewed or boundary cases.
 - Loop C: priors that argue
     - Try
         - 60 heads in 100 tosses, viewed through three different priors: flat Beta(1,1), skeptical Beta(50,50), tail-leaning Beta(2,8).

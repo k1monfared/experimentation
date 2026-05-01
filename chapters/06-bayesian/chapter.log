@@ -8,6 +8,7 @@
         - Bayes' rule combines them: posterior(p | data) is proportional to likelihood(data | p) * prior(p). Normalize so it integrates to 1.
         - For Beta priors and Bernoulli likelihoods this is a closed form: Beta(a, b) prior plus k heads in n tosses gives Beta(a + k, b + n - k) posterior. Conjugate.
         - For everything more complicated than this, we use PyMC and let the sampler do the math.
+        - Notice an immediate consequence: the posterior depends on the data only through the likelihood. The stopping rule, the design, and any data we did not see do not enter. This is the likelihood principle, the reason a Bayesian posterior survives optional stopping in Chapter 3.
     - On "uninformative" priors
         - We use Beta(1, 1) throughout. It is uniform on the natural p scale, which makes it a transparent default. It is not the only "uninformative" choice. Jeffreys prior for the binomial proportion is Beta(0.5, 0.5), which is uniform on the arcsine-transformed scale and invariant under reparameterization. Both are common defaults. The right one depends on what you want to be invariant to. Beta(1, 1) is enough for transparent exposition.
     - Credible interval vs confidence interval
@@ -39,7 +40,7 @@
         - ![PyMC trace and histogram vs closed form](images/pymc_trace_vs_closed_form.png)
         - Diagnostics from a typical run (saved trace, see `data/posterior_chapter6.nc`): R-hat on p is 1.00, ESS_bulk is approximately 1400, ESS_tail is approximately 2700, divergences is 0. R-hat near 1.00 says the chains agree on the marginal. ESS counts effectively-independent draws from the autocorrelated MCMC samples. Divergences flag funnel-like geometry the sampler could not handle. Zero divergences here is what we want.
     - Why bother with PyMC if the closed form is right there?
-        - Because in 99% of real problems the closed form does not exist. PyMC + the same Bayesian recipe extends to: hierarchical models with partial pooling, ratios, transformations, censoring, latent variables, mixtures, anything. From here on we use PyMC where it earns its keep.
+        - Because in 99% of real problems the closed form does not exist. PyMC + the same Bayesian recipe extends to: hierarchical models with partial pooling, ratios, transformations, censoring, latent variables, mixtures, anything. We use PyMC where it earns its keep: closed-form Beta when there is one (Chapters 7, 8), hierarchical PyMC when partial pooling matters (Chapters 11, 12), logistic-additive PyMC for attribution (Chapter 17). The closed-form path is not abandoned; it is shown alongside whenever both are tractable.
 - Loop D: Bayes factors, the Bayesian "p-value"
     - Try
         - Compute BF_{10}: the Bayes factor for the alternative H1 vs the null H0 (p = 0.5). It's the ratio of marginal likelihoods. > 1 means the data prefers H1, < 1 prefers H0.
@@ -53,6 +54,7 @@
     - Compare
         - Frequentist analogue: a sequential p-value would also catch the bias eventually, but interpreting "p < 0.05 in this peek" requires alpha-spending machinery. The Bayes factor is interpretable directly: BF = 30 means the data is 30 times more likely under the alternative than under the null. No multiple-testing adjustment needed.
         - The trade is the prior on H1. The frequentist test does not need one. The Bayesian test gets a directly interpretable evidence ratio in exchange for declaring it. Pick the trade you'd rather defend.
+        - Forward pointer: we will not use Bayes factors in the rest of the book. The prior-on-H1 fragility makes them a poor decision tool at scale, and the posterior-probability rule is what we use in Chapters 8 and 18.
 - Loop E: posterior predictive -- a different question
     - Try
         - We have observed 50 tosses (true p = 0.6, we don't know that). What's our distribution over the number of heads in the *next* 20 tosses?

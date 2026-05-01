@@ -1,6 +1,6 @@
 - Chapter 2: How sure can I be?
     - Carried from Chapter 1
-        - We saw 6 heads in 10 tosses. The frequentist said "p-value is 0.75, not rare". The Bayesian said "posterior probability that p > 0.5 is about 0.73". Two different answers to almost the same question. Now we make them precise.
+        - We asked: how sure can I really be, and what does each lens mean by "sure"? In Chapter 1 we hand-waved with two different answers. We saw 6 heads in 10 tosses. The frequentist said "p-value is 0.75, not rare". The Bayesian said "posterior probability that p > 0.5 is about 0.73". Two different answers to almost the same question. Now we make them precise.
     - We never know "for sure". That is the punchline. Both lenses live with that and turn it into something we can act on. Each lens does it differently, and seeing both side by side is the only way to feel the difference.
 - Loop A: what does "fair" actually look like?
     - Try
@@ -26,6 +26,7 @@
     - Compare
         - At small N: the prior matters. The Bayesian has assumed a uniform prior, which is not quite the same as "I have no information". A different prior would shift the curve. Meanwhile the frequentist has implicitly committed to "the coin is fair until proven otherwise", and the test only ever fails to reject H0, it never accepts it. Different default assumptions, different answers.
         - At large N: the data dominates. Both lenses say roughly the same thing.
+        - Side note: a third Bayesian quantity, the Bayes factor, compares H0 to H1 directly as a ratio of evidence. We will meet it in Chapter 6, when we formalize the Bayesian framework end-to-end.
     - Probe an edge case
         - "What if I really do believe the coin is probably fair?" Then a Beta(50, 50) prior is honest. With 6/10 we barely budge. With 60/100 we move noticeably. With 600/1000 we're as convinced as the frequentist.
         - "What if I believe it's probably rigged low?" Beta(2, 8) is a strong prior that says "I expect heads-rate around 0.2". With 6/10 the posterior is Beta(8, 12), mean 0.4 and P(p > 0.5) about 0.18: the data drags belief up but the prior anchors it below 0.5. With enough N the data dominates and we agree with the flat-prior result.

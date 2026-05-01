@@ -8,6 +8,11 @@
         - The frequentist lens asks: "if the coin really were fair, how often would I see something this extreme?". It refuses to talk about belief; it talks about hypothetical replays of the universe.
         - The Bayesian lens asks: "given what I started thinking and what I just saw, how should my belief about the coin change?". It puts numbers on belief.
         - Most of the time the two lenses agree on what to *do*. When they disagree, we want to understand why. From Chapter 1 onward we will run both lenses on every question we care about.
+    - Notation we will use for the rest of the book
+        - p is the true (unknown) heads rate of the coin.
+        - p_hat is the sample estimate of p, i.e. heads divided by total tosses.
+        - P(p > 0.5) is the posterior tail mass: the Bayesian probability that the coin leans heads, given the data and prior.
+        - These three symbols carry through every later chapter. When a chapter says "p_hat = 0.53" it means the same thing it does here.
 - Loop A: tossing a few times
     - Try something small
         - Three tosses. We get heads, heads, heads.
@@ -80,7 +85,7 @@
     - We started with HHH and were not sure. We got to 6/10 and were less sure. We got to 5017/10000 and were very sure indeed.
     - But suppose someone hands us 6 heads in 10 tosses and says "is this rigged?". We answered with hand-waving in this chapter. The frequentist said "p-value is 0.75, not rare". The Bayesian said "posterior probability that p > 0.5 is 0.73". These are different *answers* to almost the same *question*.
     - In Chapter 2 we make those answers precise. We meet the null hypothesis. We meet the p-value. We meet type I and type II errors. We meet the posterior probability that p > 0.5 and the Bayes factor. And we figure out exactly what each lens means when it claims "I am 95% sure".
-    - Big question: how sure can I really be?
+    - Big question: how sure can I really be, and what does each lens mean by "sure"?
 - Notebook and data
     - Companion notebook: [`notebook.ipynb`](notebook.ipynb)
     - Generation script (deterministic, seeded): [`generate.py`](generate.py)

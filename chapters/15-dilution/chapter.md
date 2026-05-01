@@ -7,6 +7,7 @@
 
 - Try
   - Simulate a feature on a settings page. 20,000 users randomized 50/50. Only 12% of all users visit settings during the experiment window. Among visitors, treatment lifts the outcome by 10pp.
+  - Exposure-rate from Chapter 14 and visit-rate here are the same operational concept: the fraction of users who actually got the treatment. We use it to read what share of the assigned arm received the change.
 - Observe
   - Intent-to-treat (ITT, all users counted), seed 150: treatment - control comes out to -0.0039, with SE around 0.0057. The expected ITT is roughly 0.12 * 0.10 = 0.012, so a single 20k-user draw can easily land at zero or slightly negative purely from sampling noise.
   - Per-protocol (visited only), same draw: treatment - control among visitors is +0.0826, with SE around 0.018. The true among-visitors effect is +0.10. The visited subsample is small (around 2,400 users total), so per-protocol is noisy too.
@@ -56,7 +57,12 @@
 # Two-lens commentary
 
 - Frequentist: ITT is the unbiased estimator of the policy effect. Per-protocol with proper CACE adjustment estimates the among-compliers effect. Both are answers to different questions.
-- Bayesian: posterior over the per-visitor effect, marginalized over compliance. Cleanly expresses uncertainty in compliance.
+- Bayesian: posterior over the per-visitor effect, marginalized over compliance. Cleanly expresses uncertainty in compliance. A small PyMC sketch:
+  - `p_visit ~ Beta(1, 1)` -- prior on the compliance rate.
+  - `delta_visitor ~ Normal(0, 0.1)` -- prior on the among-visitors effect.
+  - `p_control ~ Beta(1, 1)` -- prior on the control-arm conversion rate among visitors.
+  - For each user: `visited[i] ~ Bernoulli(p_visit)`, and observed conversion is `Bernoulli(p_control + visited[i] * arm[i] * delta_visitor)` where `arm[i]` is 0 or 1.
+  - The posterior over `delta_visitor` carries the among-visitors effect with its credible interval, marginalizing over the latent compliance indicator and the compliance rate. Save the trace as `arviz` `InferenceData` to `data/itt_cace.nc`, consistent with the project policy.
 
 # The big question that opens Chapter 16
 

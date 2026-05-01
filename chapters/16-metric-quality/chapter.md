@@ -22,6 +22,7 @@
   - ![CUPED](images/cuped.png)
 - Hunch
   - This is free statistical power. Required investment: pre-experiment data on every user. Many companies just track this by default.
+  - Chapter 3's required-N formulas all assumed raw outcome variance. CUPED can shrink the per-user variance by roughly half before the experiment starts, which is equivalent to roughly doubling N for the same precision. The variance-reduction lever from Chapter 3 lives here.
 
 # Loop C: A/A stability
 
@@ -49,6 +50,20 @@
   - With 200 paired experiments these three r values are statistically distinguishable. With only 30 the CIs would overlap heavily. Predictivity itself has variance, and the metric of metrics deserves the same scrutiny we apply to the underlying metrics.
 - Hunch
   - Treat predictivity as a metric of metrics. Ship the metric whose short-term reads best predict the long-term outcomes you actually care about, and report a CI on r so a reader knows how much sample size the choice rests on.
+  - Why does a metric end up with negative correlation to the outcome we care about? Goodhart's law: when a proxy becomes the target, optimization pushes the proxy and the underlying outcome apart. Clicks rise, revenue falls, because the cheapest way to lift clicks (clickbait, intrusive UI, dark patterns) burns brand and bounces users. Chapter 13 promised this chapter would unpack the mechanism. Predictivity scoring catches the substitution only after the fact. The structural fix is to weight short-term metrics by their measured predictivity, not to optimize them directly.
+
+# Two-lens commentary: the Bayesian counterparts
+
+- Try (Loop C as Beta-binomial)
+  - The 5,000 A/A trials produced about 249 rejections out of 5,000. Treat that as a binomial outcome with unknown rejection rate ``r``, prior Beta(1, 1). Call ``expkit.inference.bayes.coin_posterior_conjugate`` on a 0/1 vector of "did this trial reject?" indicators to get a closed-form Beta(1 + 249, 1 + 4751) posterior.
+- Observe (Loop C, Bayesian)
+  - Posterior mean for the rejection rate ~ 0.0500, 95% credible interval ~ [0.044, 0.056]. The posterior probability that ``r > 0.05`` is ~ 0.49. Same calibration verdict as the frequentist Wilson CI, expressed as belief about the rate rather than a coverage statement.
+- Hunch
+  - The two lenses agree because the data are plentiful and the prior is weak. The Bayesian frame would start to differ if we ran only 50 A/A trials: the posterior would still give a calibrated belief about ``r``, while the Wilson CI on 50 binary outcomes would be wide.
+- For Loops B and D
+  - Loop B (CUPED): the natural Bayesian counterpart is a regression of ``y`` on ``x`` with priors on the slope ``theta`` (e.g., Normal(0, 1)) and a posterior over the variance reduction. Existing expkit does not ship a regression posterior helper, so we name the path and stop short of fitting one here.
+  - Loop D (predictivity): the Bayesian counterpart is a posterior over Pearson ``rho`` given paired observations, typically via a Fisher z-transform with a Normal prior or a bivariate-Normal model. Same story: bootstrap CI in this chapter, posterior over ``rho`` is the open path.
+  - Neither path changes the practitioner's decision in this chapter, which is why the frequentist tools above are sufficient. Calling out the asymmetry honestly: this chapter leans on the frequentist lens because the data sizes here drown the prior.
 
 # The big question that opens Chapter 17
 

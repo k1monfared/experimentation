@@ -35,15 +35,15 @@
         - Non-compliance with two-sided crossover, for example control users who somehow get the treatment. Settings-page example only has one-sided non-compliance, and that is enough for the inquiry. Generalize later if a chapter explicitly needs two-sided non-compliance.
         - Heterogeneous treatment effects across user segments beyond the compliance dimension. Belongs in the segmentation chapter.
     - Book-level review additions (added 2026-04-30)
-        - SUTVA defined here for the first time without back-reference (and again in Chapter 19 with a different gloss)
+        - [SKIPPED 2026-04-29] SUTVA defined here for the first time without back-reference (and again in Chapter 19 with a different gloss)
             - Where: chapter.log Loop B CACE conditions ("SUTVA: no interference between users, one version of treatment.")
             - Why: Chapter 19 also names SUTVA as "the Stable Unit Treatment Value Assumption". Two glosses in two chapters; pick one definition and use it both places.
             - Edit: change Chapter 15 to "SUTVA (Stable Unit Treatment Value Assumption): no interference between users, one version of treatment." Then make sure Chapter 19's definition matches verbatim. Coordinate via Chapter 19 TODO.
-        - Bayesian PyMC counterpart promised by the project policy is missing
+        - [APPLIED 2026-04-29] Bayesian PyMC counterpart promised by the project policy is missing
             - Where: chapter.log Two-lens commentary
             - Why: Chapter 6 set the expectation that PyMC is the canonical Bayesian engine where there is no closed form. ITT/CACE under endogenous compliance has no closed form. The Bayesian bullet currently waves at "posterior over the per-visitor effect" without a model.
             - Edit: as already deferred in this TODO, add a small PyMC sketch (latent compliance per user, Beta prior on compliance, Normal prior on among-visitor effect). Even three lines of model spec in chapter.log makes the policy honored.
-        - Forward reference to Chapter 16 carried over from Chapter 15's big question is fine, but the visit_prob = 0.12 setup deserves a back-reference to Chapter 14's exposure dynamics
+        - [APPLIED 2026-04-29] Forward reference to Chapter 16 carried over from Chapter 15's big question is fine, but the visit_prob = 0.12 setup deserves a back-reference to Chapter 14's exposure dynamics
             - Where: chapter.log Loop A
             - Why: Chapter 14's "exposure" and Chapter 15's "compliance" describe the same operational thing (whether the user actually saw the change). Currently the chapters do not name the connection.
             - Edit: in Loop A Try, add one sentence: "Exposure-rate from Chapter 14 and visit-rate here are the same operational concept; we use it to read what fraction of users actually got the treatment."

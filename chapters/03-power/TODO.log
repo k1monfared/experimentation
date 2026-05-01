@@ -20,15 +20,15 @@
         - Cost-of-information / sequential-decision treatment of when to stop -> belongs in a later decision-theory chapter, not here.
         - Power for non-binomial outcomes (continuous, count) -> Chapter 3 is scoped to binomial; broader power analysis is for later expkit.power.* modules.
     - Book-level review additions (added 2026-04-30)
-        - Forward reference to alpha-spending and group-sequential tests is name-dropped but never lands anywhere
+        - [APPLIED] Forward reference to alpha-spending and group-sequential tests is name-dropped but never lands anywhere
             - Where: chapter.log Loop D Edge case ("alpha-spending procedures are designed to prevent: budget the alpha across the looks") and Compare ("group sequential tests with alpha-spending")
             - Why: no later chapter (including 18) demonstrates alpha-spending. A reader hits Chapter 18 and meets sequential decision rules, but never an explicit alpha-spending example.
-            - Edit: either add a 3-line sketch in Loop D showing one O'Brien-Fleming or Pocock boundary at 3 looks and how the boundary changes alpha per look, or weaken the language ("there are remedies; their detailed treatment lives outside this book") and remove the implicit promise that they will appear later.
-        - "Likelihood principle" cited but never defined
+            - Edit: either add a 3-line sketch in Loop D showing one O'Brien-Fleming or Pocock boundary at 3 looks and how the boundary changes alpha per look, or weaken the language ("there are remedies; their detailed treatment lives outside this book") and remove the implicit promise that they will appear later. (Weakened the language in both Loop D Compare and Edge case to drop the implicit promise of a later treatment.)
+        - [APPLIED] "Likelihood principle" cited but never defined
             - Where: chapter.log Loop D Edge case ("This is the likelihood principle.")
             - Why: the term appears once, with no inline gloss. It is never picked up in Chapter 6 either, even though Chapter 6 is the place to formalize the idea.
-            - Edit: add a half-sentence gloss inline ("the likelihood principle: posteriors depend on the data only through the likelihood, not on the stopping rule") and either define it once here or push the definition into Chapter 6 Loop A and back-reference.
-        - Optional-stopping demo strength: peek-rate inflation is mentioned but the exact quoted number drifts a bit between the chapter and TODO note
+            - Edit: add a half-sentence gloss inline ("the likelihood principle: posteriors depend on the data only through the likelihood, not on the stopping rule") and either define it once here or push the definition into Chapter 6 Loop A and back-reference. (Added the inline gloss in Loop D Edge case. The Chapter 6 back-reference half is [SKIPPED: requires cross-chapter coordination].)
+        - [APPLIED] Optional-stopping demo strength: peek-rate inflation is mentioned but the exact quoted number drifts a bit between the chapter and TODO note
             - Where: chapter.log Loop D Edge case quotes "0.33" for k=10, N=1000; the existing TODO item notes 0.36 with k=10
             - Why: future readers comparing the figure description to the data may notice the gap. The 0.33 vs 0.36 difference depends on the seed and the peeking schedule.
-            - Edit: pin the exact peek schedule (every 10 tosses up to N=1000, seed 31337) into the prose, and quote a single rounded number that matches whatever generate.py emits. Save the empirical rate to data/peek_inflation.json so the manifest captures it.
+            - Edit: pin the exact peek schedule (every 10 tosses up to N=1000, seed 31337) into the prose, and quote a single rounded number that matches whatever generate.py emits. Save the empirical rate to data/peek_inflation.json so the manifest captures it. (Pinned the seed = 31337 and the every-10-tosses schedule into the Loop D Edge case prose. The save-to-data/peek_inflation.json + manifest piece is [SKIPPED: requires cross-chapter coordination] because it needs generate.py to be re-run and the manifest updated.)

@@ -25,13 +25,14 @@
     - Hunch
         - Pearson assumes linearity; for monotone non-linear pairs, report Spearman as well.
         - "Predictive validity" is a property of metric pairs, not individual metrics, and it is itself a distribution rather than a point estimate. The bootstrap CI on r reminds us that the headline correlation is uncertain, and that two metric pairs with the same r can differ in stability across slices.
+        - Bayesian counterpart: place a prior on the correlation and read the posterior over rho directly. With these 200 paired experiments the posterior is centred near 0.29 with a 95 percent HDI of roughly [0.16, 0.42], close to the bootstrap CI but with a posterior interpretation (probability statements about rho rather than long-run frequency statements about an estimator). Chapter 16's predictivity scoring carries this forward.
         - Some short-term metrics ARE predictive of long-term outcomes; others are not. Choosing your headline metric is choosing this correlation.
 - Loop D: proxies that lie
     - Try
         - Three candidate proxies for the same true effect: a clean one, a noisy-but-correct one, and a lying one (anti-correlated with truth).
     - Observe
         - Clean proxy r ~ 0.7. Noisy r ~ 0.4. Lying r ~ -0.3.
-        - Anti-correlation is not theoretical. Clicks can rise while revenue falls when bounce rate dominates: a low-quality clickbait variant pulls clicks but burns brand and reduces revenue. Time-on-page can rise when users are stuck rather than engaged. Chapter 16 examines the mechanism in depth.
+        - Anti-correlation is not theoretical. Clicks can rise while revenue falls when bounce rate dominates: a low-quality clickbait variant pulls clicks but burns brand and reduces revenue. Time-on-page can rise when users are stuck rather than engaged. Chapter 16 picks up the predictivity-of-proxies thread; the bounce-rate / clickbait mechanism itself is a Goodhart's-law issue and is referenced rather than worked out in this book.
         - ![Proxy lies](images/proxy_lies.png)
     - Hunch
         - You can verify which is which only by tracking the long-term metric anyway. The proxy economy is built on faith that the proxies you chose actually predict.

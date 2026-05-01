@@ -47,11 +47,11 @@
         - Optional-stopping correction or sequential testing -> chapter 3 and chapter 18
         - Power calculation for the p=0.50 vs p=0.55 case -> chapter 3
     - Book-level review additions (added 2026-04-30)
-        - Cross-chapter handoff: Chapter 2's "Carried from Chapter 1" reframes the closing question instead of quoting it
+        - [APPLIED] Cross-chapter handoff: Chapter 2's "Carried from Chapter 1" reframes the closing question instead of quoting it
             - Where: chapter.log line 83 ("Big question: how sure can I really be?") vs chapter 02 chapter.log line 3 ("Two different answers to almost the same question. Now we make them precise.")
             - Why: the project narrative rule wants the next chapter's carried-over line to track the previous chapter's big question closely enough that the reader feels continuity. Chapter 2 picks up the spirit but not the literal phrasing.
             - Edit: change Chapter 1 big question to a verbatim sentence Chapter 2 can echo (e.g. "how sure can I really be, and what does each lens mean by 'sure'?"), or coordinate with Chapter 2 so its carried-from explicitly quotes "how sure can I really be?" before pivoting.
-        - Notation: introduces "p > 0.5" without symbolic conventions that later chapters tighten
+        - [APPLIED] Notation: introduces "p > 0.5" without symbolic conventions that later chapters tighten
             - Where: chapter.log lines 21-29, lines 81-83
             - Why: Chapter 4 starts using "hat-p", Chapter 5 uses "p_hat", Chapter 7 uses "p_hat" again. A single notation chosen in Chapter 1 and reused everywhere would prevent the drift.
             - Edit: in Loop A's Bayesian take or in a short "Notation" sub-bullet near the top of Chapter 1, declare the symbols the rest of the book uses (p for the true rate, hat-p for the sample estimate, P(p > 0.5) for the posterior tail mass) and stick to them. Then propagate the chosen form through Chapters 4, 5, 7 in the corresponding TODOs.

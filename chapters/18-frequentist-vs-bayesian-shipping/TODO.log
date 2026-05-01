@@ -33,15 +33,18 @@
         - Sensitivity sweeps over n_per_arm, MMU, alpha, and credibility level (mentioned in Loop D for the prior; expanding the full grid is its own chapter).
         - Causal-inference framing for cases where randomization fails (Chapter 19 territory; the current "big question" handoff is fine).
     - Book-level review additions (added 2026-04-30)
-        - "Loop D: prior sensitivity" is a single paragraph, not a real loop
+        - "Loop D: prior sensitivity" is a single paragraph, not a real loop [APPLIED]
             - Where: chapter.log line 43-44
             - Why: every other Loop in the book has Try / Observe / Hunch (or similar). Loop D here is one paragraph with no figure and no observation. This is misleading labeling.
             - Edit: either rename to "Aside: prior sensitivity" so it does not pretend to be a full loop, or extend it: add a Try (run the simulator at 3 prior values: Beta(1,1), Beta(50,50), Beta(2,8)), an Observe (Bayesian ship rate vs prior), and a Hunch (the prior is the knob).
-        - MMU is reused from Chapter 8 with no back-reference, even though this is the chapter that depends on the reader knowing it
+            - Applied: renamed "Loop D: prior sensitivity" to "Aside: prior sensitivity" and added a sentence stating it is an aside (no figure, no Try/Observe/Hunch sweep), with the full sweep across Beta(1,1) / Beta(50,50) / Beta(2,8) noted as follow-up work that would require rerunning the simulator.
+        - MMU is reused from Chapter 8 with no back-reference, even though this is the chapter that depends on the reader knowing it [APPLIED]
             - Where: chapter.log Loop A "Try" ("MMU = 0.5pp")
             - Why: a reader returning to the capstone needs a reminder. Chapter 8 introduces MMU; Chapter 18 uses it three times without restating.
             - Edit: at the end of the first Loop A bullet, add "(MMU is the minimum meaningful uplift, introduced in Chapter 8: an organizational/economic threshold below which we do not care)."
-        - Bayes factor introduced in Chapter 6 is not used here, but the capstone is the natural place to reuse it
+            - Applied: appended the parenthetical "(MMU is the minimum meaningful uplift, introduced in Chapter 8: an organizational or economic threshold below which we do not care.)" to the Bayesian-rule bullet in Loop A's Try block.
+        - Bayes factor introduced in Chapter 6 is not used here, but the capstone is the natural place to reuse it [APPLIED]
             - Where: chapter.log Loop A through Loop E
             - Why: Chapter 6 spent a HIGH-priority pedagogical investment on the Bayes factor. The capstone simulator uses only the posterior-probability rule on the Bayesian side. The book never returns to BFs.
             - Edit: add an optional Loop F (or expand Loop A) that includes a third decision rule: ship if BF_10 > 10 (or 30, or 100) under the same Beta(1,1) baseline. Compare its ship-rate-vs-truth curve to F and B rules. If keeping the BF rule out of scope, then add one bullet at the end of Loop B saying so explicitly: "We deliberately do not include a Bayes-factor rule here; under the prior-on-H1 fragility flagged in Chapter 6, the BF rule is fragile in production." Either honors the Chapter 6 thread.
+            - Applied: chose the keep-out-of-scope route since adding a third BF-rule curve to the figures would require rerunning generate.py, which is outside this task's scope. Added an "On Bayes factors, deliberately omitted" bullet at the end of Loop B explaining that the BF rule is sensitive to a hidden prior-on-H1 knob (per Chapter 6) and that the capstone restricts itself to the two rules a team would actually write down. Adding the BF curve to the simulator and figures is cross-chapter coord follow-up [SKIPPED].
