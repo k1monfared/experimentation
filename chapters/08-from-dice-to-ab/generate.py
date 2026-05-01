@@ -13,6 +13,7 @@ from scipy.stats import beta as beta_dist
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 
+from expkit.inference.bootstrap import bootstrap_diff_ci  # noqa: E402
 from expkit.inference.normal import two_proportion_z, two_sample_t  # noqa: E402
 from expkit.io.samples import _sha256_file, save_samples  # noqa: E402
 from expkit.plot.style import PALETTE, apply_style  # noqa: E402
@@ -94,14 +95,8 @@ def render_continuous_outcome():
     axes[0].set_ylabel("density")
     axes[0].set_title(f"Welch t: t = {t.statistic:.2f}, p = {t.p_value:.4g}")
     axes[0].legend()
-    # Bootstrap of the mean difference
-    rng = np.random.default_rng(0)
-    n_boot = 4000
-    boot_diffs = np.empty(n_boot)
-    for i in range(n_boot):
-        c = rng.choice(exp.control, size=len(exp.control), replace=True)
-        t_arm = rng.choice(exp.treatment, size=len(exp.treatment), replace=True)
-        boot_diffs[i] = t_arm.mean() - c.mean()
+    # Bootstrap of the mean difference (uses expkit.inference.bootstrap)
+    _lo, _hi, boot_diffs = bootstrap_diff_ci(exp.treatment, exp.control, n_boot=4000, seed=0)
     axes[1].hist(boot_diffs, bins=60, density=True, color=PALETTE["bayesian"], alpha=0.6, label="bootstrap of (treatment - control) mean")
     axes[1].axvline(0, color=PALETTE["muted"], linestyle="--", linewidth=1)
     axes[1].axvline(0.5, color=PALETTE["highlight"], linestyle=":", linewidth=1, label="true effect = 0.5")

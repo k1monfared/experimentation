@@ -128,8 +128,27 @@
   - Many readers reaching Ch.6 need to know what "trace looks bad" actually looks like. A small detour or appendix on R-hat, divergences, and trace plots, all in PyMC + arviz.
   - Effort: M
 - Interactive playground
-  - A small static page (matplotlib widgets or HTML+JS) where the reader can drag a "true effect" slider and watch the frequentist p-value and Bayesian posterior update live. Anchored to the Ch.18 capstone.
-  - Effort: L
+  - Inspiration: Nicky Case's interactive explainers (ncase.me). Patterns to steal:
+    - Text -> small focused widget -> reflection text, repeated with increasing complexity (Parable of the Polygons).
+    - One concept per widget, isolated. The central parameter gets a slider; everything else is fixed.
+    - Live simulation that re-runs as the slider moves (Loopy, Emoji Simulator).
+    - "Step" button to add one event at a time so the reader builds intuition (one coin toss, one user enters the experiment, one channel is touched).
+    - Sandbox mode at the end of the chapter where multiple knobs are unlocked at once.
+    - Branching/scenario shifts where the reader steps INTO the role being studied (Adventures with Anxiety, We Become What We Behold).
+  - Anchor pieces (one widget per chapter, ordered by leverage)
+    - Ch.1 -- single-coin sandbox: "step" button to toss once, "toss 100" button, slider on the true bias, the running fraction and posterior update in lockstep.
+    - Ch.2 -- p-value visualizer: fixed coin, step a toss at a time, watch the p-value rise and fall as the count moves.
+    - Ch.3 -- power slider: drag the true effect, drag the N, watch the detection rate (out of N simulated runs) update in real time.
+    - Ch.5 -- CI sweeper: same data, slider on alpha, four interval methods animate side by side.
+    - Ch.6 -- prior tuner: drag a Beta prior shape, watch the posterior with fixed observed data update.
+    - Ch.12 -- Simpson sandbox: drag segment sizes and per-segment treatment shares; the aggregate sign flips visibly. The "I made the paradox happen" moment.
+    - Ch.14 -- novelty triple-view: a single event log, three aggregation buttons (calendar / since-exposure / count); reader toggles to see the same data tell different stories.
+    - Ch.18 -- capstone shipping simulator: drag the cost ratio (FP cost / miss cost), drag the threshold, watch which lens "wins" for that cost regime.
+  - Tech notes
+    - Single-file HTML + JS (no build step) so each widget is self-contained and embeddable.
+    - Re-implement the relevant tiny piece of expkit logic in JS (binomial sampler, beta CDF, etc.). Keep the JS small; the canonical Python lives in expkit and the JS widgets cross-validate against the Python notebooks.
+    - Each widget links back to the chapter and forward to the source code.
+  - Effort: L (per widget M, across 8 widgets that's L+)
 - Blog-form publication
   - Each chapter.md is already self-contained. Wrap them in a Jekyll/Hugo/MkDocs site, syndicate to k1monfared.github.io. Add a TOC, search, and per-chapter dates.
   - Effort: L

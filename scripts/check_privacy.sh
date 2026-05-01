@@ -16,8 +16,11 @@ fi
 # Tracked files only. Skip binary files; grep -I handles that.
 matches=$(git ls-files -z | xargs -0 grep -lIiE 'claude|anthropic|co-authored-by' 2>/dev/null || true)
 
-# .gitignore is allowed to mention claude (it MUST, in order to ignore those paths).
-filtered=$(printf '%s\n' "$matches" | grep -v '^$' | grep -vx '.gitignore' || true)
+# Allowlist of files where the policy strings legitimately appear:
+#   - .gitignore must literally name the paths it ignores
+#   - this script itself contains the regex it greps for
+allowlist='^(\.gitignore|scripts/check_privacy\.sh)$'
+filtered=$(printf '%s\n' "$matches" | grep -v '^$' | grep -vE "$allowlist" || true)
 
 if [ -n "$filtered" ]; then
     echo "check_privacy.sh: privacy violations found in:" >&2

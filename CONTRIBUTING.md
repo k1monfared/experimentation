@@ -57,7 +57,7 @@
 
 - This repo has a strict privacy policy: no traces of any specific AI tooling in committed files or commit messages. The pre-commit guard is ``make privacy`` (which calls ``scripts/check_privacy.sh``) and the same check runs in CI.
 - The .gitignore is the only allowed exception, because it must literally name the paths it ignores.
-- The full policy lives in the local-only instructions file (gitignored). The short form: do not introduce strings that name AI tooling vendors or models, and do not add Co-Authored-By lines to commit messages.
+- The full policy lives in the local-only instructions file (gitignored). The short form: do not introduce strings that name AI tooling vendors or models, and do not add AI-coauthor trailer lines to commit messages.
 
 # Project structure (quick map)
 

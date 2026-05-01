@@ -31,3 +31,33 @@ def bootstrap_ci(
     lo = float(np.quantile(draws, alpha / 2))
     hi = float(np.quantile(draws, 1 - alpha / 2))
     return lo, hi, draws
+
+
+def bootstrap_diff_ci(
+    treatment: np.ndarray,
+    control: np.ndarray,
+    statistic: Callable[[np.ndarray], float] | None = None,
+    n_boot: int = 5000,
+    alpha: float = 0.05,
+    seed: int | None = None,
+) -> tuple[float, float, np.ndarray]:
+    """Bootstrap CI for ``statistic(treatment) - statistic(control)``.
+
+    Each bootstrap iteration resamples the two arms independently and
+    recomputes the difference of the per-arm statistic. Default statistic
+    is the mean. Returns ``(lo, hi, draws)``.
+    """
+    rng = np.random.default_rng(seed)
+    t = np.asarray(treatment)
+    c = np.asarray(control)
+    if statistic is None:
+        statistic = np.mean
+    draws = np.empty(n_boot, dtype=float)
+    nt, nc = len(t), len(c)
+    for i in range(n_boot):
+        ti = rng.integers(0, nt, size=nt)
+        ci = rng.integers(0, nc, size=nc)
+        draws[i] = float(statistic(t[ti])) - float(statistic(c[ci]))
+    lo = float(np.quantile(draws, alpha / 2))
+    hi = float(np.quantile(draws, 1 - alpha / 2))
+    return lo, hi, draws

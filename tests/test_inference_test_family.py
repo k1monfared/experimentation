@@ -84,6 +84,27 @@ def test_bootstrap_ci_brackets_truth():
     assert lo < 5.0 < hi
 
 
+def test_bootstrap_diff_ci_brackets_known_difference():
+    rng = np.random.default_rng(0)
+    t = rng.normal(0.5, 1.0, size=500)
+    c = rng.normal(0.0, 1.0, size=500)
+    from expkit.inference.bootstrap import bootstrap_diff_ci
+
+    lo, hi, draws = bootstrap_diff_ci(t, c, n_boot=2000, seed=0)
+    assert lo < 0.5 < hi
+    assert len(draws) == 2000
+
+
+def test_bootstrap_diff_ci_zero_effect_includes_zero():
+    rng = np.random.default_rng(1)
+    t = rng.normal(0, 1, size=500)
+    c = rng.normal(0, 1, size=500)
+    from expkit.inference.bootstrap import bootstrap_diff_ci
+
+    lo, hi, _ = bootstrap_diff_ci(t, c, n_boot=2000, seed=1)
+    assert lo < 0 < hi
+
+
 def test_bootstrap_ci_with_custom_statistic():
     rng = np.random.default_rng(3)
     data = rng.binomial(1, 0.4, size=500)

@@ -275,30 +275,6 @@ artifacts:
   seed: 72
   sha256: a5cc0d563c15f15931c5beb8211ab7aade1bf1424c09a54e748b274a2a6af5ba
   description: 'Loop B: chi-square p-values for fair vs loaded die at varying N'
-- path: chapters/08-from-dice-to-ab/images/two_arm_binary.png
-  chapter: 08-from-dice-to-ab
-  kind: image
-  seed: derived
-  sha256: c96c1c84c18ff1c61eddf0644f4bcbaf8ba02c6e595ef252dc57d07d14c3dd17
-  description: 'Chapter 8 figure: two_arm_binary.png'
-- path: chapters/08-from-dice-to-ab/images/continuous_outcome.png
-  chapter: 08-from-dice-to-ab
-  kind: image
-  seed: derived
-  sha256: 36a6671e42a4961eebdeb846e6943aa81263f32bcc76ef411c603aaf6534332c
-  description: 'Chapter 8 figure: continuous_outcome.png'
-- path: chapters/08-from-dice-to-ab/images/stratified_vs_pooled.png
-  chapter: 08-from-dice-to-ab
-  kind: image
-  seed: derived
-  sha256: 22507e63e1bb431dc2143b4ba51abc5cf29591dc1279abf6e1386a1cfe745d3c
-  description: 'Chapter 8 figure: stratified_vs_pooled.png'
-- path: chapters/08-from-dice-to-ab/images/decision_rule.png
-  chapter: 08-from-dice-to-ab
-  kind: image
-  seed: derived
-  sha256: 938411779a766f3cc14af937b7218e19ed4284d9a7f01fd6004f6d7dba831d08
-  description: 'Chapter 8 figure: decision_rule.png'
 - path: chapters/09-wine-and-the-small-print/images/external_validity.png
   chapter: 09-wine-and-the-small-print
   kind: image
@@ -516,3 +492,27 @@ artifacts:
   seed: derived
   sha256: eacf5687c8e88034d2847490b490c0bbfc796bf31819da5ec301e1de9dd6349c
   description: 'Chapter 19 figure: when_experiments_fail.png'
+- path: chapters/08-from-dice-to-ab/images/two_arm_binary.png
+  chapter: 08-from-dice-to-ab
+  kind: image
+  seed: derived
+  sha256: c96c1c84c18ff1c61eddf0644f4bcbaf8ba02c6e595ef252dc57d07d14c3dd17
+  description: 'Chapter 8 figure: two_arm_binary.png'
+- path: chapters/08-from-dice-to-ab/images/continuous_outcome.png
+  chapter: 08-from-dice-to-ab
+  kind: image
+  seed: derived
+  sha256: eebfc48423c53b245c0b5e83c48808cbf61a9e6cb2b71b7aee7b8b06bb8e01da
+  description: 'Chapter 8 figure: continuous_outcome.png'
+- path: chapters/08-from-dice-to-ab/images/stratified_vs_pooled.png
+  chapter: 08-from-dice-to-ab
+  kind: image
+  seed: derived
+  sha256: 22507e63e1bb431dc2143b4ba51abc5cf29591dc1279abf6e1386a1cfe745d3c
+  description: 'Chapter 8 figure: stratified_vs_pooled.png'
+- path: chapters/08-from-dice-to-ab/images/decision_rule.png
+  chapter: 08-from-dice-to-ab
+  kind: image
+  seed: derived
+  sha256: 938411779a766f3cc14af937b7218e19ed4284d9a7f01fd6004f6d7dba831d08
+  description: 'Chapter 8 figure: decision_rule.png'

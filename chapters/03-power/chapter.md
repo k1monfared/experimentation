@@ -21,7 +21,7 @@
 - Try
   - Invert the question. For each candidate truth, what is the smallest N at which we have 80% power? At 95% power?
 - Observe
-  - p = 0.51 needs about 78,000 tosses for 80% power. p = 0.55 needs about 780. p = 0.60 needs about 200. p = 0.70 needs about 50.
+  - p = 0.51 needs about 19,600 tosses for 80% power. p = 0.52 needs about 4,900. p = 0.55 needs about 780. p = 0.60 needs about 200. p = 0.70 needs about 50.
   - Halving the effect roughly quadruples the required N. This is the 1/effect^2 rule of thumb everyone quotes.
   - ![Required N](images/required_n.png)
 - Hunch
@@ -32,7 +32,7 @@
 - Try
   - What if N is given (we have a one-week experiment, traffic budget is fixed) and we want to know "what effects could this experiment realistically detect?". That's the minimum detectable effect, the MDE.
 - Observe
-  - At N = 100 we can reliably detect effects of about 14 percentage points. At N = 1000 about 4.5pp. At N = 10,000 about 1.4pp. At N = 100,000 about 0.45pp.
+  - At N = 100 we can reliably detect effects of about 12 percentage points. At N = 1000 about 4pp. At N = 10,000 about 1.3pp. At N = 100,000 about 0.4pp.
   - ![MDE curve](images/mde_curve.png)
 - Hunch
   - MDE and required-N are two questions, same machinery. The frequentist views them through the same lens.

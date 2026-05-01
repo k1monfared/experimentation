@@ -45,13 +45,11 @@
 - Try
   - Simulate 5,000 fair-coin experiments at N = 20. For each one, compute Wald, Wilson, Clopper-Pearson, and Bayesian 95% intervals. Count how often each contains the true p = 0.5.
 - Observe
-  - Wald: about 87% coverage. Below the nominal 95%.
-  - Wilson: about 95% coverage. Right on target.
-  - Clopper-Pearson: about 98% coverage. Conservative -- it over-covers on purpose.
-  - Bayesian (flat prior): about 95% coverage. (Frequentist coverage of a Bayesian interval depends on the prior + data.)
+  - At N = 20 with the binomial counts mostly clustering between 5 and 15, all four methods land near 0.96 coverage. The differences are small here because Wald's failure modes (counts of 0 or 20) are rare.
+  - Drop to N = 10 or N = 5 and Wald's coverage falls visibly below the nominal 95%. The smaller the N, the louder the lie.
   - ![Coverage simulation](images/coverage_simulation.png)
 - Hunch
-  - "95%" only means what you think it means if the construction is honest about the model. Wald isn't, at small N. Wilson is. Clopper-Pearson is, at the price of being conservative.
+  - "95%" only means what you think it means if the construction is honest about the model. Wald isn't, at very small N. Wilson stays near 95% across a wide N range. Clopper-Pearson is conservative on purpose.
 
 # The big question that opens Chapter 6
 

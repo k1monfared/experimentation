@@ -24,7 +24,7 @@
 - Try
   - Simulate 200 experiments. Each has a true latent effect. We measure a short-term metric (noisy proxy) and a long-term metric (less noisy, closer to the truth).
 - Observe
-  - Pearson r between short and long is around 0.5. R^2 around 0.25.
+  - Pearson r between short and long is around 0.29. R^2 around 0.08. The short-term metric is correlated with the long-term one, but the noise dominates at the per-experiment level.
   - Most of the time the short-term metric points the right way. Some experiments diverge sharply.
   - ![Predictivity](images/predictivity.png)
 - Hunch
