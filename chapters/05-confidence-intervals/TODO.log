@@ -42,3 +42,16 @@
         - Multi-parameter or non-binomial CIs (means, variances, ratios). Later chapters.
         - PyMC for Loop C posteriors. Closed-form Beta is correct and the chapter explicitly hands the PyMC framing to Chapter 6.
         - Hypothesis-test inversion derivation (the algebraic identity CI = {p_0 : test does not reject p_0}). Could be a future appendix; the chapter currently states the duality verbally, which is enough at this stage.
+    - Book-level review additions (added 2026-04-30)
+        - Jeffreys prior is named without forward pointer
+            - Where: chapter.log Loop B Rule of thumb mentions "the Jeffreys prior Beta(0.5, 0.5) matches Clopper-Pearson more tightly"
+            - Why: Chapter 6 Loop A formally introduces the Jeffreys prior. A reader hitting it here without seeing Chapter 6 will not know what the term means.
+            - Edit: append "(Chapter 6 introduces Jeffreys priors formally; here we just need the comparison.)" to the same sentence.
+        - Notation: switches between "p_hat" and the implicit "p with hat" used in Chapter 4
+            - Where: chapter.log Loop B Rule of thumb ("when N * p_hat < 5 or N * (1 - p_hat) < 5"). Chapter 4 chapter.log uses "hat-p".
+            - Why: same quantity, two spellings across two consecutive chapters; readers notice.
+            - Edit: pick one spelling consistent with whatever Chapters 1-4 settle on, propagate the change.
+        - Bootstrap is the *introduction* point for the rest of the book but lacks a forward-pointer that Chapters 8, 13, 16 will lean on it
+            - Where: chapter.log Loop A "A note on the percentile bootstrap" para, lines 18-19
+            - Why: Chapter 8 Loop B uses bootstrap of mean differences, Chapter 13 uses bootstrap CI on r, Chapter 16 uses predictivity bootstrap. None back-references this paragraph; a reader who wants to revisit "what is the bootstrap?" loses the trail.
+            - Edit: add one sentence at the end of the paragraph: "We will use this idea again in Chapters 8, 13, and 16, each time on a different statistic." Then ensure those chapters back-reference Chapter 5 in the corresponding TODOs.

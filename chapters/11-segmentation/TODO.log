@@ -47,3 +47,16 @@
         - Adding a posterior predictive check or LOO comparison between the hierarchical model and the no-pooling baseline. Useful but heavier than this chapter needs.
         - Adding hierarchical priors that depend on demographics (partial pooling across both behaviour and country). This is the Chapter 12 hand-off territory and would dilute the current chapter's main contrast.
         - Reworking the simulator so segment sizes are balanced. The imbalance is a feature of median-split cascades and is worth showing, not hiding.
+    - Book-level review additions (added 2026-04-30)
+        - Holm correction is named here a second time without ever being demonstrated
+            - Where: chapter.log Two-lens commentary ("with Bonferroni or Holm correction across the segments")
+            - Why: Chapter 7 also names Holm; Chapter 12 also names "Bonferroni or Holm". No chapter shows it.
+            - Edit: either replace "Holm" with a single word ("a Bonferroni-style correction") and stop promising Holm specifically, or add one worked-example footnote here that compares per-segment p-values under raw / Bonferroni / Holm using one of the four behavioural segments. Coordinate with Chapter 7 and Chapter 12 TODOs.
+        - "CMH" promised in Chapter 8 lands here without demonstration
+            - Where: chapter.log Two-lens commentary
+            - Why: Chapter 8 Loop C Hunch says "we will revisit this in chapter 11 ... canonical frequentist combiner is Cochran-Mantel-Haenszel." Chapter 11 does not actually use CMH; it lists per-segment z + correction or a logistic regression with interactions.
+            - Edit: add one bullet under the frequentist option in the Two-lens commentary: "Cochran-Mantel-Haenszel is the classical combiner; we do not run it here because the per-segment + correction route is what most teams use, and the logistic-regression-with-interactions route generalizes more naturally." This closes the Chapter 8 promise.
+        - Hierarchical model references Chapter 6 PyMC formality but the Chapter 6 commitment to PyMC implies this should be the default
+            - Where: chapter.log Loop D Try (the model shorthand block)
+            - Why: Chapter 6 promised PyMC where it earns its keep, and this is exactly that case. The chapter text already does it. The narrative thread, however, never says "this is the moment Chapter 6 promised."
+            - Edit: at the start of Loop D Try, prepend one sentence: "This is the kind of model Chapter 6 was preparing us for: no closed-form, partial pooling, the sampler does the work." Strengthens the through-line.

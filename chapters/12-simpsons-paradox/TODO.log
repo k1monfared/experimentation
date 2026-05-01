@@ -62,3 +62,16 @@
         - Lord's paradox, ecological fallacy, and other related but distinct phenomena. Worth a one-line forward pointer at most.
         - Frequentist tests for the existence of Simpson reversal (Cornfield conditions, etc.). Out of scope for an inquiry-style chapter.
         - Changes to the expkit hierarchical_segmented_posterior implementation. The model is fine; only the chapter's claims about it need adjustment.
+    - Book-level review additions (added 2026-04-30)
+        - Carried-from-Chapter-11 wording is shorter than Chapter 11's big question
+            - Where: chapter.log lines 2-3
+            - Why: Chapter 11 closes "under what conditions do parts and the whole disagree?" Chapter 12 opens "Subgroups can move in one direction while the aggregate moves the other. We make it concrete." Tight but does not echo the question.
+            - Edit: prepend the verbatim Chapter 11 question, then continue with the existing sentence.
+        - Holm correction named (third time in the book) but still not demonstrated
+            - Where: implied via cross-references in chapter.log Loop D Frequentist
+            - Why: Chapters 7 and 11 both promise Holm; this chapter continues the pattern. The chapter does run the per-segment z-test but does not adjust.
+            - Edit: in Loop D Frequentist, add one sentence noting that with two segments Bonferroni and Holm collapse to the same threshold and that with K segments they diverge. Either run a 6-segment toy of one of the existing scenarios with raw / Bonferroni / Holm in one table, or remove the implicit promise. Coordinate across Chapters 7, 11, and 12.
+        - Big question handoff to Chapter 13 introduces "metric tree" without warm-up
+            - Where: chapter.log lines 65-67
+            - Why: Chapter 12's big question pivots from "which segment is right?" to "which metric should we measure?" The leap is large; Chapter 13 then opens with a top-down tree-of-metrics framing. The transition is jarring.
+            - Edit: extend the big question with one bridge sentence: "We have argued about which segment, which lens, and which weight; we have never asked which metric is the right one in the first place. That is a structural question, not a statistical one." This eases the reader into Chapter 13's structural framing.

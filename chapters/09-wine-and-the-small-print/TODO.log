@@ -18,3 +18,16 @@
         - Replacing Loop D with a full decision-theoretic treatment over joint posteriors. That belongs in a later chapter on decision theory and ties to the Bayesian throughline established in Chapter 6
         - Replacing the linear utility with a non-linear one, or modeling cost-of-action. The chapter is about awareness of weighting, not about utility design
         - Heterogeneous treatment effects within a segment (would duplicate Loop A and pre-empt later chapters)
+    - Book-level review additions (added 2026-04-30)
+        - Bridge from Chapter 8 to Chapter 9 is thin: the carried-from cites mechanics-vs-context but the chapter never uses any inference machinery from Chapters 4-8
+            - Where: chapter.log lines 2-3
+            - Why: every other chapter loop in 1-8 closed with a frequentist + Bayesian inference pairing. Chapter 9 introduces the wine-22yo-students scenario at "p < 0.01" and then walks four conceptual loops without producing a single z-statistic, posterior, or CI. The handoff from Chapter 8 promises to apply mechanics to a real scenario, but the application is skipped.
+            - Edit: in Loop A, after "We find a 5pp lift on a heart-health outcome. p < 0.01", add one short bullet showing the actual two-proportion z (or Bayesian posterior on the difference) computed from the simulated 22yo cohort. This nails the chapter to the chapters that came before it.
+        - Two-lens promise ("from Chapter 1 onward we run both lenses on every question") is not honored here
+            - Where: chapter.log Loops A, B, C, D
+            - Why: the README and the project narrative rule both state every chapter applies both lenses to the same questions. Chapter 9 has no Bayesian-take or frequentist-take pairings inside any loop. Loop D's "tradeoff" is closer to decision theory than to either lens.
+            - Edit: add a "Two-lens commentary" mini-block at the end of Loop A or Loop B (similar to the one in Chapter 11). One paragraph contrasting how a Bayesian transportability framing (posterior over the segment mix) differs from a frequentist subgroup-test framing.
+        - "Wine" running example never gets connected to the digital A/B world the rest of the book lives in
+            - Where: chapter.log Loop A through Loop D
+            - Why: the chapter is healthcare-flavored, then Chapter 10 abruptly snaps to "industry experimentation". The two voices feel disjoint.
+            - Edit: at the bottom of Loop D add one bridge bullet: "These four traps -- studied population, outcome choice, side effects, weights -- show up in tech experiments too, just with click-rates substituting for heart rates and engagement substituting for mortality. Chapter 10 walks the same four traps in industry dress." Soft handoff, no new analysis.

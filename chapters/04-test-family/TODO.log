@@ -42,3 +42,12 @@
         - Full PyMC integration across all chapter loops: tracked as ROADMAP Area 2 work. Only the Loop D companion PyMC cell is added here.
         - Continuity-corrected z (Yates' chi-square): out of scope. Could be a sidebar in a later edition, but does not change the family discussion materially.
         - Re-running the figures: this TODO documents required edits but does not regenerate images. Image regeneration follows once chapter.log and generate.py are updated.
+    - Book-level review additions (added 2026-04-30)
+        - Bootstrap is named in Chapter 5 but used in Chapter 4 implicitly without forward pointer
+            - Where: chapter.log Loop A discusses five tests but does not mention bootstrap as a sixth route; Chapter 5 introduces percentile bootstrap as one of five intervals.
+            - Why: a reader leaving Chapter 4 expects the "five tests" tally to map cleanly onto Chapter 5's "five intervals", but the inventories do not align (Chapter 4 has Fisher and t which have no Chapter 5 interval analog; Chapter 5 has Wald and bootstrap with no Chapter 4 test row).
+            - Edit: at the close of Loop D add a one-line forward pointer: "Each of these tests has a confidence-interval dual; Chapter 5 turns the same five families inside-out into intervals (with bootstrap added as a non-parametric default)."
+        - Notation: "hat-p" introduced here but Chapter 5 switches to "p_hat"
+            - Where: chapter.log line 9 ("the sample variance is hat-p (1 minus hat-p)")
+            - Why: the same quantity is rendered "hat-p" in this chapter and "p_hat" in Chapter 5 Loop B. Pick one.
+            - Edit: standardize on "hat-p" (matching Chapter 4) or "p_hat" (matching Chapter 5) and propagate everywhere. Coordinate with Chapter 1, 2, 5, 7 TODOs.

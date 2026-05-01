@@ -34,3 +34,16 @@
         - Implementing Holm/BH inside expkit.inference. That belongs to Area 1 (test coverage) and to a future multiple-testing chapter, not to this chapter's narrative pass.
         - Adding a power curve for the chi-square test. Power belongs to Chapter 3's framework; reusing that machinery for the multinomial case is a Chapter 8+ concern (two-arm tests).
         - Hierarchical Dirichlet (learned concentration). Area 9's "Hierarchical Bayesian deep-dive companion" is the right home; mentioning it as a forward reference inside Item 3 is enough for now.
+    - Book-level review additions (added 2026-04-30)
+        - Holm and Benjamini-Hochberg are forward-promised but never demonstrated anywhere in the book
+            - Where: chapter.log Loop D Probe an edge case ("Holm's step-down procedure, the Benjamini-Hochberg FDR procedure")
+            - Why: Chapter 11 mentions "Bonferroni or Holm correction" again without implementing it; Chapter 12 does not run either; no chapter shows a worked example with adjusted p-values. The reader is told there are smarter remedies but never sees one.
+            - Edit: either add a small Holm-correction worked example here in Loop D (just a 6-row table comparing raw, Bonferroni, Holm p-values from one of the 1000 fair-die runs) or change the wording to "We will not demonstrate them in this book; standard scipy and statsmodels implementations are available." Coordinate with Chapter 11 TODO so the same correction gets a single canonical demonstration once.
+        - Notation: this chapter uses "p_hat" for empirical face frequencies (Loop A and Loop D)
+            - Where: chapter.log Loop A and Loop D
+            - Why: Chapter 4 uses "hat-p" for the same kind of quantity. Pick one notation across the book.
+            - Edit: standardize on whatever Chapters 1-2 settle on, propagate to Loop A and Loop D.
+        - Multinomial generalization promised in Chapter 6 but the connection to the closed-form Beta-binomial of Chapters 1-5 is implicit
+            - Where: chapter.log "Try" in Loop C
+            - Why: Chapter 6 ends with "how do these tools generalize beyond two outcomes?" Chapter 7 launches into Dirichlet-multinomial without an explicit "this is what Chapter 6's binomial-Beta becomes when we have K categories instead of 2" sentence.
+            - Edit: prepend one bullet under Loop C "Try": "The Beta-binomial of Chapters 1-5 generalizes naturally: K outcomes instead of 2, Dirichlet prior with K parameters instead of Beta with 2, the conjugacy still holds." This makes the lineage visible.

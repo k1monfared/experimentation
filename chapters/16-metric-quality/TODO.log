@@ -24,3 +24,16 @@
         - Bayesian framing for Chapter 16. The project rule is two lenses per chapter from Chapter 1. This chapter currently has only the frequentist lens. A Bayesian Loop, for example a hierarchical model that pools predictivity across metric families, is a natural addition but is a separate task.
         - Replacing the simple CUPED with CUPAC, doubly robust adjustments, or machine-learning residualization. Worth a follow-up chapter, not this review.
         - Reworking the figures. The plots are fine. Only the captions need to track the wording changes above.
+    - Book-level review additions (added 2026-04-30)
+        - Two-lens promise broken: this chapter has no Bayesian counterpart in any loop
+            - Where: chapter.log Loops A through D
+            - Why: the README and the project narrative rule say from Chapter 1 onward every loop applies both lenses. CUPED, A/A calibration, and predictivity all have natural Bayesian framings (posterior over theta, posterior over rejection rate, posterior over predictivity correlation), none of which are sketched. The existing TODO already flags this as out of scope.
+            - Edit: at minimum, add a short two-lens commentary block at the end of the chapter naming the Bayesian counterparts the reader could reach for: "A Bayesian counterpart for each loop: a posterior over theta in Loop B (regression with priors), a posterior over alpha in Loop C (Beta-binomial on rejection counts), a posterior over rho in Loop D. None of these change the practitioner's decision in this chapter, which is why we skip them, but the path is open." This addresses the asymmetry honestly.
+        - "CUPED" is introduced here for the first and only time, no back-reference for variance reduction
+            - Where: chapter.log Loop B
+            - Why: the broader story arc treats variance reduction as a metric-quality issue. Earlier chapters (Chapters 3, 8, 16) all sized experiments based on raw variance. Once CUPED enters in Chapter 16, no later chapter uses it. The chapter would benefit from a back-reference.
+            - Edit: in Loop B Hunch, add one sentence: "Chapter 3's required-N formulas all assumed raw outcome variance; CUPED can shrink the per-user variance by half before you start, which is equivalent to roughly doubling N for the same precision." This connects CUPED to the power machinery from Chapter 3 explicitly.
+        - Forward promise from Chapter 13 ("Chapter 16 examines the mechanism in depth") of clicks-up-revenue-down does not get fulfilled
+            - Where: chapter.log Loop D (predictivity scoring)
+            - Why: Chapter 13 Loop D Hunch points readers here for the Goodhart-style mechanism. Chapter 16 only shows that lying proxies have negative r; it does not unpack *why* a metric goes negative-correlation with the long-term outcome.
+            - Edit: in Loop D Hunch, add one paragraph naming Goodhart's law and the substitution mechanism: "When a proxy becomes the target, optimization pushes the proxy and the underlying outcome apart. Clicks rise, revenue falls, because the cheapest way to lift clicks (clickbait, intrusive UI) burns brand and bounces users. Predictivity scoring catches this only after the fact; the structural fix is to weight short-term metrics by their measured predictivity, not to optimize them directly."

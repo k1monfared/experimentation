@@ -44,3 +44,16 @@
         - Replacing the synthetic figures with a real industry dataset. No public dataset matches the chapter's narrative cleanly; constructed examples are appropriate for an inquiry-driven pedagogical chapter as long as they are flagged as illustrative.
         - Implementing the hierarchical PyMC model for the guardrails. That belongs in Chapter 6 or in the chapter's flesh-out PR, not in this review.
         - Rewriting the chapter into the full inquiry-loop format. The current structure is a stub; review focuses on statistical correctness and framing within that scope.
+    - Book-level review additions (added 2026-04-30)
+        - This is the only chapter with an "expkit modules exercised" section
+            - Where: chapter.log lines 49-55
+            - Why: no other chapter in the book has a similar bullet at the bottom. Either every chapter should have one (per the project narrative rule that stubs list expkit modules), or none should.
+            - Edit: pick the convention that matches the rest of the book. If the rule is "every chapter lists modules", roll the same section out across Chapters 1-9 and 11-19 in their respective TODOs. If "no chapter lists modules", remove this one. Currently the asymmetry is odd.
+        - The "Loop A" naming is not actually used (the chapter renames it to "Setup")
+            - Where: chapter.log line 4 ("Setup: industry runs on averages")
+            - Why: every other chapter uses "Loop A: ...". This chapter alone breaks that pattern (because the framing block is not really a loop, per the prior TODO item).
+            - Edit: keep the "Setup" label (it is honest), but make sure no other chapter quietly does the same thing. (Chapter 4 has "Five tests we will use through the rest of the book", a similar setup block. Standardize.)
+        - Forward reference to Chapter 16 about clicks-up-revenue-down does not land precisely
+            - Where: Chapter 13 chapter.log Loop D Hunch ("Chapter 16 examines the mechanism in depth"), echoed by Chapter 10 Loop B's clickbait dynamics framing
+            - Why: Chapter 16 covers variance, CUPED, A/A stability, and predictivity scoring. It does not actually examine the mechanism by which clicks rise while revenue falls; that mechanism (Goodhart-style substitution) is barely sketched in Chapter 16 Loop D.
+            - Edit: in Loop B Hunch and Decision question, soften the implicit promise that Chapter 16 unpacks the mechanism. Either point to Chapter 13 (proxies that lie) instead, or be explicit: "Chapter 16 picks up the metric-quality side of this; the mechanism itself does not get a dedicated chapter."

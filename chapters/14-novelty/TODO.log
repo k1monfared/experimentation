@@ -20,3 +20,16 @@
         - Formalizing the selection bias from late-arrival truncation as a missing-data problem (MAR vs MNAR). Pointer is sufficient at this level.
         - Adding a fourth measurement scheme such as "exposure age weighted by inverse arrival probability" to correct the right-tail subsample. Adds machinery without changing the chapter's core message.
         - Replacing the toy U-shape (cosine) in generate.py with a more realistic shape. Visual is fine for the illustrative point.
+    - Book-level review additions (added 2026-04-30)
+        - "lme4-style nonlinear mixed-effects" referenced without defining lme4 or the term
+            - Where: chapter.log Two-lens commentary ("nonlinear least squares (lme4-style nonlinear mixed-effects)")
+            - Why: lme4 is an R package; the book is otherwise Python-only. A reader who does not know R will not recognize the reference. Also the terms "mixed effects" and "random effects" first appear here without being introduced earlier.
+            - Edit: replace "lme4-style nonlinear mixed-effects" with a Python-language equivalent such as "statsmodels.MixedLM or scipy.optimize on a per-user random-intercept model". Or leave the lme4 reference but add an inline gloss: "(an R package; the Python equivalent is statsmodels.MixedLM)".
+        - SUTVA appears in Chapter 19 but novelty/exposure dynamics never invoke the term even though the survival-caveat is exactly an interference issue
+            - Where: chapter.log Loop B
+            - Why: Chapter 15 mentions SUTVA in the CACE assumptions and Chapter 19 mentions it under network effects. Chapter 14's late-arrival survival problem is closer to a missing-data problem, but the same vocabulary helps.
+            - Edit: in the late-arrival survival caveat, add one parenthetical: "(this is a missing-data problem, not a SUTVA violation, but it shows up in the same kinds of observational analyses)". Helps the reader pin the issue.
+        - "MMU" never appears here even though novelty's classic question is "is this lift bigger than nothing-once-it-fades?"
+            - Where: chapter.log throughout
+            - Why: Chapter 8 defined MMU and Chapter 18 carries it. Novelty effects are a primary use case for "is the asymptote above the meaningful threshold?" but the term MMU is not invoked.
+            - Edit: at the end of the Two-lens commentary, add one bullet: "The decision rule that closes the loop here is asymptote vs MMU: ship if the posterior on the asymptotic effect exceeds the minimum meaningful uplift introduced in Chapter 8. Truncate-and-average gives a point estimate of the asymptote; the hierarchical model gives a posterior, which is the right input to the MMU comparison."
