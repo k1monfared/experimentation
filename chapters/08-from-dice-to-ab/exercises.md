@@ -1,0 +1,47 @@
+# Chapter 08 exercises: From dice to A/B tests
+
+- Note: each exercise is small, runnable in the chapter's notebook or a fresh Python REPL, and probes one specific point the chapter raised. Two-lens exercises ask both questions explicitly.
+- Exercise 1: Predict before running, the small-N coin flip
+  - Setup: paper and pencil first. Control converts at 5 percent, treatment at 6 percent, N=1000 per arm.
+  - Task: write down, before running anything, your guess for the two-proportion z-statistic and your guess for the Bayesian posterior probability that treatment exceeds control. Then run expkit.sim.abtest.two_arm_binary at SEEDS["binary_small"]=80, compute expkit.inference.normal.two_proportion_z, and approximate the Bayesian posterior on the difference by sampling 5000 Beta(1+s, 1+n-s) draws per arm and subtracting.
+  - Expected pattern: z is roughly 1.0, p-value is roughly 0.31. Bayesian P(diff > 0) lands around 0.78. Both lenses say "we don't know yet". This reproduces the left panel of two_arm_binary.png.
+  - Two-lens: the frequentist verdict is "fail to reject H0:p1=p2". The Bayesian verdict is "78 percent posterior credence that treatment beats control, far short of a 95 percent shipping threshold".
+  - Stretch: rerun at seeds 0 through 9 at the same N. How often does the z-test cross p<0.05 in either direction? You should see roughly 5 percent of seeds reject, half of them in the wrong direction.
+- Exercise 2: Same effect, ten times the data
+  - Setup: same control 5 percent, treatment 6 percent, but N=10000 per arm with SEEDS["binary_large"]=81.
+  - Task: repeat the z-test and the Bayesian posterior simulation from Exercise 1 at the new N. Compare to the N=1000 result.
+  - Expected pattern: z grows by roughly sqrt(10) which is about 3.16, p-value drops below 0.002. Bayesian P(diff > 0) above 0.999. This is the right panel of two_arm_binary.png. Both lenses now agree the effect is real. Power, again.
+  - Two-lens: at N=10000 the two lenses are numerically aligned. This is the regime where the choice of lens almost does not matter for the ship/no-ship decision. Ask yourself in writing: at what N does the agreement break down, and what does that tell you about when the lens choice actually carries weight?
+  - Stretch: use expkit.power.binomial.required_n with p_null=0.05, p_alt=0.06, power=0.8. Compare to the N at which the Bayesian rule "P(diff > 0) > 0.95" first reaches 80 percent ship rate via Monte Carlo.
+- Exercise 3: Continuous outcome, t-test vs bootstrap
+  - Setup: control mean 10, treatment mean 10.5, sigma 4, N=2000 per arm, seed SEEDS["continuous"]=82.
+  - Task: simulate with expkit.sim.abtest.two_arm_continuous. Run expkit.inference.normal.two_sample_t (Welch's t) and expkit.inference.bootstrap.bootstrap_diff_ci with 4000 percentile resamples. Report the t-statistic, the t-test p-value, and the bootstrap 95 percent CI on the mean difference.
+  - Expected pattern: t around 2.7, p-value around 0.007. Bootstrap CI roughly [0.13, 0.86], excluding zero. Both reject the null. This reproduces the continuous_outcome.png panel.
+  - Skeptical: replace the normal noise with heavy-tailed noise: regenerate the data with t-distributed noise (df=3) scaled to roughly the same sigma. Re-run both. The Welch's t-test will become noticeably less reliable. The bootstrap should be more honest because it does not assume Gaussianity.
+  - Two-lens: write one sentence on what each tool assumes. Welch's t assumes approximately normal arms with possibly unequal variances. The percentile bootstrap assumes the data themselves are an i.i.d. sample from the population.
+  - Stretch: use expkit.power.continuous.required_n at mu_c=10, mu_t=10.5, sigma=4, power=0.8 and compare to the N=2000 we used. Are we comfortably above or below threshold?
+- Exercise 4: Stratified vs pooled, where the gain hides
+  - Setup: two segments. Power-users at fraction 0.10 with baseline 0.30, treatment lift 0.02. Casuals at fraction 0.90 with baseline 0.05, treatment lift 0.02. Total N=4000, seed SEEDS["stratified"]=83. Use expkit.sim.abtest.stratified_binary.
+  - Task: run a two_proportion_z test per segment. Then run a pooled two_proportion_z test on the combined population. Tabulate the per-segment z-statistics, p-values, and point estimates alongside the pooled result.
+  - Expected pattern: the absolute lift is +0.02 in both segments. Per-segment p-values look noisy, with the casual segment at p around 0.05 and the power-user segment at p around 0.40 (small N hides the effect there). The pooled estimate is dominated by the casual segment because casuals outnumber power-users 9 to 1. The power-user lift is real but invisible in the pool.
+  - Two-lens: run expkit.inference.cmh.cochran_mantel_haenszel on the same data as a stratum-aware aggregate. Compare its p-value to the pooled p-value. CMH respects the strata. The pool does not.
+  - Stretch: invert the segment fractions (90 percent power-users, 10 percent casuals) and rerun. Watch which segment now dominates the pool. The pool always reflects whoever is heaviest.
+- Exercise 5: Decision rules, sweep the truth
+  - Setup: control p_c=0.05, vary the true treatment lift over {-0.02, -0.005, 0, 0.005, 0.02, 0.04}, N=2000 per arm, 300 simulated experiments per truth value, base seed 800. MMU=0.005.
+  - Task: implement two ship rules. Rule A (frequentist simple): ship iff p<0.05 and direction positive (use two_proportion_z). Rule B (Bayesian with MMU): ship iff P(treatment - control > 0.005) > 0.95 (sample 4000 Beta(1+s, 1+n-s) draws per arm). For each truth value, report the ship rate of each rule across the 300 experiments.
+  - Expected pattern: at truth=0, both rules ship around 1 to 3 percent of the time. At truth=0.005 (right at the MMU), frequentist ships about 7 percent, Bayesian about 5 percent. At truth=0.02, both ship reliably (above 50 percent). At truth=-0.02, neither ships. This reproduces decision_rule.png.
+  - Two-lens: the simple frequentist rule does not know what "matters", it only asks about the sign vs zero. The Bayesian rule with an MMU asks "is the lift meaningfully positive?". Add a third rule, frequentist with an MMU: "ship iff lower bound of one-sided 95 percent CI > MMU" using two_proportion_z plus a manual one-sided cutoff. Watch the third rule converge with Rule B as the chapter said it would.
+  - Stretch: shrink N to 500 per arm and watch all three rules collapse on the truth=0.005 row. Power, again.
+- Exercise 6: PyMC two-arm vs the closed-form Beta posterior
+  - Setup: Loop F's case, N=10000 per arm, p_c=0.05, p_t=0.06, seed SEEDS["pymc"]=808.
+  - Task: simulate with two_arm_binary. Run expkit.inference.bayes.two_arm_posterior (PyMC, draws=2000, chains=2, tune=1000, random_seed=808). Separately, sample 8000 Beta(1+s_c, 1+n_c-s_c) and Beta(1+s_t, 1+n_t-s_t) draws using numpy and compute the difference. Compare the posterior mean of "diff", the 95 percent credible interval, and P(diff > 0) between the two methods.
+  - Expected pattern: PyMC and closed-form agree to about 0.0005 on the posterior mean and 0.001 on the credible interval edges. Both centre near 0.01 with most mass above zero. P(diff > 0) is above 0.99 for both. This reproduces pymc_two_arm.png. The point of the exercise is the sanity check: when conjugate works, PyMC matches it.
+  - Two-lens: this is purely Bayesian. The frequentist comparison was already done in Exercise 2.
+  - Stretch: bump prior to Beta(50, 50) on each arm and rerun PyMC. Read off how the credible interval shrinks and shifts toward 0.5. Note that with N=10000 per arm even the strong prior moves only slightly.
+- Exercise 7: Find a seed where the two lenses disagree by N=500
+  - Setup: search seeds 0 through 199. p_c=0.05, p_t=0.07 (a 2pp lift), N=500 per arm.
+  - Task: for each seed, run two_arm_binary, then a two_proportion_z test and a Bayesian "P(diff > 0) > 0.95" check. Find any seed where the frequentist rejects at p<0.05 but the Bayesian P(diff > 0) is below 0.95, or vice versa. Print the disagreeing seeds and the numbers.
+  - Expected pattern: with these parameters and Beta(1, 1) priors, the two lenses are numerically very close, so disagreements are rare. You may find zero or one disagreeing seed in 200. The exercise is to see how rare the disagreement is in this regime, which is part of why the chapter says "above the noise floor both lenses speak in the same direction".
+  - Skeptical: now repeat with a Beta(50, 50) prior on each arm. Disagreements should appear more often, because the strong prior pulls the Bayesian rule toward "no shipping" relative to the frequentist rule.
+  - Stretch: which direction of disagreement (Bayes ships, freq does not, vs the reverse) is more common at N=500? At N=2000?
+- Carry-forward question: the chapter's big question was "how do scientists and product teams actually decide what to ship, and where do they go wrong?". After these exercises, your sharper question is: when the mechanics agree (Exercises 2, 6), what is left to disagree about, and is it always a values question rather than a statistics question?

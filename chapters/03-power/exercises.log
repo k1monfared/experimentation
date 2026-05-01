@@ -1,0 +1,42 @@
+- Chapter 03 exercises: What if it is biased? (Power and sample size)
+    - Note: each exercise is small, runnable in the chapter's notebook or a fresh Python REPL, and probes one specific point the chapter raised. Two-lens exercises ask both questions explicitly.
+    - Exercise 1: Predict before computing
+        - Setup: paper first. We want to detect a true bias of p=0.55 against H0: p=0.5 with a two-sided alpha=0.05 test.
+        - Task: write down your guess for the smallest N giving 80 percent power, and your guess for power at N=100. Then verify with expkit.power.binomial.required_n and expkit.power.binomial.normal_approx_power.
+        - Expected pattern: required_n returns about 783. Power at N=100 is roughly 0.17. Most beginners overestimate power at small N and underestimate the N needed.
+        - Stretch: redo the prediction for p=0.51 and p=0.60. Notice the 1/effect-squared scaling.
+    - Exercise 2: Power curves across truths
+        - Setup: grid N in [10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000].
+        - Task: for each true p in {0.51, 0.52, 0.55, 0.60, 0.70}, plot power vs N (log scale on N) using normal_approx_power against p_null=0.5.
+        - Expected pattern: matches the chapter's images/power_curves.png. The p=0.51 curve barely climbs above 0.5 even at N=10000. The p=0.70 curve is essentially saturated at N=50.
+        - Stretch: add a horizontal line at power=0.8 and read off the N intersection for each truth. Compare to required_n.
+    - Exercise 3: MDE vs required N
+        - Setup: same alpha=0.05, power=0.8, p_null=0.5.
+        - Task: for N in {100, 1000, 10000, 100000} compute the one-sided MDE with expkit.power.binomial.mde. For each MDE, then compute the required_n needed to detect that effect at 80 percent power.
+        - Expected pattern: required_n should round-trip back to roughly the original N (slight numerical drift because mde uses a 2001-point grid and required_n is a binary search).
+        - Stretch: explain in one sentence why MDE and required_n are inverses of each other.
+    - Exercise 4: Two lenses on "how long to run"
+        - Setup: truth p=0.55, prior Beta(1, 1), target precision: posterior 95 percent credible interval width less than or equal to 0.04. Seed=51.
+        - Task A (frequentist precision): compute the fixed N needed for a 95 percent CI of half-width 0.02 around p=0.55 using the closed-form formula n approximately equal to 4 z^2 p (1-p) / w^2.
+        - Task B (Bayesian stopping): simulate one run. Toss until the Beta(1+heads, 1+tails) credible-interval width drops below 0.04. Use bernoulli_sequence at p=0.55 to get the data and the analytic credible_interval method on ConjugatePosterior to check the width every 20 tosses. Record the stopping N.
+        - Expected pattern: closed-form N is about 2377. Bayesian stopping N for this seed will land near 2360 to 2400. They agree because they answer the same question, posterior-precision target.
+        - Two-lens: this is the chapter's Loop D in code. Note that the frequentist 80 percent power N (about 783) is a different question (hypothesis-test power) and lands in a different place.
+        - Stretch: run the Bayesian stopping over 50 seeds and report the median and IQR of stopping N.
+    - Exercise 5: Find a seed where peeking misleads
+        - Setup: truth p=0.5 (fair). N up to 1000. seed grid 0 through 99.
+        - Task: simulate 100 fair-coin runs, each of length 1000. Peek every 10 tosses. Record the first peek index where the exact two-sided p-value drops below 0.05. If a run never crosses, mark it as never. Report the fraction of runs that crossed and an example seed where crossing happens early.
+        - Expected pattern: a substantial fraction (around 0.3) of fair-coin runs will trip a p less than 0.05 at some peek. The frequentist false-positive rate has been blown up far above the nominal 0.05. This is the chapter's edge case: peeking without alpha-spending is unsafe.
+        - Two-lens: re-examine one of the misleading seeds with the Bayesian credible interval at the trip moment. Does the credible interval also exclude 0.5? Often it does, because at small N the data really does point away from 0.5 by chance. The Bayesian's protection (the chapter's likelihood-principle note) is about parameter inference being independent of stopping rule, not about being immune to type I errors when you act on a noisy peek.
+        - Stretch: rerun with peek frequency every 100 tosses. The crossing rate should drop.
+    - Exercise 6: Empirical power from simulation
+        - Setup: truth p=0.55, alpha=0.05, n_experiments=2000, seed=41.
+        - Task: at N in {200, 500, 783, 1000, 2000} compute empirical rejection rate with simulate_rejection_rate. Compare to normal_approx_power at the same arguments.
+        - Expected pattern: the simulated rates and the analytic normal-approx values agree to within roughly 0.02 at all N. At N=783 both should land near 0.80.
+        - Two-lens: note that normal_approx_power is an analytic frequentist quantity. The Bayesian counterpart, "probability that posterior credible interval excludes 0.5 under truth p=0.55", is not the same number. To see this, simulate 200 runs at N=783, p=0.55, and count what fraction of credible intervals exclude 0.5. The number will be close to 0.80 here, but it is a different definition.
+        - Stretch: redo for p=0.52 to make the two-lens comparison sharper at low power.
+    - Exercise 7: Tiny effect, huge N
+        - Setup: p=0.501 vs p_null=0.5.
+        - Task: compute required_n at 80 percent power. Then ask: is this a sensible experiment? In one sentence, explain when we should refuse to run an experiment because the required N is impractical.
+        - Expected pattern: required_n returns near 2 million. The honest answer is "we will not run this; we should redefine the effect size we care about, or accept lower power, or give up".
+        - Stretch: at N=10000 what is the MDE? Compare to 0.001 and note that detecting a 0.1pp lift is essentially impossible at that sample size.
+    - Carry-forward question: the chapter closed on "same data, multiple tests, when do they disagree?". After these exercises the question is: when I have planned my N for power against an exact-binomial test, does swapping in a normal-approx z-test change my answer at the borderline, and which test should I trust at small N?

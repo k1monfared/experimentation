@@ -1,0 +1,43 @@
+- Chapter 01 exercises: The coin
+    - Note: each exercise is small, runnable in the chapter's notebook or a fresh Python REPL, and probes one specific point the chapter raised. Two-lens exercises ask both questions explicitly.
+    - Exercise 1: Predict before running
+        - Setup: paper and pencil only, no code yet.
+        - Task: write down, before running anything, what running fraction of heads you expect after 10 fair tosses, after 100, and after 1000. Then run expkit.sim.coin.bernoulli_sequence with n=10, 100, 1000 at seed=0 and p=0.5 and compute running_fraction at each end point.
+        - Expected pattern: your guesses for n=10 will likely be 0.5 plus or minus a guess of about 0.05. The actual result at n=10 will land somewhere in [0.2, 0.8] depending on seed. By n=1000 the gap between guess and result will be tiny.
+        - Two-lens: this is purely a data-generation exercise, no inference yet. The lens question lands in Exercise 2.
+        - Stretch: repeat with seeds 1 through 5 and notice how loud the small-N variation is.
+    - Exercise 2: Three heads in a row, both lenses
+        - Setup: hard-code seq = np.array([1, 1, 1]).
+        - Task: compute the frequentist exact two-sided p-value with expkit.inference.binomial.binom_test_exact against p_null=0.5, and the Bayesian posterior with expkit.inference.bayes.coin_posterior_conjugate using a flat Beta(1, 1) prior. Report p-value, posterior mean, posterior probability that p > 0.5, and the 95 percent credible interval.
+        - Expected pattern: p-value around 0.25 for the two-sided test. Posterior mean 0.8, posterior probability greater than 0.5 around 0.94. The two lenses tell different stories from the same three tosses, exactly the chapter's Loop A.
+        - Two-lens: frequentist asks "would three heads in a row be surprising under p=0.5?", Bayesian asks "what should I now believe about p?". Same data, different question.
+        - Stretch: replace the flat prior with Beta(50, 50). Recompute the posterior summary. Observe how a strong "I think it is fair" prior barely moves at all on three tosses.
+    - Exercise 3: Reproduce Loop B with one extra seed
+        - Setup: pick six seeds (the chapter used a specific six). Add a seventh seed of your own.
+        - Task: for each seed, generate 100 tosses with bernoulli_sequence at p=0.5, compute the running fraction with running_fraction, and plot all seven curves on one set of axes.
+        - Expected pattern: every curve wobbles wildly before about toss 30, tightens by toss 50, and lands within roughly 0.1 of 0.5 by toss 100. None lands exactly at 0.5.
+        - Stretch: at toss 30, what is the spread of your seven running fractions? Compare to the chapter's claim that small-N runs disagree heavily.
+    - Exercise 4: Find a seed that fools you
+        - Setup: loop over seeds 0 through 199, generate 30 tosses each at p=0.5, count heads.
+        - Task: find a seed where the count of heads is 21 or more out of 30 (a fair coin can hand you this, it just feels unfair). Print the seed and the count. Then compute the Wilson interval at that count with expkit.inference.binomial.wilson_ci and the Beta(1, 1) posterior credible interval with the conjugate helper.
+        - Expected pattern: at least one seed in 200 will show 21 or more out of 30 heads (unconditional probability is about 0.02, so you should expect three or four matches). Wilson CI at 21/30 is roughly [0.52, 0.83] and excludes 0.5. The Bayesian credible interval has a similar shape and also excludes 0.5. A fair coin produced data both lenses would call "biased". This is the type I error from Chapter 2 in disguise.
+        - Two-lens: the Wilson interval and the credible interval almost agree. The disagreement, if any, is on the lower edge near 0.5.
+        - Stretch: for the same fooling seed, extend the run to 300 tosses. Watch the running fraction climb back toward 0.5.
+    - Exercise 5: Long-run convergence
+        - Setup: generate a single 10000-toss sequence at p=0.5, seed=42.
+        - Task: at N in {10, 100, 1000, 10000}, record the running fraction, the Wilson CI, and the Beta(1, 1) credible interval. Tabulate.
+        - Expected pattern: as N grows by factors of 10, the interval width shrinks by about sqrt(10) at each step. By N=10000 both intervals have width near 0.02. The Wilson and credible intervals agree to two decimal places at every N greater than 100.
+        - Two-lens: the frequentist Wilson interval ("procedure covers truth 95 percent of the time") and the Bayesian credible interval ("posterior probability that p sits in this range is 95 percent") give the same numbers at large N. The chapter's Loop C made the same point.
+        - Stretch: plot interval width vs N on a log-log scale. The slope should be close to -0.5.
+    - Exercise 6: Fair vs slightly biased, side by side
+        - Setup: two coins, p=0.50 and p=0.55, n=10 each, seeds 1 and 2.
+        - Task: for each coin, compute the heads count and the conjugate Beta(1, 1) posterior. Plot both posteriors on the same axes.
+        - Expected pattern: the two posteriors overlap heavily. At n=10 the data does not yet separate a fair coin from a 0.05 biased one. This previews "we need power" from Chapter 3.
+        - Two-lens: also run binom_test_exact for each coin against p_null=0.5. Both p-values will likely be uninformative. Both lenses agree the data is too thin.
+        - Stretch: bump n to 2000 and repeat. The two posteriors should now be clearly separated and the two p-values clearly different.
+    - Exercise 7: Stop early, fool yourself
+        - Setup: one long fair-coin sequence at p=0.5, seed=7, n=200.
+        - Task: scan toss by toss. Find the first toss index t such that heads_so_far / t is greater than or equal to 0.65. Print t and the count at t. Then continue to n=200 and recompute the final running fraction.
+        - Expected pattern: there will likely be a small early t (under 30) where the running fraction crosses 0.65. The temptation to stop there and call the coin biased is real. By n=200 the fraction will have drifted back near 0.5. This previews the optional-stopping problem the chapter flags for Chapter 3 and Chapter 18.
+        - Stretch: try seeds 0 through 9 and tabulate the earliest crossing of 0.65 for each. Some seeds will never cross.
+    - Carry-forward question: the chapter ended on "what does each lens mean by sure?". After these exercises, your sharper question is: when the two lenses give numerically similar intervals (Exercise 5) or numerically different probabilities (Exercise 2), which one tells me what to do next, and does the answer depend on how much data I have?

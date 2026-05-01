@@ -1,0 +1,45 @@
+- Chapter 14 exercises: novelty effects
+    - Note: each exercise is small, runnable in the chapter's notebook or a fresh Python REPL, and probes one specific point the chapter raised. Two-lens exercises ask both questions explicitly.
+    - Exercise 1: predict the calendar-day curve before plotting it
+        - Setup: read Loop A. The simulator parameters are `n_users=2000`, `days=40`, `base_rate=0.10`, `initial_lift=0.06`, `half_life_days=5`, with arrival rate 0.4. The treatment user's per-event probability on day d after first exposure is `0.10 + 0.06 * exp(-d / 5)`.
+        - Task: write down what you predict the treatment minus control curve looks like as a function of calendar day. Then run `expkit.sim.novelty.novelty_event_log(...)` with `seed=140`, aggregate it with `expkit.novelty.measure.by_calendar_day`, and plot.
+        - Expected pattern: early days show a treatment lift around +6pp because most exposed users are within their first 5 days. By day 20 most exposed users are deep into the decay tail. By day 40 the curves should have crossed (long-run truth is no lift). Looks like the left panel of images/three_views.png.
+        - Two-lens: skip, this is a setup question.
+        - Stretch: predict what the curve would look like at `half_life_days=20` instead of 5. Then verify. What is the half-life that would make a 40-day experiment look like a permanent +6pp lift?
+    - Exercise 2: same data, three views
+        - Setup: same event log as Exercise 1. Aggregate with `by_calendar_day`, `by_days_since_exposure`, and `by_exposure_count` from `expkit.novelty.measure`.
+        - Task: plot all three views side by side. Annotate each plot with the asymptotic lift implied by the right tail.
+        - Expected pattern: by-calendar-day shows a noisy decay that fades by day 20 and crosses by day 40. By-days-since-exposure shows a clean +6pp at day 1 falling to near zero by day 20. By-exposure-count shows the maximum lift at exposure 1 falling progressively. Three different x-axes, one underlying truth.
+        - Two-lens: implicit. The frequentist analyst typically picks one view and tests it. The Bayesian analyst marginalizes over the choice of view by fitting the structural decay model directly.
+        - Stretch: invent a fourth view (maybe day-of-week, or per-user session count). Plot it. Does it tell yet another story or does it collapse onto one of the three?
+    - Exercise 3: distinguish decay from primacy from a U-shape
+        - Setup: read Loop C. The chapter describes three shapes: decay (`0.06 * exp(-d / 5)`), primacy (`0.06 * (1 - exp(-d / 10))`), U-shape (`0.06 * cos(d / 12)^2 - 0.02`).
+        - Task: plot all three on the same axes for d in 0 to 40. For each shape, annotate the day at which the cumulative-mean lift (treating each day equally) crosses zero, crosses +0.03, and asymptotes.
+        - Expected pattern: decay starts high, asymptotes near zero. Primacy starts at zero, asymptotes near +6pp. U-shape oscillates between -2pp and +4pp. Looks like images/decay_shapes.png.
+        - Two-lens: skip, this is descriptive.
+        - Stretch: pick one shape. Design a one-week truncation analysis (drop the first 7 days, compute the effect over days 8 to 40). Does that analysis correctly recover the asymptotic lift for your shape? For which shape does truncation work best, and which worst?
+    - Exercise 4: find a seed where novelty is misread as durable
+        - Setup: regenerate the Loop A event log over seeds 100 to 199 with `n_users=500` (smaller, noisier), `days=14` (shorter window), `initial_lift=0.06`, `half_life_days=5`. The long-run truth is no lift.
+        - Task: for each seed, compute the average treatment minus control over the full 14 days using `by_calendar_day` aggregated over the window. Find the seed with the largest positive measured lift. Report it.
+        - Expected pattern: many seeds show a positive lift in the 0 to 4pp range despite zero long-run truth. Truncation length and N decide the false-positive rate. If you stop at day 14 and read the calendar-day average, you ship a feature that does nothing.
+        - Two-lens: explicit. Frequentist response is "fit an exponential decay with random per-user effects (statsmodels MixedLM or scipy.optimize) and read the asymptote." Bayesian response is "fit the same structural model in PyMC and read the posterior on the asymptote." Both are more honest than truncate-and-average.
+        - Stretch: take your worst-seed event log. Fit a simple exponential decay model `y(d) = A + B * exp(-d / tau)` to days_since_exposure, then read `A` as the asymptote estimate. Does it correctly land near zero? With this small N, will the CI on `A` cover zero?
+    - Exercise 5: per-user random effects vs population mean curve, conceptual
+        - Setup: read the chapter's hunch in Loop C. "A flat population-mean curve is consistent with many users showing strong individual decay or ramp that cancel in the average."
+        - Task: write a one-paragraph response to "if my population-mean curve is flat, can I conclude novelty is not a problem here?". Cite at least one mechanism by which a flat aggregate hides per-user heterogeneity.
+        - Expected pattern: no, a flat population mean can be the average of users decaying down and other users ramping up. The right diagnostic is to fit a hierarchical model and look at the posterior on tau (the population SD of per-user shapes). If tau is large, the population mean lies.
+        - Two-lens: implicit. The frequentist random-intercept model and the Bayesian hierarchical model both expose this. The Bayesian one carries the uncertainty in tau into the asymptote credible interval directly.
+        - Stretch: design a tiny PyMC model where each user has its own initial lift and asymptote, both drawn from population-level normals. Fit it on the Exercise 1 event log. What is the posterior mean and 95 percent CI on the population-level asymptote?
+    - Exercise 6: asymptote vs minimum meaningful uplift, decision rule
+        - Setup: read the two-lens commentary. The decision rule is "ship if the posterior on the asymptotic effect exceeds the MMU from Chapter 8."
+        - Task: pick MMU = 0.01 (a 1pp lift). Run the Exercise 1 simulation with `initial_lift=0.06` and `half_life_days=5` (so the long-run truth is zero). Fit an exponential decay model to days_since_exposure, get a posterior or bootstrap CI on the asymptote. Report whether your rule says ship.
+        - Expected pattern: with a true asymptote of zero, your interval should cover values below the MMU and the rule says do not ship. If you instead use truncate-and-average over the first 14 days, the same rule says ship. Same data, two procedures, opposite decisions.
+        - Two-lens: explicit. Frequentist truncation gives a point estimate, no honest interval on the asymptote. Bayesian hierarchical decay gives a posterior on the asymptote, which is the right input to MMU comparison.
+        - Stretch: now flip the truth. Set `initial_lift=0` and add a real long-run lift of +0.02 (a constant additive effect). Re-run both procedures. Which one ships and which does not? At what MMU is each procedure right vs wrong?
+    - Exercise 7: cohort-tenure mixing in calendar-day aggregation
+        - Setup: read Loop B. Each calendar day is a mixture of users at different per-user exposure tenures.
+        - Task: with the seed-140 event log, group treatment users by their first exposure day. Plot the treatment outcome rate on calendar day 30 separately for users whose first exposure landed on day 1, day 10, day 20, and day 25. Compare to the population-mean treatment rate on day 30.
+        - Expected pattern: users with early first exposure show treatment rate close to the asymptote (near +0pp) on day 30. Users with late first exposure show a +6pp lift on day 30 because they are at the start of their decay. The population mean on day 30 is a weighted average of those, which is what the calendar-day plot mixes together.
+        - Two-lens: implicit. The fix is structural: do not aggregate by calendar day, aggregate by days-since-exposure. Both lenses agree.
+        - Stretch: build the implied selection problem on the right tail of by-days-since-exposure. With `days=40` and arrivals throughout, only users whose first exposure landed in the first 10 calendar days can populate the day-30-of-exposure bucket. Show this empirically by plotting the count of users per bucket. Why does this bias your asymptote estimate?
+    - Carry-forward question: Chapter 14 assumed every assigned user actually saw the new feature. They did not. Most users in an experiment never visit the page where the change happens, and counting them flat-lines the lift you measure. When the people in the assignment list and the people exposed to the change are different populations, what does the experiment's "effect" even mean?

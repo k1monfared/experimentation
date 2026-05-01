@@ -1,0 +1,46 @@
+# Chapter 18 exercises: Frequentist vs Bayesian shipping
+
+- Note: each exercise is small, runnable in the chapter's notebook or a fresh Python REPL, and probes one specific point the chapter raised. Two-lens exercises ask both questions explicitly.
+- Exercise 1: predict the murky middle, conceptual
+  - Setup: read Loop A in chapter.log and look at `images/ship_by_truth.png`. The frequentist rule is `(p < 0.05) AND (point estimate > 0)`. The Bayesian rule is `P(diff > MMU) > 0.95`, MMU = 0.005.
+  - Task: before running anything, sketch ship-rate against true effect on a piece of paper for both rules. Mark where you expect them to be roughly equal, where the frequentist rule ships more, and where the Bayesian rule ships more.
+  - Expected pattern: the two curves should cross. At true effect = 0 the frequentist rule ships at roughly its alpha-half (~2.5%), the Bayesian one ships almost never. From 0 up to MMU the frequentist rule pulls ahead steeply. Past 2 to 3x MMU the curves converge as power dominates.
+  - Two-lens: this is the chapter's whole thesis in one picture. The disagreement lives in the murky middle, not in the obvious cases.
+  - Stretch: predict where the *matched* frequentist rule, `(p < 0.05) AND (point estimate > MMU)`, sits relative to the Bayesian curve, then verify with the `f_ship_matched` column from `data/ship_decisions.csv`.
+- Exercise 2: rerun the simulator at a new seed
+  - Setup: use `chapters/18-frequentist-vs-bayesian-shipping/generate.py` `run_simulator`. The default is `seed=180, n_runs=2000, n_per_arm=2000, mmu=0.005`.
+  - Task: rerun with `seed=181` and `seed=182`. For each seed, count agreement cells of the confusion matrix and the rates `f_fp_rate, f_miss_rate, b_fp_rate, b_miss_rate`.
+  - Expected pattern: rates wobble by roughly 0.005 to 0.01 between seeds, in line with the binomial standard error on 2,000 trials that Loop C calls out. The qualitative ranking (B more conservative than F, B-no-ship cells dominate disagreements) is stable across seeds.
+  - Two-lens: this exercise probes the chapter's own caveat that "differences inside that band are noise". A change you can flip with a different seed is not a lens difference, it's Monte-Carlo noise.
+  - Stretch: with `n_runs = 20000` how much do the per-bin ship rates tighten in the upper tail of `images/ship_by_truth.png`?
+- Exercise 3: skeptical, find a seed where joint shipping is wrong
+  - Setup: Loop E's joint rule is `f_ship AND b_ship`. The chapter claims the joint rule is "conservative but interpretable".
+  - Task: filter the 2,000 runs to those where `joint_ship == True`. Among those, count how many had `true_diff <= 0` (a false-positive ship by the joint rule). Then count joint-rule misses on `true_diff > MMU`.
+  - Expected pattern: joint false-positive rate is essentially zero. Joint miss rate, however, is higher than either lens alone, because the joint rule must clear two skeptical hurdles. This is the cost the chapter advertises.
+  - Two-lens: the joint rule is a third decision rule, not a third lens. Both lenses stay intact, the rule just requires both to agree. The reason this is defensible is because the disagreement region is exactly where a careful judgement call adds value, as the closing paragraph of Loop B says.
+  - Stretch: find a seed and a true effect where the *joint* rule misses but the matched-frequentist rule alone would have shipped a real win. What does that suggest about combining rules?
+- Exercise 4: cost analysis, find your team's break-even
+  - Setup: Loop C sweeps `(C1, C2)` over `(1, 1)` and `(1, 5)`.
+  - Task: use the `data/ship_decisions.csv` rates to compute expected cost per decision for both lenses across `C2 / C1` from 0.5 to 10 in steps of 0.5. Plot.
+  - Expected pattern: the two cost curves cross near `C2 / C1` between 1 and 2. Below the crossing, B's conservative rule wins. Above the crossing, F's higher ship rate wins because miss cost dominates. Loop C's caveat about the constant-per-decision cost model still applies.
+  - Two-lens: which cost ratio your team should use is not a statistical question, it's an economic one. The two lenses give the same expected-cost machinery once you fix the cost ratio. The lens choice and the cost ratio are separately consequential.
+  - Stretch: implement Loop C's effect-weighted cost variant `c1 * E[max(0, -true_diff) | shipped] + c2 * E[max(0, true_diff - MMU) | not shipped]` and compare to the constant-cost version. Where does the crossing move?
+- Exercise 5: prior sensitivity, the missing loop
+  - Setup: the chapter's "Aside: prior sensitivity" describes three priors: `Beta(1, 1)` (default), `Beta(50, 50)` (skeptical), and a permissive prior. The aside flags this as missing follow-up work.
+  - Task: rerun `run_simulator` with the conjugate `a_c, b_c` and `a_t, b_t` priors changed from `(1, 1)` to (a) `(50, 50)` and (b) `(1, 50)` for control and `(50, 1)` for treatment. Compute the Bayesian ship rate at true effect = 0, at true effect = MMU, and at true effect = 2 * MMU.
+  - Expected pattern: the skeptical `(50, 50)` prior pushes the Bayesian rule toward almost never shipping unless the effect is large. The permissive lopsided prior makes the Bayesian rule ship roughly as often as the frequentist one. The prior is the knob, exactly as the chapter aside says.
+  - Two-lens: the frequentist rule has no prior knob, but it does have an alpha knob. Compare changing alpha from 0.05 to 0.01 against tightening the prior to `Beta(50, 50)`. Are they exchangeable?
+  - Stretch: derive analytically the prior under which the Bayesian rule ships at exactly the same rate as the frequentist one at true effect = 0.
+- Exercise 6: explicit two-lens on a single experiment
+  - Setup: pick row 0 of `chapters/18-frequentist-vs-bayesian-shipping/data/ship_decisions.csv`. It has `obs_diff`, `p`, `true_diff`, `f_ship`, `b_ship`.
+  - Task: from `obs_diff` and the two arms' counts, recompute the frequentist verdict using `expkit.inference.normal.two_proportion_z` and the Bayesian verdict using `expkit.inference.bayes.coin_posterior_conjugate` for each arm followed by Monte-Carlo sampling of `Beta(a_t, b_t) - Beta(a_c, b_c)`. Report `p`, `point_estimate`, `P(diff > MMU)`, and the two ship verdicts.
+  - Expected pattern: your reproduction matches the saved row up to Monte-Carlo noise on the posterior probability (Loop B's "discovered bug" sets the order of that noise at about 0.008).
+  - Two-lens: this is the explicit head-to-head. Same data, two summaries. Note where each summary captures something the other does not. The frequentist `p` says "how surprising under the null", the posterior probability says "how confident we are that diff exceeds MMU".
+  - Stretch: pick three rows where `f_ship != b_ship`. For each, write one sentence explaining which lens you would defer to and why.
+- Exercise 7: design a rule of your own
+  - Setup: read the closing two-lens commentary. The chapter does not claim either lens is "right".
+  - Task: write down a third decision rule that is *not* one of `(p < 0.05) AND > 0`, `(p < 0.05) AND > MMU`, `P(diff > MMU) > 0.95`, or the joint rule. Score it on `data/ship_decisions.csv` against the same rates `(fp, miss)` Loop C uses.
+  - Expected pattern: every reasonable rule traces a point in the (fp, miss) plane. The frequentist and Bayesian rules and the joint rule are three points among many. Your custom rule sits somewhere on the same Pareto front, or strictly inside it. The lesson is that lens choice is one axis on a larger trade-off space.
+  - Two-lens: the rule you write down might be hybrid (e.g. "ship if `p < 0.10` AND `P(diff > 0) > 0.99`"). Whether that helps depends on your cost ratio and your taste for defensibility.
+  - Stretch: describe what your rule encodes about your team's risk preferences in one sentence.
+- Carry-forward question: even with two lenses and a joint rule, every decision so far has assumed a randomized A/B can be run. What if the question is "what would have happened if we had not done X" and we never had a control arm in the first place?

@@ -1,0 +1,43 @@
+- Chapter 05 exercises: Confidence intervals, the dual of tests
+    - Note: each exercise is small, runnable in the chapter's notebook or a fresh Python REPL, and probes one specific point the chapter raised. Two-lens exercises ask both questions explicitly.
+    - Exercise 1: Predict before computing
+        - Setup: paper first. 6 heads in 10 tosses.
+        - Task: write down your guess for the 95 percent Wald, Wilson, Clopper-Pearson, and Bayesian (Beta(1, 1)) intervals. Then compute with expkit.inference.binomial.wilson_ci, expkit.inference.binomial.clopper_pearson_ci, statsmodels.stats.proportion.proportion_confint with method="normal" for Wald, and expkit.inference.bayes.coin_posterior_conjugate (then call credible_interval).
+        - Expected pattern: most newcomers will guess intervals that are too narrow at n=10. The actual Wald is roughly [0.30, 0.90], Wilson [0.31, 0.83], Clopper-Pearson [0.26, 0.88], Bayesian [0.32, 0.81]. All contain 0.5.
+        - Stretch: for the same data run expkit.inference.bootstrap.bootstrap_ci on the 0/1 array and compare. Set seed=99.
+    - Exercise 2: Wald breaks at the boundary
+        - Setup: data scenarios 0/10, 10/10, 0/100, 100/100.
+        - Task: compute Wald, Wilson, Clopper-Pearson, and Bayesian (Beta(1, 1)) intervals for each. Tabulate.
+        - Expected pattern: Wald collapses to [0, 0] at 0/10 and [1, 1] at 10/10. The other three give honest, non-degenerate intervals. This is the chapter's Loop B, the famous Wald failure.
+        - Two-lens: at 0/10, Wilson says "I cannot rule out p as high as about 0.28", Bayesian says "the posterior credible interval is [0.002, 0.265]". Both give similar shapes by accident-of-construction at the boundary. Wald gives nonsense.
+        - Stretch: at 0/100, explain in one sentence why Wald keeps failing at the boundary even when n is large.
+    - Exercise 3: Coverage is a property of the procedure
+        - Setup: truth p=0.5, n=20, seed=123, n_experiments=5000.
+        - Task: simulate 5000 fair-coin samples of size 20 with bernoulli_sequence in a loop. For each, compute Wald, Wilson, Clopper-Pearson, and Bayesian 95 percent intervals. Count what fraction of each method's intervals contain 0.5.
+        - Expected pattern: Wilson and Bayesian land near 0.95. Clopper-Pearson lands above 0.95 (conservative on purpose). Wald drops below 0.95.
+        - Two-lens: this is the chapter's Loop D. The frequentist 95 percent confidence is exactly this empirical fraction. The Bayesian credible interval is not defined by long-run coverage, but it happens to cover near 95 percent here for symmetry reasons.
+        - Stretch: rerun at n=5. Report how much further Wald drops.
+    - Exercise 4: Coverage across p, where Wald lies
+        - Setup: n=30, seed=456, 3000 trials per p, p grid from 0.02 to 0.98 in steps of 0.04.
+        - Task: at each p, simulate 3000 binomial samples and record empirical coverage of Wald, Wilson, Clopper-Pearson, Bayesian (flat prior). Plot all four curves on the same axes.
+        - Expected pattern: matches images/coverage_vs_p.png. Wald oscillates and dips well below 0.95 near the boundaries. Wilson is stable near 0.95 across the whole grid. Clopper-Pearson is at or above 0.95 everywhere. Bayesian closely tracks Clopper-Pearson.
+        - Stretch: at which value of p does Wald's coverage hit its lowest dip? Read from your plot.
+    - Exercise 5: Find a seed where methods disagree on action
+        - Setup: scan seeds 0 through 199. For each, generate n=30 tosses at p=0.5 with bernoulli_sequence. We want the borderline case where Wald excludes 0.5 but Wilson includes it.
+        - Task: for each seed, compute Wald and Wilson 95 percent intervals on the resulting heads count. Find a seed where one interval excludes 0.5 and the other includes it. Print seed, count, both intervals.
+        - Expected pattern: you should be able to find such a seed in the first 200 (it is most common when the count is at the edges of the rejection region, around 9, 10, 20, 21 out of 30). Wald is narrower so it sometimes excludes 0.5 when Wilson does not.
+        - Two-lens: at that same seed compute the Bayesian credible interval. It usually agrees with Wilson, not Wald.
+        - Stretch: tally the disagreement rate over all 200 seeds. How often do Wald and Wilson cross 0.5 differently?
+    - Exercise 6: Priors that argue
+        - Setup: 60 heads in 100 tosses. Three priors: flat Beta(1, 1), skeptical Beta(50, 50), tail-leaning Beta(2, 8).
+        - Task: compute the posterior 95 percent credible interval and the posterior probability that p > 0.5 under each prior, with coin_posterior_conjugate. Tabulate.
+        - Expected pattern: matches images/three_priors.png. Flat: CI roughly [0.50, 0.69], P(p > 0.5) about 0.97. Skeptical: CI [0.48, 0.62], P(p > 0.5) about 0.92. Tail-leaning: CI roughly [0.47, 0.66], P(p > 0.5) around 0.88. The data moves the prior toward the truth, but the prior leaves a fingerprint.
+        - Two-lens: there is no frequentist counterpart that uses a prior. The frequentist's implicit assumption is "do not budge from the null until the data forces me", which is itself a prior, just an invisible one. Write one sentence on why making the prior explicit is honest.
+        - Stretch: what posterior credible interval would you need (qualitatively) to confidently ship a change? At what prior do you become uncomfortable?
+    - Exercise 7: Bootstrap on the borderline
+        - Setup: 60 heads in 100 tosses. seq = np.array([1] * 60 + [0] * 40).
+        - Task: run expkit.inference.bootstrap.bootstrap_ci with statistic=np.mean, n_boot=5000, seed=2024. Compare the percentile bootstrap interval to Wilson and to the Beta(1, 1) credible interval.
+        - Expected pattern: bootstrap returns roughly [0.50, 0.69], very close to Wilson and to the credible interval. At 60/100 the methods agree because the sampling distribution is symmetric and away from the boundary.
+        - Two-lens: now redo on 1/10 (one head in ten). Bootstrap interval will be visibly narrower than Wilson and the credible interval. The chapter flagged this: percentile bootstrap is biased near the boundary. Note where it goes wrong.
+        - Stretch: implement a bias-corrected bootstrap (BCa) by hand on 1/10 and report the BCa interval. Compare to Clopper-Pearson.
+    - Carry-forward question: the chapter ends on "what does the Bayesian framework look like end-to-end?". After these exercises the question is sharper: when intervals from five different procedures agree to two decimal places at large N but diverge at small N or at the boundary, what is the underlying machine that all five are approximating, and which prior makes the agreement at large N inevitable?

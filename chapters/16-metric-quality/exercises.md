@@ -1,0 +1,45 @@
+# Chapter 16 exercises: Metric quality
+
+- Note: each exercise is small, runnable in the chapter's notebook or a fresh Python REPL, and probes one specific point the chapter raised. Two-lens exercises ask both questions explicitly.
+- Exercise 1: predict the sample-size cost of noise
+  - Setup: read Loop A in chapter.log. Three candidate metrics A, B, C wrap the same underlying truth (mean 10, std 2) with extra noise of std 1, 5, and 0.3 respectively.
+  - Task: before running any code, write down the ratio of sample sizes you expect each metric to need to detect the same true effect at the same power. Then verify by computing the variance of metric_a, metric_b, metric_c using the snippet from `chapters/16-metric-quality/generate.py` `render_variance_comparison` and dividing pairwise.
+  - Expected pattern: required-N scales with variance. Metric B should need roughly 25 times the sample of metric C, because Loop A's variances are dominated by the added-noise std.
+  - Two-lens: not applicable here, this is a property of the metric definition, identical under either lens.
+  - Stretch: write the exact required-N ratio in terms of the noise std and the truth std using the Chapter 3 power formula.
+- Exercise 2: CUPED with a covariate that has nothing to do with y
+  - Setup: use `expkit.metrics.variance.cuped` and `expkit.metrics.variance.variance_reduction_ratio`. Generate y as in `render_cuped` from generate.py, but replace the pre-experiment covariate `pre` with an independent `np.random.normal(0, 3, n)` that has zero correlation with y.
+  - Task: compute theta and the variance reduction ratio. Repeat with the original correlated `pre`. Compare.
+  - Expected pattern: with an uncorrelated covariate, theta is near zero and the variance reduction ratio sits within sampling noise of zero. CUPED only buys precision when the covariate actually predicts the outcome.
+  - Two-lens: the frequentist statement is "theta is the OLS slope, near zero in expectation when cov is zero". The Bayesian counterpart, named in chapter Loop B's "For Loops B and D" aside, would put a Normal(0, 1) prior on theta and report a posterior centered near zero with width set by the data. Same conclusion, expressed as a posterior over theta rather than a point estimate.
+  - Stretch: pick a seed where, even with an uncorrelated covariate, the variance reduction ratio comes out positive by chance. Explain why.
+- Exercise 3: break the A/A calibration check
+  - Setup: copy the A/A loop in `render_aa_stability`. Replace the per-trial Welch t-test with a fixed denominator: divide every trial's mean difference by a constant SE estimated once from the very first trial.
+  - Task: feed the resulting p-values into `expkit.metrics.quality.aa_calibration` with alpha = 0.05.
+  - Expected pattern: empirical rejection rate drifts away from 0.05 and the 95% Wilson CI excludes the nominal alpha. This is exactly the failure mode `aa_calibration` is designed to catch: a pipeline that looks fine on `stability_aa` (the shape check stays symmetric) is provably miscalibrated.
+  - Two-lens: frequentist verdict is "Wilson CI on the rate excludes 0.05, pipeline broken". Bayesian counterpart from Loop C: feed the per-trial reject-or-not indicators to `expkit.inference.bayes.coin_posterior_conjugate` and ask `prob_greater_than(0.05)`. With many trials the posterior on the reject rate sits firmly above 0.05.
+  - Stretch: find a seed where the Wilson CI just barely includes 0.05 even though the pipeline is mis-specified. Discuss what that means for one-shot calibration audits.
+- Exercise 4: skeptical predictivity, find the boundary
+  - Setup: take the predictivity setup from `render_predictivity_grid` with three short-term metrics (good, noise, liar). Currently n = 200 paired experiments.
+  - Task: reduce n to 30 and call `expkit.metrics.quality.predictivity` with `n_boot=1000, seed=0` on each metric. Record the bootstrap 95% CI for r.
+  - Expected pattern: the good metric's CI overlaps zero, and may even overlap the liar's CI. The "metric of metrics" itself has variance, and 30 paired experiments is not enough to distinguish a +0.6 correlation from a -0.3 one with confidence.
+  - Two-lens: the chapter's bootstrap CI is the frequentist answer. The Bayesian counterpart, flagged in Loop D's "For Loops B and D" footnote, is a posterior over Pearson rho via Fisher z. Implementing it is left as the stretch.
+  - Stretch: implement the Fisher z posterior, sample from it, and compare the 95% credible interval on rho to the bootstrap CI at n = 30 and n = 200.
+- Exercise 5: the lying metric, conceptual
+  - Setup: re-read the Goodhart paragraph at the end of Loop D in chapter.log.
+  - Task: without writing code, list three concrete short-term product metrics that you would expect to score *negatively* on `predictivity` against a long-term retention metric. For each, name the optimization pressure that drives the divergence.
+  - Expected pattern: examples should show a substitution mechanism, not just noise. Click-through-rate optimized against ad relevance, push-notification opens optimized against weekly retention, daily sessions optimized against monthly retention. In each case, the proxy and the outcome are pulled apart by the optimization itself, not by sampling noise.
+  - Two-lens: the chapter notes that predictivity scoring catches Goodhart's law only after the fact, and that the structural fix is to weight short-term metrics by measured predictivity rather than to optimize them directly. Whether you frame "predictivity" as a Pearson r with bootstrap CI or as a posterior over rho, the diagnosis is the same and so is the fix.
+  - Stretch: design an experiment that would distinguish "the metric is noisy" from "the metric is a liar" using only short-term and long-term effect data.
+- Exercise 6: CUPED's variance reduction at different correlations
+  - Setup: from `render_cuped`, the line `y = 0.7 * pre + arm * treatment_effect + rng.normal(0, 1, n)` sets the slope of y on pre to 0.7. Sweep that slope through 0.0, 0.3, 0.5, 0.7, 0.9. For each, simulate, run `cuped`, and record `variance_reduction_ratio`.
+  - Task: plot variance reduction ratio against the slope.
+  - Expected pattern: the ratio is roughly r squared, where r is the correlation between pre and y. At slope 0.7 with the noise std of 1 you should land near 50%, matching Loop B's quoted figure. At slope 0 you get 0. CUPED's leverage is exactly the squared correlation.
+  - Stretch: replace the single covariate with two correlated covariates and compute the multiple-regression theta vector by hand, as Loop B's text says is also valid.
+- Exercise 7: two lenses on the A/A pipeline, agree by design
+  - Setup: rerun `render_aa_stability` from generate.py to get 5,000 A/A p-values.
+  - Task: report (a) the frequentist `aa_calibration` rate with its 95% Wilson CI, (b) the Bayesian Beta posterior from `coin_posterior_conjugate` on the 0/1 reject indicators with a Beta(1, 1) prior, and the posterior probability that the rate exceeds 0.05.
+  - Expected pattern: the frequentist Wilson CI brackets 0.05 and the posterior mean lands near 0.05 with `prob_greater_than(0.05)` near 0.5. The two answers tell the same story, as Loop C's two-lens commentary spelled out.
+  - Two-lens: this is the explicit comparison. Same data, two summaries, same verdict. Now reduce n_trials to 50 and rerun. The Wilson CI widens dramatically. The posterior also widens but stays a coherent belief about the rate. Note which lens you find easier to act on at small n.
+  - Stretch: with n_trials = 50, what prior would you have to use to get the Bayesian rule to *disagree* with the frequentist verdict? What does that prior encode?
+- Carry-forward question: we now know how to clean up a metric, calibrate the pipeline, and score predictivity. But the metric we measure is rarely the metric we care about, and most user value accrues across many touches before the conversion event lands. When credit is spread across a sequence, who deserves it?

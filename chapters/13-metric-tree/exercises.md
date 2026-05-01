@@ -1,0 +1,46 @@
+# Chapter 13 exercises: the metric tree
+
+- Note: each exercise is small, runnable in the chapter's notebook or a fresh Python REPL, and probes one specific point the chapter raised. Two-lens exercises ask both questions explicitly.
+- Exercise 1: predict R squared before computing it
+  - Setup: read Loop C. The simulator generates 200 paired (short-term, long-term) effects with `short = 0.6 * truth + Normal(0, 0.03)` and `long = 0.9 * truth + Normal(0, 0.01)`, where `truth ~ Normal(0, 0.02)`.
+  - Task: write down the analytic Pearson correlation between short-term and long-term in this generative process. Hint: compute Cov(short, long) and the two variances directly from the generative coefficients. Then run the simulation and call `expkit.metrics.quality.predictivity(short, long, n_boot=1000, seed=0)` to compare.
+  - Expected pattern: analytic r is around 0.30, the simulation lands near 0.29, the bootstrap 95 percent CI brackets [0.15, 0.41]. Most of your prediction error is rounding.
+  - Two-lens: skip, this is a setup question.
+  - Stretch: change the long-term noise from 0.01 to 0.05. Predict the new r before running. Why does increasing the long-term noise drop r more than increasing short-term noise by the same amount?
+- Exercise 2: bootstrap CI vs Bayesian posterior on Pearson r
+  - Setup: regenerate Loop C's 200 paired effects. Compute the bootstrap 95 percent CI for r with `predictivity(short, long, n_boot=1000, seed=0)`. Then fit a tiny Bayesian model on the same pairs: `r ~ Uniform(-1, 1)`, `(short, long) ~ MultivariateNormal(0, Sigma(r))`, sampled in PyMC.
+  - Task: report the bootstrap 95 percent CI on r and the 95 percent HDI from the posterior on r. Plot both intervals on the same axis.
+  - Expected pattern: both intervals cover roughly [0.15, 0.42], with the Bayesian interval slightly tighter at the top because the prior is uniform on (-1, 1). The chapter quotes a posterior centred near 0.29 with HDI around [0.16, 0.42].
+  - Two-lens: explicit. Frequentist bootstrap CI is "if the world repeats, 95 percent of intervals cover the true r." Bayesian HDI is "given my prior and these data, the posterior puts 95 percent mass on r in this range." Numerically close, philosophically different.
+  - Stretch: replace the Pearson r in the Bayesian model with Spearman rho. Why is this harder to do natively in PyMC, and what is the standard workaround?
+- Exercise 3: build a lying proxy
+  - Setup: read Loop D. Generate a fresh `truth ~ Normal(0, 0.02)` over n = 150 experiments. Generate three proxies. Proxy A is `truth + Normal(0, 0.02)` (clean). Proxy B is `truth + Normal(0, 0.04)` (noisy but honest). Proxy C is `-0.5 * truth + Normal(0, 0.03)` (lying).
+  - Task: compute Pearson r of each proxy against truth. Plot the three scatter plots side by side, annotated with their r values.
+  - Expected pattern: r around +0.7, +0.4, -0.3 respectively. The figure looks like images/proxy_lies.png. The lying proxy is not just noisy, it is anti-correlated with truth.
+  - Two-lens: skip, this is a per-proxy descriptive measurement.
+  - Stretch: design a hypothetical product change for which clicks would rise but revenue would fall. Real-world anchor: the chapter mentions clickbait. Sketch the data-generating process and explain what a lying proxy looks like at the user level rather than at the per-experiment level.
+- Exercise 4: find a seed where the short-term metric points the wrong way
+  - Setup: regenerate Loop C's pair-of-200 simulation, but loop over seeds 0 through 99. For each seed, count the number of experiments where short-term and long-term disagree on sign.
+  - Task: report the per-seed count of sign-disagreements out of 200. Find the seed with the most disagreements. Plot the (short, long) scatter for that seed.
+  - Expected pattern: somewhere between 35 and 60 disagreements out of 200 in a typical seed, because the noise dominates at the per-experiment level even when r ~ 0.3 holds in expectation. The worst seed will look messy at the origin.
+  - Two-lens: explicit. The frequentist response is "we have a 30 percent r, 30 percent of headlines about long-term will be wrong if read off short-term alone, plan accordingly." The Bayesian response is "carry the joint posterior on (short, long) into every decision instead of collapsing to a point estimate." Both reach the same operating policy, only the framing differs.
+  - Stretch: how would you redesign the proxy choice if your decision rule is "ship if short-term points up by at least 1pp"? Compute the false-positive rate of that rule given the chapter's r ~ 0.3.
+- Exercise 5: predictivity is a property of metric pairs, not single metrics
+  - Setup: read the Loop C hunch. Pick two short-term candidates: short_a = `0.6 * truth + Normal(0, 0.03)`, short_b = `0.4 * truth + Normal(0, 0.02)`. Pick two long-term candidates: long_x = `0.9 * truth + Normal(0, 0.01)`, long_y = `0.7 * truth + Normal(0, 0.03)`.
+  - Task: compute Pearson r for all four pairs (short_a, long_x), (short_a, long_y), (short_b, long_x), (short_b, long_y) on n = 200 experiments. Tabulate them.
+  - Expected pattern: r varies from around 0.20 to 0.45 across the four pairs. The "best" short-term metric is not a property of short_a alone, it depends on which long-term you anchor to.
+  - Two-lens: implicit. The Bayesian counterpart is to fit a joint multivariate-Normal posterior on the four candidate metrics and read off all six pairwise posterior correlations at once, with shared uncertainty.
+  - Stretch: rank the four candidate "headline metric pairs" using `expkit.metrics.quality.predictivity`. Then break ties by `signal_to_noise` of the short-term metric. Which pair would you actually ship as the leading indicator, and why?
+- Exercise 6: noise vs measurement speed, conceptual
+  - Setup: read Loop B and look at images/noise_vs_speed.png. The figure is schematic. The CV values and day counts are illustrative.
+  - Task: write a one-paragraph response to "given my real product, which layer of the metric tree should be my headline? click, session, first-layer proxy, or company outcome?". Cite at least one product fact you would need to know to answer this.
+  - Expected pattern: there is no universal answer. Answers should reference the rate at which the team can ship, the tolerance for shipping a regression undetected, and the cost of running a 6-month confirmation experiment. A startup might pick first-layer proxies. A regulated platform might pick company outcomes.
+  - Two-lens: skip, this is a structural choice that precedes inference.
+  - Stretch: pick your headline from the answer above. What is the smallest decision you can defend making purely off that headline metric without going one level higher in the tree?
+- Exercise 7: when does Spearman beat Pearson
+  - Setup: build a non-linear paired metric. Let `truth ~ Normal(0, 0.02)`, `short = sign(truth) * sqrt(|truth|) + Normal(0, 0.02)` (saturating), and `long = 0.9 * truth + Normal(0, 0.01)` (linear).
+  - Task: compute Pearson r and Spearman rho for the (short, long) pair across 200 experiments. Compare them.
+  - Expected pattern: Spearman rho is meaningfully higher than Pearson r because the relationship is monotone but not linear, and Pearson penalizes the curvature. The chapter's hunch said this directly.
+  - Two-lens: implicit. The Bayesian counterpart for monotone non-linear pairs is a copula model, but that is heavy machinery. The takeaway is that a single point estimate of r is the wrong summary the moment the link function bends.
+  - Stretch: design a metric pair where Pearson r is high but Spearman rho is low. Hint: heteroscedastic noise around a linear trend, with one outlier per 50 points. What does this say about which correlation you would put in a quarterly review slide?
+- Carry-forward question: Chapter 13 picked the right metric and Chapter 11 sliced it the right way. But the metric still wobbles, and worse, the wobble has a shape over time. The first day a user sees a new feature they over-engage. By week three, they do not. When does a real-looking lift turn out to be a temporary novelty bump, and how would we tell ahead of time?

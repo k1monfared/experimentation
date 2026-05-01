@@ -1,0 +1,44 @@
+- Chapter 06 exercises: The Bayesian view, formalized
+    - Note: each exercise is small, runnable in the chapter's notebook or a fresh Python REPL, and probes one specific point the chapter raised. Two-lens exercises ask both questions explicitly.
+    - Exercise 1: Predict before running, then check the conjugate update
+        - Setup: paper and pencil first. We have observed 6 heads in 10 tosses. Prior is Beta(1, 1).
+        - Task: write down, before running anything, what you expect the posterior mean and the 95 percent credible interval to be. Then call expkit.inference.bayes.coin_posterior_conjugate on np.array of length 10 with 6 ones, and read off the posterior mean and the credible_interval at level 0.95.
+        - Expected pattern: posterior is Beta(7, 5) so the posterior mean is 7/12 which is about 0.583. The 95 percent credible interval is roughly [0.31, 0.83]. Your guess of "around 0.6" should land near the mean. Most students underestimate the width.
+        - Two-lens: this exercise is purely Bayesian. The frequentist comparison lives in Exercise 4.
+        - Stretch: change the prior to Beta(2, 8) and predict whether the posterior mean shifts up or down before computing. Verify with the helper.
+    - Exercise 2: Priors that argue at small N, agree at large N
+        - Setup: four priors as in the chapter's Loop B figure (priors_argue.png), namely Beta(1, 1), Beta(50, 50), Beta(2, 8), and Beta(8, 2).
+        - Task: build seq_small with 6 heads in 10 tosses and seq_large with 600 heads in 1000 tosses. For each of the four priors, compute the posterior mean and credible interval with coin_posterior_conjugate at both sample sizes. Tabulate eight rows.
+        - Expected pattern: at 6/10 the posterior means span roughly 0.40 to 0.70 across the four priors. At 600/1000 all four posterior means cluster within 0.01 of 0.60, and all four credible intervals overlap heavily. The data has overwhelmed the prior, exactly as Loop B claimed.
+        - Stretch: pick the prior that disagrees most strongly with the small-N data. At what N does its posterior mean first come within 0.01 of the maximum-likelihood estimate? Use a binary search over N.
+    - Exercise 3: PyMC vs the closed form, sanity check
+        - Setup: 60 tosses with bernoulli_sequence at p=0.5 and seed=606.
+        - Task: compute the posterior with both expkit.inference.bayes.coin_posterior (PyMC, draws=2000, chains=2, tune=1000, random_seed=606) and coin_posterior_conjugate (closed form, Beta(1, 1) prior). Compare posterior_summary on the PyMC trace to the closed-form mean and 95 percent credible interval.
+        - Expected pattern: PyMC mean and quantiles agree with the closed form to within Monte Carlo error, around 0.005 on the mean and 0.01 on the credible interval edges. Inspect the trace's R-hat on p (should be near 1.00) and ESS_bulk (a few thousand). This reproduces the pymc_trace_vs_closed_form.png check.
+        - Two-lens: still purely Bayesian, but you are now confirming that the sampler (which we will need when there is no closed form) gives the same answer as the math.
+        - Stretch: re-run with chains=1 and draws=200. Watch ESS_bulk fall and the credible interval edges wobble. This is the fewer-effective-samples regime that diagnostics flag.
+    - Exercise 4: Same data, two lenses, narrate the gap
+        - Setup: 7 heads in 12 tosses.
+        - Task: compute the frequentist exact two-sided p-value with expkit.inference.binomial.binom_test_exact against p_null=0.5 and the Wilson 95 percent CI with wilson_ci. Compute the Bayesian posterior with coin_posterior_conjugate (Beta(1, 1)), the 95 percent credible interval, and prob_greater_than(0.5).
+        - Expected pattern: p-value is around 0.77, Wilson CI roughly [0.31, 0.83]. Posterior mean is 8/14 which is about 0.571, credible interval close to the Wilson interval, and posterior probability that p exceeds 0.5 is around 0.69. The frequentist verdict is "no evidence against fair", the Bayesian verdict is "leaning slightly toward biased but not confidently". Same data, two questions.
+        - Two-lens: write one sentence in your own words for each lens. The frequentist sentence starts with "If the coin were fair...". The Bayesian sentence starts with "Given my flat prior and these tosses...".
+        - Stretch: re-run at 70 heads in 120 tosses (same fraction). The two intervals should now agree to two decimal places, and posterior probability that p exceeds 0.5 should jump above 0.95. Power, again.
+    - Exercise 5: Bayes factor under a fair coin, find the wobble
+        - Setup: bernoulli_sequence at p=0.5 with seed=0, n=2000.
+        - Task: at N in [50, 100, 200, 500, 1000, 2000] take the prefix of the sequence and compute expkit.inference.bayes.bayes_factor_point_vs_uniform against point=0.5. Plot BF_10 vs N on a log-y axis.
+        - Expected pattern: BF_10 drifts up and down and never escapes a band roughly between 0.05 and 5. There is no consistent direction because H0 is true. This reproduces the fair-coin trace in bayes_factor.png. Some prefixes will briefly show BF_10 above 3 (which Jeffreys' scale calls "substantial evidence for H1"), purely from sampling noise.
+        - Skeptical: find a seed in 0 to 50 where BF_10 first crosses 10 before N reaches 500 on a fair coin. Note the seed and the crossing N. Why is "the data is 10 times more likely under H1" not the same as "H1 is true"?
+        - Stretch: redo with p=0.55 and seed=0. BF_10 should grow roughly exponentially in N. Fit log(BF_10) vs N and read off the slope.
+    - Exercise 6: Lindley's paradox, build a small one
+        - Setup: 5500 heads in 10000 tosses (a very small but very precise excess over 0.5).
+        - Task: compute the frequentist two-sided p-value (use binom_test_exact or normal_approx) and the Bayes factor with bayes_factor_point_vs_uniform against point=0.5. Then compute the BF using a tighter alternative by mentally replacing the uniform with Beta(50, 50): you can approximate this by computing the marginal likelihood ratio yourself with scipy.special.betaln, or by sketching the comparison qualitatively.
+        - Expected pattern: the p-value is comfortably below 0.05 (frequentist rejects H0). With the uniform-on-(0,1) alternative, BF_10 is roughly of order 30 or larger, agreeing with the frequentist verdict. With a tight Beta(50, 50) alternative concentrated near 0.5, the BF actually disfavors H1 because the alternative also predicts data near 0.5. The two analyses send opposite signals about the same data. That is Lindley's paradox in miniature.
+        - Two-lens: write one sentence on what changed and which analysis you would defend. The chapter warned that BF "is not interpretable without a prior on the alternative parameter".
+        - Stretch: vary the alternative concentration from Beta(2, 2) to Beta(500, 500) and find the crossover concentration at which BF_10 equals 1.
+    - Exercise 7: Posterior predictive vs plug-in, the width gap
+        - Setup: replicate the chapter's Loop E setup. Use bernoulli_sequence at p=0.6 with seed=11 and n=50, then look at predictions for the next 20 tosses.
+        - Task: compute expkit.inference.bayes.conjugate_posterior_predictive(seq, new_n=20, seed=42, n_samples=20000) for the proper posterior predictive. Then build a plug-in baseline: estimate p_hat from seq, draw 20000 samples from Binomial(20, p_hat), and compare the 95 percent intervals on the count of future heads.
+        - Expected pattern: both distributions centre near 13 heads. The plug-in 95 percent interval is roughly [8, 17]. The posterior predictive 95 percent interval is roughly [8, 18], one head wider on the high side. The posterior predictive is wider because it carries our remaining uncertainty about p, exactly the chapter's posterior_predictive.png panel.
+        - Two-lens: the plug-in interval is a frequentist-flavored prediction (use a point estimate, ignore parameter uncertainty). The posterior predictive is the Bayesian version (integrate over the posterior). Note when each is honest.
+        - Stretch: cut the observed sample to n=10 (still seed=11) and recompute both. The width gap should grow noticeably because parameter uncertainty matters more when the posterior is wide.
+    - Carry-forward question: the chapter's big question was "how do these tools generalize beyond two outcomes?". After these exercises, your sharper question is: when the prior matters (small N, Bayes factor), how do I justify the choice in writing, and when the prior does not matter (large N, plug-in roughly equals predictive), why am I still bothering with the Bayesian machinery?

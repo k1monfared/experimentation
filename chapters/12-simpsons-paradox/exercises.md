@@ -1,0 +1,48 @@
+# Chapter 12 exercises: Simpson's paradox, when the parts disagree with the whole
+
+- Note: each exercise is small, runnable in the chapter's notebook or a fresh Python REPL, and probes one specific point the chapter raised. Two-lens exercises ask both questions explicitly.
+- Exercise 1: predict the aggregate before computing it
+  - Setup: read Loop A. Two segments. Segment A is 20 percent of the population, baseline 0.80. Segment B is 80 percent, baseline 0.20. Each segment lifts by exactly +5pp under treatment. Treatment share is 0.20 in segment A and 0.80 in segment B.
+  - Task: compute by hand the analytic control mean and treatment mean, taking the population-weighted average over the two segments. Take their difference. Then run `expkit.sim.user_segments.imbalanced_assignment` with `n_total=20000` and `seed=1200` to verify.
+  - Expected pattern: control mean lands near 0.500, treatment mean near 0.285, aggregate diff near -0.21. Each per-segment diff is +0.05. Sign flip is structural, not statistical.
+  - Two-lens: skip, this is the arithmetic setup before any inference.
+  - Stretch: redo the arithmetic with the segment-A fraction at 0.50 instead of 0.20. Show that the aggregate still does not equal +0.05 unless treatment share is also balanced within each segment.
+- Exercise 2: sweep treatment share to find the flip point
+  - Setup: regenerate Loop B's sweep using `imbalanced_assignment` over treatment-share-in-A from 0.05 to 0.95 in 31 steps, with treatment-share-in-B set to one minus that value. Hold `n_total=10000`.
+  - Task: plot the aggregate effect against treatment share in A. Identify the value of treatment share where the aggregate sign first becomes positive, and the value where it first becomes equal to the within-segment +0.05 truth.
+  - Expected pattern: aggregate is roughly +0.05 only when treatment share equals the segment-A fraction (0.20 here). Far from balanced, aggregate drifts toward minus 0.20 or plus 0.20. The figure looks like images/paradox_sweep.png.
+  - Two-lens: explicit. Frequentist diagnosis is "stratify by segment and run a per-segment two-proportion z." Bayesian diagnosis is `expkit.inference.bayes.hierarchical_segmented_posterior` with the segment label as input. Both recover +0.05 per segment. The naive aggregate keeps lying.
+  - Stretch: replace the +0.05 per-segment lift with a true effect that varies by segment, say +0.10 in segment A and 0.00 in segment B. Re-run the sweep. Now, when can the aggregate honestly be summarized by a single number?
+- Exercise 3: when is the paradox impossible
+  - Setup: read Loop C. Same population as Exercise 1 but vary the assignment design across 50 simulation runs each.
+  - Task: run two designs side by side. Design 1: treatment share 0.50 in both segments, with `n_total=10000`. Design 2: treatment share 0.20 in segment A and 0.80 in segment B, same N. For each design, plot the histogram of the aggregate diff over 50 seeds.
+  - Expected pattern: Design 1 histogram centres on +0.05 with a spread of about 0.01. Design 2 histogram centres far below zero (around -0.21) and almost never overlaps the truth. Looks like images/paradox_impossible.png.
+  - Two-lens: explicit. Design 1 makes both lenses agree on the aggregate. Design 2 splits the lenses: frequentist must stratify or pay a confounding tax, Bayesian must include the segment label or pay the same tax in posterior bias.
+  - Stretch: at what segment-by-baseline ratio does balanced random assignment cease to protect against the paradox? Hint: balanced assignment makes the paradox impossible in expectation but a small-N realization can still flip. Find the smallest N where the balanced design occasionally produces the wrong sign.
+- Exercise 4: build a Berkeley-style example from scratch
+  - Setup: re-create the Loop E setup. Two departments: department A is hard (acceptance around 0.20), department B is easy (acceptance around 0.65). Apply 80 percent of female applicants to department A and 80 percent of male applicants to department B. Within each department, women have a slightly higher acceptance rate than men (say +2pp).
+  - Task: print the aggregate acceptance rate for men and for women, then the per-department rates. Compute the aggregate diff (men minus women) and the per-department diffs.
+  - Expected pattern: aggregate looks like men are favored. Per department, women are slightly favored. Same data, opposite headline.
+  - Two-lens: implicit. The frequentist response is "stratify by department." The Bayesian response is a hierarchical model on per-department acceptance with the department label, which gives the same conclusion through partial pooling.
+  - Stretch: discuss in three sentences what the "right" answer is. Hint: the chapter's "confounder vs mediator" aside is the unlock. If department choice is itself a downstream consequence of treatment-by-gender, the per-department view blocks the very effect you are trying to measure.
+- Exercise 5: hierarchical model dissolves the paradox
+  - Setup: take the seed-1200 Loop A data exactly as in `generate.py:render_hierarchical_recovery`. Build per-segment success and trial dicts. Fit `hierarchical_segmented_posterior(successes_by_segment, n_by_segment, seed=1212, draws=2000, chains=2, tune=3000, target_accept=0.99)`.
+  - Task: read off the posterior mean and 95 percent CI of `p_treatment - p_control` per segment. Compare to the truth (+0.05 each). Compare to the naive aggregate of -0.21.
+  - Expected pattern: per-segment posteriors centre near +0.05 with the truth inside the 95 percent CI. The Bayesian "population mu" translated to a probability-scale average effect is also near +0.05. The naive aggregate stays at -0.21. The figure looks like images/hierarchical_recovery.png.
+  - Two-lens: explicit. Frequentist stratified analysis returns +0.05 per segment with one z-test per segment plus correction. Bayesian hierarchical model returns +0.05 per segment plus a population-level mu. Same answer, two roads.
+  - Stretch: now break the hierarchical model. Remove the segment label from the model and feed it only the aggregate counts. What does the posterior look like? Why does the right answer require the right DAG, not just more data?
+- Exercise 6: confounder vs mediator, conceptual
+  - Setup: read the "confounder or mediator" aside in chapter.log.
+  - Task: for each of two product scenarios, decide which DAG applies and which analysis is right.
+    - Scenario 1: treatment is a UI redesign. Segment is "user country." Segment causes both treatment-eligibility (rollout schedule) and conversion. Should you stratify by country?
+    - Scenario 2: treatment is a notification campaign. Segment is "opened the notification." Treatment causes the segment, then segment causes the outcome. Should you stratify by "opened"?
+  - Expected pattern: Scenario 1 is a confounder. Stratify by country, the per-segment effect is the right answer. Scenario 2 is a mediator. Stratifying by "opened" blocks the causal path and zeroes out the very effect you wanted to measure. Use ITT (Chapter 15) or a CACE estimator instead.
+  - Two-lens: skip, this is a structural question that precedes inference.
+  - Stretch: design one frequentist diagnostic and one Bayesian diagnostic that would catch you misclassifying Scenario 2 as a confounder. Hint for the Bayesian one, look at the posterior on the population mu when the model uses "opened" as a segment label vs when it does not.
+- Exercise 7: seed hunt for a finite-sample sign flip under balanced assignment
+  - Setup: use the Loop A specs but with treatment share fixed at 0.50 in both segments. Use a small `n_total=200` to amplify finite-sample noise.
+  - Task: run 1000 seeds. Record the aggregate diff in each. Report the fraction where the aggregate sign disagrees with the per-segment sign (each segment is +0.05 by construction).
+  - Expected pattern: the fraction of sign flips drops fast as N grows. At N = 200 the flip rate is several percent. At N = 20000 it is essentially zero. Balanced assignment makes the paradox impossible in expectation, but finite samples can still embarrass you.
+  - Two-lens: explicit. For one of your sign-flip seeds, run a per-segment two-proportion z-test (frequentist) and a hierarchical posterior (Bayesian) on the same data. Both should still recover +0.05 within their per-segment uncertainty even when the aggregate flipped.
+  - Stretch: at what N does the empirical sign-flip rate cross 1 percent for these specs? Read it off your sweep, then check whether the analytic standard error of the aggregate predicts the same cross-over.
+- Carry-forward question: every chapter so far has argued about which segment, which lens, which weight. None has asked which metric we should be measuring in the first place. When subgroups disagree with the aggregate, sometimes the right answer is "report both," but sometimes the right answer is "you are measuring the wrong thing." How do we tell which case we are in, and what does that say about the metric we picked?

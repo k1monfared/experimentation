@@ -1,0 +1,40 @@
+- Chapter 04 exercises: The family of tests
+    - Note: each exercise is small, runnable in the chapter's notebook or a fresh Python REPL, and probes one specific point the chapter raised. Two-lens exercises ask both questions explicitly.
+    - Exercise 1: Predict which tests will disagree
+        - Setup: paper first. Five tests on the same data (exact binomial, normal-approx z, chi-square goodness-of-fit, Fisher 2x2 against equal-size reference, one-sample t). Four data scenarios: 6/10, 60/100, 600/1000, 6000/10000.
+        - Task: write down before computing which scenario you expect the tests to most disagree on, and which test you expect to be the outlier. Then compute. Use expkit.inference.binomial.binom_test_exact, expkit.inference.normal.one_sample_z, expkit.inference.chi2.goodness_of_fit, expkit.inference.fisher.fisher_exact_2x2 (paired with reference [n/2, n/2]), and expkit.inference.normal.one_sample_t on the 0/1 array.
+        - Expected pattern: the borderline 60/100 row is where they disagree most on alpha=0.05 trip. Fisher is the systematic outlier (more conservative) at every row. Chi-square and z give identical p-values at every row.
+        - Stretch: produce the chapter's images/pvalue_grid.png table from your own runs and verify the published numbers.
+    - Exercise 2: Where the normal-approximation lies
+        - Setup: grid of (n, k) pairs. n in [10, 25, 50, 100, 250, 500, 1000]. For each n, k from 0 to n.
+        - Task: compute exact-binomial and normal-approx z p-values for each (n, k) and plot the absolute gap as a function of k for each n. Use binom_test_exact and one_sample_z with p_null=0.5.
+        - Expected pattern: at n=10 the gap reaches about 0.23. At n=1000 it is still about 0.025 in the tails. The gap shrinks like 1/sqrt(n), the chapter's Loop B claim.
+        - Stretch: for what value of n does the maximum gap drop below 0.005? You will likely need n in the tens of thousands.
+    - Exercise 3: Edge cases that break tests
+        - Setup: scenarios 0/10, 10/10, 1/1, 0/100, 100/100.
+        - Task: run all five tests on each scenario. Catch the failure modes: t-test on 1/1 returns NaN, t-test on 0/10 and 10/10 returns p=0 with infinite t. Tabulate which tests fail on which scenario.
+        - Expected pattern: matches images/edge_cases.png. The t-test fails most. Normal-approx z is overconfident at the boundary. Exact binomial and chi-square stay sane (chi-square may warn on small expected counts).
+        - Stretch: at 0/10, what does the Wilson interval say? Compare to what each test "thinks" about p.
+    - Exercise 4: Find a borderline 60/100-style data point
+        - Setup: simulate 200 fair-coin sequences at N=100, seeds 0 through 199.
+        - Task: for each seed, compute the exact-binomial and z-test p-values. Find a seed where exact says do not reject (p greater than 0.05) but z says reject (p less than 0.05). Print the seed, the heads count, and both p-values. Compare to the chapter's claim about 60/100.
+        - Expected pattern: heads counts of 39, 40, 61, or 62 are the candidates. At those counts, exact and z straddle 0.05, with exact more conservative. The two tests disagree on action.
+        - Two-lens: for the same data, also compute the Beta(1, 1) credible interval and check whether 0.5 sits inside or outside. Does the Bayesian agree with exact, or with z?
+        - Stretch: explore whether Fisher (with reference [50, 50]) ever flips disagreement direction (i.e., Fisher rejects while exact does not). Report counterexamples or a one-line reason none exist.
+    - Exercise 5: Fisher converges to exact as the reference grows
+        - Setup: data 60/100. Reference sizes ref_n in {100, 1000, 10000, 100000}.
+        - Task: build the 2x2 table [[60, 40], [ref_n/2, ref_n/2]] for each reference size. Run fisher_exact_2x2 on each. Compare to binom_test_exact at the same data.
+        - Expected pattern: at ref_n=100 Fisher gives about 0.20. At ref_n=10000 it has dropped near 0.057, matching exact. The "variance tax" of treating the reference as data drains away as the reference grows. This is the chapter's sentence "Fisher converges to the exact binomial p-value as the reference goes to infinity".
+        - Stretch: derive in one paragraph why this convergence happens (hint: hypergeometric tail under fixed margins narrows when one margin gets huge).
+    - Exercise 6: Two-lens grid on the same data
+        - Setup: same four scenarios as Exercise 1: 6/10, 60/100, 600/1000, 6000/10000.
+        - Task: for each, compute the exact-binomial p-value and the Beta(1, 1) posterior 95 percent credible interval and posterior P(p > 0.5). Tabulate side by side.
+        - Expected pattern: matches the chapter's Loop D. At 6/10 both lenses agree "no signal". At 60/100 both call it borderline (p just above 0.05, credible-interval lower bound just at 0.50). At 600/1000 and beyond, both agree "rejected and p > 0.5 with very high probability".
+        - Two-lens: explicit. Write one sentence at each row about whether you would ship a change based on the data, under each lens, and explain.
+        - Stretch: redo the 60/100 row with three priors (Beta(1, 1), Beta(50, 50), Beta(2, 8)). Reproduce the prior-sensitivity from Chapter 2.
+    - Exercise 7: One-sample t on 0/1 data, when does it agree with z
+        - Setup: scenarios 6/10, 60/100, 600/1000, 6000/10000. Build a 0/1 numpy array of the right length for each.
+        - Task: run one_sample_t with mu_null=0.5 and one_sample_z with p_null=0.5. Tabulate the t and z statistics, the two p-values, and their absolute difference.
+        - Expected pattern: at 6/10 the t and z p-values differ noticeably (about 0.51 vs 0.85, the chapter does not match perfectly because t uses a different SE). Wait, sanity check with the chapter's Loop A numbers: at 60/100 z gives 0.046 and t gives 0.045, close. At 600/1000 they essentially agree to many digits. The t-z gap shrinks fast with N because the t reference distribution converges to normal and the data SE converges to the null SE.
+        - Stretch: at exactly the boundary (1/1), confirm that t returns NaN while z returns a defined number. This is the chapter's edge-case point.
+    - Carry-forward question: the chapter closes on "tests answer can-I-reject-this-point, intervals answer what-set-is-plausible". After these exercises the question is sharper: for the borderline 60/100 case where five tests give five p-values from 0.046 to 0.20, what does the corresponding interval-based answer look like, and is it similarly fragile to the choice of method?

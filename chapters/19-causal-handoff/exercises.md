@@ -1,0 +1,52 @@
+# Chapter 19 exercises: When experiments aren't enough
+
+- Note: each exercise is small, runnable in the chapter's notebook or a fresh Python REPL, and probes one specific point the chapter raised. Two-lens exercises ask both questions explicitly. The carry-forward leaves the experimentation repo and points the reader at the sibling causal-inference repo.
+- Exercise 1: predict the bias direction
+  - Setup: read Loop B in chapter.log. Latent `propensity ~ Normal(0, 1)`. Treatment more likely when propensity is high. True treatment effect = +0.30. Outcome = propensity + 0.30 * treated + Normal(0, 0.5).
+  - Task: before running anything, predict the sign of the naive-comparison bias (treated mean minus untreated mean, minus the true effect of 0.30). Then run `chapters/19-causal-handoff/generate.py` `render_selection_bias` and read off the actual gap.
+  - Expected pattern: the gap is positive and roughly +0.70, exactly matching Loop B's "naive +1.0 vs true +0.30". This is pure selection bias, since the simulation has zero heterogeneous treatment effect (the HTE term in Rubin's decomposition vanishes).
+  - Two-lens: the bias does not care about the lens. Both a frequentist t-test and a Bayesian posterior on `treated_mean - untreated_mean` will land on +1.0. The lens does not solve the identification problem. Only design or causal-inference machinery does.
+  - Stretch: what would the naive comparison report if the propensity-to-treatment sigmoid were *flipped* (high propensity to less likely to be treated)?
+- Exercise 2: shrink the bias by reducing the propensity-treatment link
+  - Setup: same simulation as Exercise 1, but parameterize the strength of the link. In `render_selection_bias` the line `treated = rng.random(n) < 1 / (1 + np.exp(-propensity))` gives a very strong link.
+  - Task: replace the sigmoid argument with `0.1 * propensity`, then `0.5 * propensity`, then `2.0 * propensity`. Recompute the naive treated-minus-untreated gap for each.
+  - Expected pattern: as the link strength approaches zero, the naive comparison approaches the true effect of +0.30. As the link strength grows, the bias grows roughly monotonically. At link strength zero (random assignment), naive comparison is unbiased: this is what randomization buys.
+  - Two-lens: still no two-lens difference. The point is that the *design* matters in a way the inference machinery cannot fix. This is precisely why the chapter hands off to causal inference.
+  - Stretch: at what link strength does the naive comparison flip sign on the true effect (i.e. the treated mean is actually lower than the untreated mean despite a +0.30 true effect)? Explain.
+- Exercise 3: skeptical, find the heterogeneity that hides
+  - Setup: Loop B notes that Rubin's decomposition splits SDO into ATE + selection bias + HTE bias. The chapter's simulation kills the HTE term by making the treatment effect constant at +0.30.
+  - Task: modify the outcome to `propensity + (0.30 + 0.40 * propensity) * treated + Normal(0, 0.5)`. Now the treatment effect rises with propensity. Recompute the naive comparison and decompose.
+  - Expected pattern: the SDO is now larger than +1.0, because both selection bias *and* HTE bias push in the same direction. A naive analyst could not, from observational data alone, tell which term is which. They both look like "treated has higher outcomes".
+  - Two-lens: from the chapter, "even when randomization is impossible, we have tools for unbiased effect estimation under explicit assumptions". The frequentist and Bayesian camps disagree about how to express uncertainty over those estimates, but neither can identify ATE without the assumptions. The handoff repo is where those assumptions get formalized.
+  - Stretch: design an outcome model where selection bias and HTE bias *cancel*, so the naive comparison happens to land on the true ATE for the wrong reasons. What conditions does this require?
+- Exercise 4: SUTVA, build a network-effects example
+  - Setup: read the network-effects bullet in Loop A. SUTVA fails when treating user A changes user A's friends' behaviour.
+  - Task: simulate 1,000 users on a sparse social graph (each user has 3 random friends). Half are randomly treated. The treated users have a +0.20 effect on their own outcome. Each *untreated* user gets +0.05 per treated friend (spillover).
+  - Compute (a) the per-user treatment-vs-control difference ignoring the spillover, and (b) the same difference if you "purify" the control arm to only users with zero treated friends. Compare to the within-user true effect of +0.20.
+  - Expected pattern: ignoring spillover, the apparent effect is *smaller* than +0.20, because spillover lifts the control arm too. The purified-control estimate is closer to +0.20 but loses sample. SUTVA violation distorts the estimand.
+  - Two-lens: the chapter does not run this simulation but names the failure mode. The frequentist response is cluster randomization or partial-interference designs. The Bayesian response is to write down a likelihood that includes the spillover term and let the posterior propagate uncertainty. The handoff repo treats both.
+  - Stretch: increase friend density to 10 friends per user. Does the naive estimate drift further from +0.20 or stay roughly constant? Why?
+- Exercise 5: vocabulary check, conceptual
+  - Setup: read Loop C's vocabulary list (potential outcomes, ATE, selection bias, identification).
+  - Task: for each of the five "experiments cannot answer this" cases in Loop A (long horizons, ethics, network effects, observational data, one-time events), pick the *one* vocabulary term from Loop C that is most central to making progress on it.
+  - Expected pattern: long horizons and observational data both need *identification*, since a control arm is missing. Ethics needs *potential outcomes* most directly, since the unobserved Y(0) for a treated patient is the moral hazard. Network effects need a refined estimand because *ATE* with SUTVA is undefined. One-time events need *identification* via natural experiments or synthetic controls.
+  - Two-lens: this is conceptual. The lens shows up later, in how each method propagates uncertainty after the identification work is done.
+  - Stretch: pick one of the five cases from your own work life and write three sentences about which method from Loop B's list (potential outcomes, IV, RD, DiD, propensity scoring, synthetic controls) you would reach for first.
+- Exercise 6: two-lens on the *naive* comparison
+  - Setup: from the simulation in `render_selection_bias`, you have outcome arrays for treated and untreated users.
+  - Task: compute (a) a frequentist 95% CI for `treated.mean() - untreated.mean()` using `expkit.inference.normal.welch_t` or a manual t-interval, and (b) a Bayesian posterior over the same quantity using independent Normal priors on each mean and `pm.sample` (or analytically, since the data is large).
+  - Expected pattern: both intervals exclude zero, both are tightly concentrated around +1.0, and *both* are wrong about the causal effect of +0.30. This is the chapter's central point made operational: the lens does not save you from selection bias. Calibrated uncertainty around the wrong estimand is still wrong.
+  - Two-lens: this is the explicit two-lens exercise for this chapter. The frequentist and Bayesian intervals around the naive estimator agree to four decimals. They are jointly miscalibrated in the only way that matters: the estimand they agree on is not the ATE.
+  - Stretch: redo this exercise after stratifying users into deciles of `propensity` and computing the within-decile treatment effect, weighted to the population. Does the answer move toward +0.30?
+- Exercise 7: when does an experiment stop being enough, in your domain
+  - Setup: read the closing thought in chapter.log. The big question handed to the reader is "when do experiments stop being enough, in your domain?".
+  - Task: write a one-page note for your team, in five paragraphs:
+    - 1. one decision your team makes routinely where a clean A/B is feasible.
+    - 2. one decision where a clean A/B is *not* feasible, and which of Loop A's five reasons applies.
+    - 3. the observational data you already have that bears on the second decision.
+    - 4. which causal-inference tool from Loop B's list is the most natural fit (potential outcomes, IV, RD, DiD, propensity scoring, synthetic controls).
+    - 5. what you would need to assume for that tool to be valid, and how you would check the assumption.
+  - Expected pattern: this exercise cannot have a "right" answer. The point is to translate Chapter 19's vocabulary into your operational reality before opening the sibling repo.
+  - Two-lens: this exercise is mostly about identification, which is upstream of the lens choice. Once identification is settled, both lenses re-enter on the inference step.
+  - Stretch: pick the assumption from step 5 you find least defensible. Sketch what would happen to your estimate if it failed.
+- Carry-forward question: the experimentation repo ends here. The next leg of the journey is in the sibling repo at /home/k1/public/statistics/causal_inference, which uses the Mixtape Sessions framework, runs labs on potential outcomes (perfect-doctor vs random-assignment, the Thornton HIV experiment), and treats IV, RD, DiD, propensity scoring, and synthetic controls at proper depth. Open that repo with this question in hand: which of the five "experiments cannot answer this" cases from Loop A is most pressing for your work, and which method there resolves it under the cleanest assumptions?

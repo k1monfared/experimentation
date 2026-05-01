@@ -1,0 +1,48 @@
+- Chapter 15 exercises: dilution
+    - Note: each exercise is small, runnable in the chapter's notebook or a fresh Python REPL, and probes one specific point the chapter raised. Two-lens exercises ask both questions explicitly.
+    - Exercise 1: predict ITT from per-protocol
+        - Setup: read Loop A. Simulator parameters are `n_users=20000`, `visit_prob=0.12`, `base_rate=0.20`, `treatment_lift_among_visitors=0.10`. The expected ITT is roughly visit_prob times among-visitors lift, so 0.12 times 0.10 = 0.012.
+        - Task: predict the analytical ITT before running. Then run `expkit.sim.dilution.settings_page_experiment(...)` with `seed=150` and compute the empirical ITT and per-protocol diffs.
+        - Expected pattern: ITT in a single seed-150 draw lands near -0.004 with SE around 0.006, which brackets the analytical 0.012 within roughly two SEs. Per-protocol on the visited subsample lands near +0.083 with SE around 0.018, bracketing the truth 0.10 within roughly one SE. Looks like images/itt_vs_per_protocol.png.
+        - Two-lens: skip, this is a setup question.
+        - Stretch: change the seed to find one where the empirical ITT is positive but smaller than 0.005. How many seeds did you have to scan? What does that say about the power to detect the true 0.012 ITT at this N?
+    - Exercise 2: dilution sweep over visit rate
+        - Setup: regenerate Loop B. Sweep `visit_prob` from 0.02 to 0.95 in 30 steps, with `n_users=8000` and `treatment_lift_among_visitors=0.10`, repeating each step over 20 seeds. Measure ITT and per-protocol effects per seed.
+        - Task: plot ITT mean vs visit_prob, and per-protocol mean vs visit_prob, with plus or minus 2 SD bands across seeds. Also draw a horizontal line at 0.10 (the true among-visitors effect).
+        - Expected pattern: ITT scales roughly linearly with visit_prob from 0 up to 0.10 at full compliance. Per-protocol stays near +0.10 across the sweep but its band is wide at low visit rates. Looks like images/dilution_sweep.png.
+        - Two-lens: explicit. Frequentist analysis is "ITT is the policy effect, per-protocol is the among-compliers effect, and the Wald estimator is ITT divided by compliance." Bayesian analysis builds a single hierarchical model with a latent visit indicator and reads `delta_visitor` directly. Both should agree on the among-visitors effect.
+        - Stretch: at what visit_prob does the ITT become indistinguishable from zero in a single 8000-user experiment? Hint: compute the analytical SE on the difference of two proportions and find where the truth (visit_prob times 0.10) falls below 1.96 times that SE.
+    - Exercise 3: build a CACE estimator from ITT and compliance
+        - Setup: take a single seed-150 draw from `settings_page_experiment` with the Loop A parameters. Compute the empirical compliance rate (the fraction of treatment-arm users who visited).
+        - Task: compute the Wald estimator of CACE as `ITT / compliance_rate`. Compare to per-protocol and to the true among-compliers effect (0.10).
+        - Expected pattern: CACE matches per-protocol in this design because compliance is exogenous (visit_prob does not depend on potential outcomes). Both should land near 0.10 within sampling noise. The analytic CACE in expectation is ITT / compliance = 0.012 / 0.12 = 0.10.
+        - Two-lens: explicit. Frequentist Wald estimator is the standard CACE recipe under the four conditions in Loop B (random assignment, monotonicity, exclusion restriction, SUTVA, non-zero first stage). Bayesian counterpart is the small PyMC sketch in chapter.log: `delta_visitor ~ Normal(0, 0.1)`, `p_visit ~ Beta(1, 1)`, posterior on `delta_visitor` directly.
+        - Stretch: break the exogeneity assumption. Modify the simulator so that motivated users are both more likely to visit and have a higher base_rate (say `base_rate = 0.20 + 0.10 * motivated`). Now compare CACE, per-protocol, and the truth. Which one is biased and by how much?
+    - Exercise 4: delta method for ratio metrics
+        - Setup: read Loop C. Build the simulated data from `generate.py:render_ratio_metric`. Control: `sessions ~ Poisson(8)`, `revenue ~ Normal(2.0 * sessions, 4)`. Treatment: `sessions ~ Poisson(8)`, `revenue ~ Normal(2.05 * sessions, 4)`. So per-session revenue lifts by 0.05 in treatment.
+        - Task: compute the naive ratio diff `sum(rev_t)/sum(sess_t) - sum(rev_c)/sum(sess_c)`. Compute the delta-method version via `expkit.metrics.delta.delta_two_arm(rev_t, sess_t, rev_c, sess_c)` and read off `(diff, se, z)`.
+        - Expected pattern: naive diff and delta diff agree numerically (both near 0.0495). Naive returns no SE. Delta method returns SE around 0.013 and z around 3.84. The naive z-test on per-session revenue (treating each session as independent) is wrong about the SE because numerator and denominator are both random and correlated.
+        - Two-lens: implicit. The Bayesian counterpart is to model revenue and sessions jointly, e.g. `sessions ~ Poisson(lambda)` and `revenue | sessions ~ Normal(mu * sessions, sigma)`, and read the posterior on `mu_t - mu_c` directly. Posterior interval should match the delta-method CI to leading order.
+        - Stretch: replace the delta method with a paired bootstrap on the per-user (revenue, sessions) pairs. Compare the bootstrap SE to the delta-method SE. When does the bootstrap give a different answer? Hint: heavy tails, near-zero denominators, or small N.
+    - Exercise 5: find a visit rate where a single experiment is dead on arrival
+        - Setup: same simulator as Exercise 1 with `treatment_lift_among_visitors=0.10` and `n_users=20000`. Sweep visit_prob over 0.02, 0.05, 0.08, 0.12, 0.20, 0.50.
+        - Task: for each visit_prob, run 100 seeds. Report the fraction of seeds where the ITT 95 percent CI excludes zero.
+        - Expected pattern: at visit_prob = 0.02 the ITT power is well below 50 percent. At visit_prob = 0.20 it climbs above 80 percent. At visit_prob = 0.50 it is near 1.0. The smaller the compliance, the more N you need to read ITT.
+        - Two-lens: explicit. Frequentist "power to read ITT at this N" maps to Bayesian "posterior probability that the among-visitors effect exceeds zero." For low visit_prob both should look weak.
+        - Stretch: at visit_prob = 0.02, what N would you need to push ITT power to 80 percent? Use `expkit.power.binomial` if available, otherwise solve the analytic two-proportion power formula by hand.
+    - Exercise 6: ITT vs per-protocol, conceptual
+        - Setup: read the Loop A hunch and the two-lens commentary. ITT and per-protocol answer different questions.
+        - Task: write a one-paragraph response to each of these product scenarios. State which estimand (ITT, per-protocol, or CACE) you would report, and why.
+            - Scenario 1: a banner shown to all users in treatment, with a click-through to a redesigned settings page. You want to know "what happens if we ship the redesign?".
+            - Scenario 2: an opt-in beta feature. You want to know "what happens to a user who actually uses it?".
+            - Scenario 3: a regulatory rollout where the question is "did being assigned to treatment harm anyone?".
+        - Expected pattern: Scenario 1 is ITT, the policy effect for shipping. Scenario 2 is per-protocol or CACE, the among-compliers effect. Scenario 3 is ITT again, because regulatory protection follows assignment, not uptake.
+        - Two-lens: skip, this is structural and precedes inference.
+        - Stretch: in Scenario 1, what would violate the exclusion restriction and turn ITT into a contaminated estimate? Hint: a banner that nudges behavior even for users who do not click through.
+    - Exercise 7: where does the linear ITT scaling break
+        - Setup: read the Loop B caveat. ITT scales linearly with visit rate only when the per-visitor effect is constant across compliance types. Modify the simulator: split users into two latent "types," eager (visit_prob 0.30, treatment lift +0.15) and lazy (visit_prob 0.05, treatment lift +0.05). Make 50 percent of users each type.
+        - Task: compute the true ITT analytically: ITT = 0.5 * 0.30 * 0.15 + 0.5 * 0.05 * 0.05 = 0.0238. Compute the population-average among-visitors effect: weighted by their probability of visiting. Run the simulator with `n_users=20000` and report the empirical ITT and per-protocol numbers.
+        - Expected pattern: empirical ITT lands near 0.024. Naive "ITT divided by overall compliance" computes to 0.024 / 0.175 = 0.137, which is *not* the population-average among-visitors effect. The Wald estimator now identifies CACE for compliers under monotonicity, not the population-average treatment effect on the treated.
+        - Two-lens: explicit. Frequentist response is "Wald estimates CACE under monotonicity, full stop." Bayesian response is "fit a latent-type mixture model and read the posterior on each type's effect." Both lenses agree the linear scaling is an approximation rather than an identity.
+        - Stretch: at what level of correlation between "willingness to visit" and "responsiveness to treatment" does the linear ITT scaling deviate by more than 10 percent from the among-visitors truth? Sweep this correlation and plot the gap.
+    - Carry-forward question: every estimator in this chapter (ITT, per-protocol, CACE, delta-method ratios) gives a different number. Even after we pick the right one, the same A/A test gives different effects from week to week. The metric wobbles. How much of that wobble is real signal that varies between weeks vs random noise that we should be averaging out, and what would it cost to reduce the noise without throwing the signal away?

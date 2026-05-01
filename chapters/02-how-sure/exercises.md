@@ -1,0 +1,43 @@
+# Chapter 02 exercises: How sure can I be?
+
+- Note: each exercise is small, runnable in the chapter's notebook or a fresh Python REPL, and probes one specific point the chapter raised. Two-lens exercises ask both questions explicitly.
+- Exercise 1: Predict the rejection region
+  - Setup: paper first, code second. N=100, two-sided test against H0: p=0.5, alpha=0.05.
+  - Task: write down, before computing, what counts of heads you think will reject. Then compute the exact rejection region by sweeping k from 0 to 100 and calling expkit.inference.binomial.binom_test_exact for each, recording which return p_value less than 0.05.
+  - Expected pattern: your guess will likely be "below 40 or above 60". The actual cutoffs are k less than or equal to 39 or k greater than or equal to 61. The rejection mass is below 5 percent because no integer cutoff lands exactly on alpha.
+  - Stretch: compute the actual type I rate by summing the binomial PMF on the rejection region. Compare to alpha.
+- Exercise 2: Same data, two answers
+  - Setup: 60 heads in 100 tosses. seq = np.array([1] * 60 + [0] * 40).
+  - Task: compute the frequentist exact two-sided p-value and the Bayesian posterior probability that p > 0.5 with a flat Beta(1, 1) prior. Then redo the Bayesian piece with a skeptical Beta(50, 50) prior.
+  - Expected pattern: frequentist p-value about 0.057. Bayesian P(p > 0.5) under flat prior about 0.97. Same data, very different headlines. Skeptical prior pulls the posterior probability down toward 0.85, exactly the chapter's Loop B observation that the prior matters at the borderline.
+  - Two-lens: frequentist asks "if H0 is true, would I see at least this much imbalance?". Bayesian asks "given prior plus data, what is the chance the coin leans heads?". The chapter's punchline: same number can mean different things, and different priors give different numbers from the same data.
+  - Stretch: try Beta(2, 8). Report the new posterior probability and explain why the prior dragged the answer down.
+- Exercise 3: Decision curves at small N
+  - Setup: N=10, sweep k from 0 to 10.
+  - Task: for each k, compute the exact two-sided p-value with binom_test_exact and the posterior P(p > 0.5) with coin_posterior_conjugate (flat prior). Tabulate. Mark which k cross alpha=0.05 and which cross posterior probability 0.95.
+  - Expected pattern: the boundary is jagged. There are k where one lens flips its decision but the other does not. At small N the two lenses can disagree on action, the chapter's main point.
+  - Two-lens: explicit. Build a 2-column table indexed by k showing both decisions side by side. Circle disagreements.
+  - Stretch: redo for N=100. The two boundaries should now nearly coincide.
+- Exercise 4: Alpha is a knob
+  - Setup: N=100, true p=0.5, n_experiments=2000, seed=11.
+  - Task: use expkit.power.binomial.simulate_rejection_rate at alpha values 0.10, 0.05, 0.01. Record the empirical rejection rate at each.
+  - Expected pattern: empirical rates land at most at the nominal alpha and slightly below because of binomial discreteness. At alpha=0.10 about 0.06 to 0.08, at alpha=0.05 about 0.03 to 0.05, at alpha=0.01 about 0.005 to 0.012.
+  - Stretch: explain in one sentence why the empirical rate is at most alpha but not equal to alpha.
+- Exercise 5: Find a borderline seed
+  - Setup: N=100, true p=0.5, sweep seeds 0 through 199.
+  - Task: for each seed, generate 100 tosses with bernoulli_sequence and compute the exact two-sided p-value. Find a seed whose p-value lands in [0.04, 0.06]. Print the seed, the heads count, the p-value. For that same data, compute the credible interval with the conjugate posterior and check whether it contains 0.5.
+  - Expected pattern: the right p-value range corresponds to heads counts of 39, 40, 61, or 62 roughly. The credible interval will hover with 0.5 barely inside or barely outside. The frequentist might reject while the Bayesian's interval still includes 0.5, or vice versa. The borderline does exist and you have just found it.
+  - Two-lens: for the matching seed, write down what each lens would say to a stakeholder. Note that "p-value 0.045 reject" and "credible interval contains 0.5 do not act" can both be true on the same data.
+  - Stretch: try alpha=0.01 and find a seed that flips decisions there too.
+- Exercise 6: Stress-test rejection rate
+  - Setup: grid of (p_true, N): p in {0.50, 0.52, 0.55, 0.60}, N in {50, 200, 1000}. Use simulate_rejection_rate with n_experiments=2000, seed=23, alpha=0.05.
+  - Task: build a 4-by-3 table of empirical rejection rates. For p=0.50 the rate should be at most 0.05.
+  - Expected pattern: matches the chapter's Loop D. Row 1 around 0.03 to 0.05 across all N. Row 2 climbs slowly with N. Row 3 climbs faster. Row 4 reaches near 1.0 at N=1000.
+  - Stretch: draw a heatmap. The diagonal pattern is the power surface that Chapter 3 will formalize.
+- Exercise 7: What "95 percent" actually means, in code
+  - Setup: simulate. Truth p=0.5. Run 5000 experiments at N=100, seed=99, with bernoulli_sequence in a loop.
+  - Task: for each experiment, compute the Wilson 95 percent CI with expkit.inference.binomial.wilson_ci and the Beta(1, 1) credible interval with coin_posterior_conjugate. Count: what fraction of Wilson intervals contain 0.5? What fraction of credible intervals contain 0.5?
+  - Expected pattern: both fractions land near 0.95. The Wilson coverage fraction is the literal definition of frequentist 95 percent confidence (the procedure covers the truth 95 percent of the time). The credible-interval coverage rate also lands near 0.95 here because the prior is flat and N is moderate, but that is a numerical coincidence, not the definition.
+  - Two-lens: write one sentence on what each "95 percent" means. Frequentist: a property of the procedure across replications. Bayesian: a property of the posterior given the data.
+  - Stretch: pick a single experiment that did not contain 0.5. Print its data, its Wilson interval, its credible interval. Verify both miss 0.5 in the same direction.
+- Carry-forward question: the chapter ended on "how do I plan N?". After these exercises the question is sharper: given an effect size I care about and a tolerance for type I error, what is the smallest N at which my test reliably catches the effect, and how do I avoid being fooled by a borderline alpha trip on data that the credible interval still calls a wash?
