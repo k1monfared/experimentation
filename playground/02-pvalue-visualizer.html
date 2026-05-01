@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chapter 2 - The p-value, visualized</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+<h1>Chapter 2 sandbox: the p-value</h1>
+<p>This is the picture behind every p-value. Pick a sample size <em>N</em>, drag the observed heads <em>k</em>, choose one- vs two-sided, and watch what the test sees: the binomial distribution under the null <em>p</em> = 0.5, the rejection region (any tail at least as extreme as <em>k</em>), and the running p-value as the area of those tails.</p>
+
+<div class="panel">
+  <div class="controls">
+    <label>N
+      <input id="n" type="range" min="10" max="500" step="1" value="100">
+      <span class="value" id="n-val">100</span>
+    </label>
+    <label>observed heads k
+      <input id="k" type="range" min="0" max="100" step="1" value="60">
+      <span class="value" id="k-val">60</span>
+    </label>
+    <label>alpha
+      <input id="alpha" type="range" min="0.001" max="0.2" step="0.001" value="0.05">
+      <span class="value" id="alpha-val">0.050</span>
+    </label>
+    <label>alternative
+      <select id="alt">
+        <option value="two-sided" selected>two-sided</option>
+        <option value="greater">greater (right tail)</option>
+        <option value="less">less (left tail)</option>
+      </select>
+    </label>
+  </div>
+
+  <canvas id="pmf" width="860" height="320"></canvas>
+
+  <div class="legend">
+    <span><span class="swatch" style="background:#bbb"></span>P(K=k | H0: p=0.5)</span>
+    <span><span class="swatch" style="background:#2ca02c"></span>rejection region (area = p-value)</span>
+    <span><span class="swatch" style="background:#d62728"></span>observed k</span>
+  </div>
+
+  <dl class="readout">
+    <dt>p-value</dt><dd id="r-pval">-</dd>
+    <dt>reject H0 at alpha?</dt><dd id="r-reject">-</dd>
+    <dt>rejection region (counts)</dt><dd id="r-region">-</dd>
+    <dt>critical fraction</dt><dd id="r-crit">-</dd>
+  </dl>
+</div>
+
+<p class="muted">The chapter narrative: <a href="../chapters/02-how-sure/chapter.md">chapters/02-how-sure/chapter.md</a>. The math: <a href="../expkit/inference/binomial.py">expkit/inference/binomial.py</a>.</p>
+
+<footer><a href="index.html">&larr; playground index</a></footer>
+</main>
+
+<script src="lib.js"></script>
+<script>
+(function () {
+  const W = window.expkitWidget;
+
+  const $ = id => document.getElementById(id);
+  const nIn = $("n"), kIn = $("k"), alphaIn = $("alpha"), altIn = $("alt");
+  const nVal = $("n-val"), kVal = $("k-val"), alphaVal = $("alpha-val");
+  const canvas = $("pmf");
+
+  function clamp(x, lo, hi) { return Math.max(lo, Math.min(hi, x)); }
+
+  function pvalueAndRegion(n, k, alt) {
+    // Build PMF under H0: p=0.5.
+    const pmf = [];
+    for (let i = 0; i <= n; i++) pmf.push(W.binomPmf(i, n, 0.5));
+    let region = new Array(n + 1).fill(false);
+    let p = 0;
+    if (alt === "two-sided") {
+      const obs = pmf[k];
+      const tol = 1e-12;
+      for (let i = 0; i <= n; i++) {
+        if (pmf[i] <= obs + tol) { region[i] = true; p += pmf[i]; }
+      }
+      p = Math.min(1, p);
+    } else if (alt === "greater") {
+      for (let i = k; i <= n; i++) { region[i] = true; p += pmf[i]; }
+    } else {
+      for (let i = 0; i <= k; i++) { region[i] = true; p += pmf[i]; }
+    }
+    return { pmf, region, p };
+  }
+
+  function criticalRegionFor(n, alpha, alt) {
+    // Build the canonical rejection region for the test at the chosen alpha,
+    // independent of k. Returns an array of booleans of length n+1.
+    const pmf = [];
+    for (let i = 0; i <= n; i++) pmf.push(W.binomPmf(i, n, 0.5));
+    const region = new Array(n + 1).fill(false);
+    if (alt === "two-sided") {
+      // Order outcomes by ascending pmf, accept smallest until cumulative <= alpha.
+      const order = pmf.map((p, i) => ({ i, p })).sort((a, b) => a.p - b.p);
+      let cum = 0;
+      for (const o of order) {
+        if (cum + o.p > alpha + 1e-12) break;
+        region[o.i] = true; cum += o.p;
+      }
+    } else if (alt === "greater") {
+      let cum = 0;
+      for (let i = n; i >= 0; i--) {
+        if (cum + pmf[i] > alpha + 1e-12) break;
+        region[i] = true; cum += pmf[i];
+      }
+    } else {
+      let cum = 0;
+      for (let i = 0; i <= n; i++) {
+        if (cum + pmf[i] > alpha + 1e-12) break;
+        region[i] = true; cum += pmf[i];
+      }
+    }
+    return region;
+  }
+
+  function regionToRange(region) {
+    // Return a compact human description of the rejection region.
+    const ranges = [];
+    let i = 0;
+    while (i < region.length) {
+      if (!region[i]) { i++; continue; }
+      let j = i; while (j + 1 < region.length && region[j + 1]) j++;
+      ranges.push(i === j ? `{${i}}` : `[${i}..${j}]`);
+      i = j + 1;
+    }
+    return ranges.length ? ranges.join(" + ") : "(empty)";
+  }
+
+  function render() {
+    const n = +nIn.value;
+    nVal.textContent = n;
+    kIn.max = n;
+    if (+kIn.value > n) kIn.value = n;
+    const k = +kIn.value;
+    kVal.textContent = k;
+    const alpha = +alphaIn.value;
+    alphaVal.textContent = alpha.toFixed(3);
+    const alt = altIn.value;
+
+    const { pmf, region, p } = pvalueAndRegion(n, k, alt);
+    const crit = criticalRegionFor(n, alpha, alt);
+
+    // Plot.
+    const ctx = W.fitCanvas(canvas, 860, 320);
+    W.clearCanvas(ctx, 860, 320);
+    const ymax = Math.max(...pmf) * 1.08;
+    const axes = W.makeAxes(ctx, 860, 320, { xmin: 0, xmax: n, ymin: 0, ymax });
+    W.drawAxes(ctx, axes, 860, 320, { xlabel: "k (heads in N tosses)", ylabel: "P(K=k | H0)", title: `H0: p = 0.5, N = ${n}` });
+    // Bars.
+    const barW = (axes.sx(1) - axes.sx(0)) * 0.9;
+    for (let i = 0; i <= n; i++) {
+      const x = axes.sx(i) - barW / 2;
+      const yTop = axes.sy(pmf[i]);
+      const yBot = axes.sy(0);
+      ctx.fillStyle = region[i] ? "#2ca02c" : "#bbbbbb";
+      ctx.fillRect(x, yTop, barW, yBot - yTop);
+    }
+    // Critical fraction line and observed k.
+    W.plotVLine(ctx, axes, 320, k, "#d62728", []);
+    // Critical-region thick band along the bottom for the alpha test.
+    ctx.fillStyle = "rgba(214, 39, 40, 0.12)";
+    for (let i = 0; i <= n; i++) {
+      if (crit[i]) {
+        const x = axes.sx(i) - barW / 2;
+        ctx.fillRect(x, axes.sy(0) - 4, barW, 4);
+      }
+    }
+
+    // Readout.
+    $("r-pval").textContent = p < 1e-4 ? p.toExponential(2) : p.toFixed(4);
+    $("r-reject").textContent = (p < alpha) ? `yes (p=${p.toFixed(4)} < ${alpha})` : `no (p=${p.toFixed(4)} >= ${alpha})`;
+    $("r-region").textContent = regionToRange(region);
+    $("r-crit").textContent = regionToRange(crit) + ` (alpha=${alpha.toFixed(3)})`;
+  }
+
+  ["n", "k", "alpha", "alt"].forEach(id => {
+    $(id).addEventListener("input", render);
+  });
+  render();
+})();
+</script>
+</body>
+</html>

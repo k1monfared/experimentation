@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chapter 14 - Novelty triple-view</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+<h1>Chapter 14 sandbox: same data, three measurement schemes</h1>
+<p>Run a small synthetic experiment with a novelty-decay treatment effect. The treatment lift starts at <em>initial_lift</em> on the day of first exposure and decays with half-life <em>half_life_days</em>. The control rate is flat. Then look at the same data three ways: <strong>calendar day</strong> (days from launch), <strong>days since the user's first exposure</strong>, and <strong>exposure count</strong> for that user. Three different X axes, three different shapes of decay, one underlying data set.</p>
+
+<div class="panel">
+  <div class="controls">
+    <label>users
+      <input id="users" type="range" min="200" max="5000" step="50" value="1500">
+      <span class="value" id="users-val">1500</span>
+    </label>
+    <label>days
+      <input id="days" type="range" min="20" max="120" step="5" value="60">
+      <span class="value" id="days-val">60</span>
+    </label>
+    <label>arrival rate per day
+      <input id="arrival" type="range" min="0.1" max="0.95" step="0.025" value="0.4">
+      <span class="value" id="arrival-val">0.40</span>
+    </label>
+    <label>base conversion rate
+      <input id="base" type="range" min="0.05" max="0.5" step="0.005" value="0.20">
+      <span class="value" id="base-val">0.200</span>
+    </label>
+    <label>initial lift
+      <input id="lift" type="range" min="0" max="0.30" step="0.005" value="0.12">
+      <span class="value" id="lift-val">0.120</span>
+    </label>
+    <label>half-life (days)
+      <input id="hl" type="range" min="1" max="30" step="0.5" value="7">
+      <span class="value" id="hl-val">7.0</span>
+    </label>
+    <label>seed
+      <input id="seed" type="number" value="14" style="width:5rem">
+    </label>
+    <button id="resim" class="primary">resimulate</button>
+  </div>
+
+  <canvas id="calendar" width="860" height="220"></canvas>
+  <canvas id="since" width="860" height="220"></canvas>
+  <canvas id="count" width="860" height="220"></canvas>
+
+  <div class="legend">
+    <span><span class="swatch" style="background:#1f77b4"></span>control</span>
+    <span><span class="swatch" style="background:#d62728"></span>treatment</span>
+    <span><span class="swatch" style="background:#888"></span>true asymptote (base + lift * 0)</span>
+  </div>
+
+  <dl class="readout">
+    <dt>events generated</dt><dd id="r-n">-</dd>
+    <dt>overall control rate</dt><dd id="r-c">-</dd>
+    <dt>overall treatment rate</dt><dd id="r-t">-</dd>
+    <dt>aggregated lift (treatment - control)</dt><dd id="r-lift">-</dd>
+    <dt>asymptotic lift (limit as days-since-exposure -&gt; infinity)</dt><dd id="r-asym">0.000 (decay model)</dd>
+  </dl>
+</div>
+
+<p class="muted">The chapter narrative: <a href="../chapters/14-novelty/chapter.md">chapters/14-novelty/chapter.md</a>. Source for the simulator: <a href="../expkit/sim/novelty.py">expkit/sim/novelty.py</a> and <a href="../expkit/novelty/measure.py">expkit/novelty/measure.py</a>.</p>
+
+<footer><a href="index.html">&larr; playground index</a></footer>
+</main>
+
+<script src="lib.js"></script>
+<script>
+(function () {
+  const W = window.expkitWidget;
+  const $ = id => document.getElementById(id);
+
+  function simulate(params) {
+    const { users, days, arrival, base, lift, hl, seed } = params;
+    const rng = W.mulberry32(seed);
+    const events = []; // { arm, day, since, count, outcome }
+    const arms = []; for (let u = 0; u < users; u++) arms.push(rng() < 0.5 ? "control" : "treatment");
+    for (let u = 0; u < users; u++) {
+      const arm = arms[u];
+      let firstExposure = null;
+      let count = 0;
+      for (let d = 0; d < days; d++) {
+        if (rng() < arrival) {
+          if (firstExposure === null && arm === "treatment") firstExposure = d;
+          if (arm === "treatment") count++;
+          let p;
+          if (arm === "control") p = base;
+          else if (firstExposure === null) p = base;
+          else {
+            const since = d - firstExposure;
+            p = Math.min(1, Math.max(0, base + lift * Math.exp(-since / hl)));
+          }
+          const outcome = rng() < p ? 1 : 0;
+          events.push({
+            arm, day: d,
+            since: firstExposure === null ? null : (d - firstExposure),
+            count: arm === "treatment" ? count : 0,
+            outcome,
+          });
+        }
+      }
+    }
+    return events;
+  }
+
+  function aggregate(events, key, maxKey) {
+    // For each integer bucket of `key`, compute control rate and treatment rate.
+    const c_n = new Array(maxKey + 1).fill(0), c_s = new Array(maxKey + 1).fill(0);
+    const t_n = new Array(maxKey + 1).fill(0), t_s = new Array(maxKey + 1).fill(0);
+    for (const e of events) {
+      const k = (key === "since" || key === "count") ? e[key] : e.day;
+      if (k === null || k === undefined) continue;
+      if (k < 0 || k > maxKey) continue;
+      if (e.arm === "control") { c_n[k]++; c_s[k] += e.outcome; }
+      else { t_n[k]++; t_s[k] += e.outcome; }
+    }
+    return { c_n, c_s, t_n, t_s };
+  }
+
+  function plotPanel(canvasId, events, key, maxKey, title, base) {
+    const ctx = W.fitCanvas(document.getElementById(canvasId), 860, 220);
+    W.clearCanvas(ctx, 860, 220);
+    const { c_n, c_s, t_n, t_s } = aggregate(events, key, maxKey);
+    const xs = [], yc = [], yt = [];
+    for (let k = 0; k <= maxKey; k++) {
+      if (c_n[k] === 0 && t_n[k] === 0) continue;
+      xs.push(k);
+      yc.push(c_n[k] > 0 ? c_s[k] / c_n[k] : NaN);
+      yt.push(t_n[k] > 0 ? t_s[k] / t_n[k] : NaN);
+    }
+    const ymax = Math.max(0.5, Math.max(...yc.filter(Number.isFinite), ...yt.filter(Number.isFinite)) * 1.1);
+    const axes = W.makeAxes(ctx, 860, 220, { xmin: 0, xmax: maxKey, ymin: 0, ymax });
+    W.drawAxes(ctx, axes, 860, 220, { xlabel: key === "day" ? "calendar day" : (key === "since" ? "days since first exposure" : "exposure count"), ylabel: "conversion rate", title });
+    // Skip-NaN line drawing.
+    function plotSkip(xs, ys, color) {
+      ctx.strokeStyle = color; ctx.lineWidth = 2;
+      ctx.beginPath();
+      let drawing = false;
+      for (let i = 0; i < xs.length; i++) {
+        if (!Number.isFinite(ys[i])) { drawing = false; continue; }
+        const x = axes.sx(xs[i]), y = axes.sy(ys[i]);
+        if (!drawing) { ctx.moveTo(x, y); drawing = true; }
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+    }
+    plotSkip(xs, yc, "#1f77b4");
+    plotSkip(xs, yt, "#d62728");
+    W.plotHLine(ctx, axes, 220, base, "#888888");
+  }
+
+  function fitParamsAndRun() {
+    const params = {
+      users: +$("users").value,
+      days: +$("days").value,
+      arrival: +$("arrival").value,
+      base: +$("base").value,
+      lift: +$("lift").value,
+      hl: +$("hl").value,
+      seed: +$("seed").value,
+    };
+    $("users-val").textContent = params.users;
+    $("days-val").textContent = params.days;
+    $("arrival-val").textContent = params.arrival.toFixed(2);
+    $("base-val").textContent = params.base.toFixed(3);
+    $("lift-val").textContent = params.lift.toFixed(3);
+    $("hl-val").textContent = params.hl.toFixed(1);
+
+    const events = simulate(params);
+    plotPanel("calendar", events, "day", params.days - 1, "calendar day (days from launch)", params.base);
+    plotPanel("since", events, "since", params.days - 1, "days since first exposure (per-user time)", params.base);
+    // Cap exposure count axis at the per-user theoretical max.
+    const maxCount = Math.max(1, Math.ceil(params.days * params.arrival));
+    plotPanel("count", events, "count", maxCount, "exposure count (per-user)", params.base);
+
+    let nC = 0, nT = 0, sC = 0, sT = 0;
+    for (const e of events) {
+      if (e.arm === "control") { nC++; sC += e.outcome; }
+      else { nT++; sT += e.outcome; }
+    }
+    const rC = nC ? sC / nC : NaN, rT = nT ? sT / nT : NaN;
+    $("r-n").textContent = events.length.toLocaleString();
+    $("r-c").textContent = isFinite(rC) ? rC.toFixed(4) : "-";
+    $("r-t").textContent = isFinite(rT) ? rT.toFixed(4) : "-";
+    $("r-lift").textContent = isFinite(rT - rC) ? (rT - rC).toFixed(4) : "-";
+  }
+
+  ["users", "days", "arrival", "base", "lift", "hl"].forEach(id => $(id).addEventListener("input", fitParamsAndRun));
+  $("seed").addEventListener("change", fitParamsAndRun);
+  $("resim").addEventListener("click", fitParamsAndRun);
+  fitParamsAndRun();
+})();
+</script>
+</body>
+</html>
