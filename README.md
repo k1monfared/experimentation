@@ -43,14 +43,22 @@
 - Chapter 17 -- Attribution: first-touch, last-touch, time-decay, Bayesian multi-touch. [chapters/17-attribution/](chapters/17-attribution/)
 - Chapter 18 -- Frequentist vs Bayesian shipping: 1,000 simulated experiments, where would each lens have shipped? [chapters/18-frequentist-vs-bayesian-shipping/](chapters/18-frequentist-vs-bayesian-shipping/)
 - Chapter 19 -- When experiments aren't enough: hand-off to causal inference. [chapters/19-causal-handoff/](chapters/19-causal-handoff/)
+- Appendix A1 -- MCMC diagnostics: trace plots, R-hat, ESS, divergences, the funnel and the non-centered fix. [chapters/A1-mcmc-diagnostics/](chapters/A1-mcmc-diagnostics/)
+- Appendix A2 -- Hierarchical Bayesian models, a deeper look: no/complete/partial pooling, tau is learned, prior on tau when data are weak. [chapters/A2-hierarchical/](chapters/A2-hierarchical/)
+
+Each chapter folder also has an `exercises.log` and `exercises.md` with five-to-seven inquiry-shaped exercises tied to the chapter's loops, two-lens, citing specific `expkit` functions.
 
 # Interactive playground
 
 - Self-contained HTML+JS widgets that let you play with the central knob of each chapter without installing anything. Open [`playground/index.html`](playground/index.html) directly in your browser, or serve the repo locally and visit `/playground/`.
 - Widgets so far:
   - [Chapter 1 sandbox](playground/01-coin-sandbox.html) -- toss a coin one at a time, in tens, in hundreds. Running fraction + Wilson CI + Bayesian posterior all live.
+  - [Chapter 2 p-value visualizer](playground/02-pvalue-visualizer.html) -- the binomial PMF under H0, the rejection region, the running p-value as the area of the tails.
+  - [Chapter 3 power slider](playground/03-power-slider.html) -- drag p_alt, N, alpha; see power-vs-N and power-vs-p_alt curves; read off required-N and MDE.
+  - [Chapter 5 CI sweeper](playground/05-ci-sweeper.html) -- four 95 percent intervals on the same axes (Wald, Wilson, Clopper-Pearson, Bayesian); slide k/N to the boundary and watch Wald collapse.
   - [Chapter 6 prior tuner](playground/06-prior-tuner.html) -- drag a Beta prior and observed (k, N), watch the posterior re-render.
   - [Chapter 12 Simpson sandbox](playground/12-simpsons-sandbox.html) -- two segments, drag the assignment imbalance, make the paradox happen.
+  - [Chapter 14 novelty triple-view](playground/14-novelty-triple-view.html) -- run a small in-browser novelty-decay experiment; see the same data three ways.
   - [Chapter 18 shipping simulator](playground/18-shipping-simulator.html) -- loads the saved 2,000 simulated A/B tests; drag the cost ratio, watch which lens is cheaper.
 
 # The library: expkit
@@ -69,5 +77,5 @@
 
 # Status
 
-- All 19 chapters are fully built: narrative, runnable notebook, deterministic generator, embedded figures, and PyMC traces where the chapter calls for one. The expkit library covers simulation, frequentist + Bayesian inference, power, metrics, segments, novelty, and attribution. 112 fast tests pass plus a slow PyMC convergence test.
+- All 19 chapters plus two appendices (MCMC diagnostics, hierarchical Bayes) are fully built: narrative, runnable notebook, deterministic generator, embedded figures, and PyMC traces where the chapter calls for one. The expkit library covers simulation, frequentist + Bayesian inference (incl. Bonferroni / Holm / Benjamini-Hochberg, Cochran-Mantel-Haenszel), power for binomial / continuous / ratio metrics, metrics, segments, novelty, and attribution. 153 fast tests pass plus a slow PyMC convergence test. CI runs the full suite plus a notebook-execution job; a nightly workflow runs the slow-tests and a manifest-reproducibility check.
 - See [STATUS.log](STATUS.log) for the staged delivery breakdown and [ROADMAP.md](ROADMAP.md) for what's still on the wishlist.

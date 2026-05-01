@@ -607,3 +607,105 @@ artifacts:
   seed: derived
   sha256: 1ecf363fc441662ccef1c2bd28e2630c5b1554cdbd6a60efbb7c5f747bb4aed7
   description: 'Chapter 11 figure: hierarchical_effects.png'
+- path: chapters/A1-mcmc-diagnostics/data/healthy_chains.nc
+  chapter: A1-mcmc-diagnostics
+  kind: idata
+  seed: 606
+  sha256: 5bca947bd8f3f4b92a978c36344fb3f54453a777f4ac9cd683b284175404afe7
+  description: Appendix A1 healthy-chain coin posterior
+- path: chapters/A1-mcmc-diagnostics/data/funnel_centered.nc
+  chapter: A1-mcmc-diagnostics
+  kind: idata
+  seed: 11
+  sha256: 05b2f2b8f88177bee27045473eaa25964373c6aa27e5e848b0298c502a662e98
+  description: Appendix A1 funnel fit, centered form
+- path: chapters/A1-mcmc-diagnostics/data/funnel_noncentered.nc
+  chapter: A1-mcmc-diagnostics
+  kind: idata
+  seed: 11
+  sha256: 45aaca70216222d0b4ad872736d09d00aabbddb133a0937fd3b6f10f92a389fb
+  description: Appendix A1 funnel fit, non-centered form
+- path: chapters/A1-mcmc-diagnostics/images/healthy_chains.png
+  chapter: A1-mcmc-diagnostics
+  kind: image
+  seed: derived
+  sha256: 8fe40b3db7805ce8612a992e03453cdeab79ef8007feb0ae8ab2136c94bbc09a
+  description: 'Appendix A1 figure: healthy_chains.png'
+- path: chapters/A1-mcmc-diagnostics/images/funnel_centered_vs_noncentered.png
+  chapter: A1-mcmc-diagnostics
+  kind: image
+  seed: derived
+  sha256: 9ea9bd1bfa475412f86f31a47ad1cc3aee265a2f4bb95dd0db8b1f1f65230d53
+  description: 'Appendix A1 figure: funnel_centered_vs_noncentered.png'
+- path: chapters/A1-mcmc-diagnostics/images/rhat_ess_curves.png
+  chapter: A1-mcmc-diagnostics
+  kind: image
+  seed: derived
+  sha256: 1c3b3bfc1a159d9e9592860151d0a0d4b8a8a0cd48dbe5e95bd6204b9c254363
+  description: 'Appendix A1 figure: rhat_ess_curves.png'
+- path: chapters/A2-hierarchical/data/tau_scenario_0.nc
+  chapter: A2-hierarchical
+  kind: idata
+  seed: 3031
+  sha256: 855aa06179970cba13d605a8c94b3ce30f60488cb190b089fc9fce14e264957e
+  description: A2 tau scenario tau_true=0.15
+- path: chapters/A2-hierarchical/data/prior_on_tau_0.nc
+  chapter: A2-hierarchical
+  kind: idata
+  seed: 94
+  sha256: 096bd6ca32d048eff70f1aa9ffc9f82510c82a1b9f1ef0f2616d2067cbea7ab2
+  description: A2 prior-on-tau sigma=0.5
+- path: chapters/A2-hierarchical/data/three_pooling_modes.nc
+  chapter: A2-hierarchical
+  kind: idata
+  seed: 2002
+  sha256: 67fe22cf881de457566d736905a87b711007db052d4433fee34ec8a0cd5cd915
+  description: A2 three-pooling-modes hierarchical posterior
+- path: chapters/A2-hierarchical/data/tau_scenario_0p005.nc
+  chapter: A2-hierarchical
+  kind: idata
+  seed: 1011
+  sha256: 7395904cdf0d2d76ebb42bbc86c826a04d445fbf9cb09a805db7d72f5a429b5e
+  description: A2 tau scenario tau_true=0.005
+- path: chapters/A2-hierarchical/data/tau_scenario_0p040.nc
+  chapter: A2-hierarchical
+  kind: idata
+  seed: 2021
+  sha256: ea51e37ae4d991d8024823fc509b8f18d852cfb2e5b346da77d3c3c9d5af1405
+  description: A2 tau scenario tau_true=0.04
+- path: chapters/A2-hierarchical/data/tau_scenario_0p150.nc
+  chapter: A2-hierarchical
+  kind: idata
+  seed: 3031
+  sha256: ce734658330f7a8b5ab3e1c7a778fabf8d0106042b7755bab3358896d25d344b
+  description: A2 tau scenario tau_true=0.15
+- path: chapters/A2-hierarchical/data/prior_on_tau_0p05.nc
+  chapter: A2-hierarchical
+  kind: idata
+  seed: 49
+  sha256: 58dc5316d025d1d25cf2627495c5b75d9bbb352a5f81aa606507be79b1211466
+  description: A2 prior-on-tau sigma=0.05
+- path: chapters/A2-hierarchical/data/prior_on_tau_0p50.nc
+  chapter: A2-hierarchical
+  kind: idata
+  seed: 94
+  sha256: 6b5f4bd7667d96be50f4d73081776d3d39f3795b9ae3d4d16ec1d30478c1600f
+  description: A2 prior-on-tau sigma=0.5
+- path: chapters/A2-hierarchical/images/three_pooling_modes.png
+  chapter: A2-hierarchical
+  kind: image
+  seed: derived
+  sha256: aa0c920bcdbdfa01eaa3e9417f408ce1f3827c9d40f6472fb337a2840665308c
+  description: 'Appendix A2 figure: three_pooling_modes.png'
+- path: chapters/A2-hierarchical/images/tau_learned.png
+  chapter: A2-hierarchical
+  kind: image
+  seed: derived
+  sha256: 7d1d5f23d0cf5cbd09c9250baeb4385ddfe9a8ca2042546228b1c5f7b0716c4b
+  description: 'Appendix A2 figure: tau_learned.png'
+- path: chapters/A2-hierarchical/images/prior_on_tau.png
+  chapter: A2-hierarchical
+  kind: image
+  seed: derived
+  sha256: 26dc2e1af5937b9556b89e253df7f200d6d9a563755b231479c3697b0da73579
+  description: 'Appendix A2 figure: prior_on_tau.png'

@@ -121,12 +121,12 @@
 
 # Area 9: stretch goals
 
-- Companion exercises per chapter
-  - Each chapter ends with one or two short exercises (with hidden answers in a separate file or footer). Reader runs the inquiry themselves on a tweak of the chapter's setup.
-  - Effort: M per chapter, L total
-- MCMC diagnostics mini-chapter
-  - Many readers reaching Ch.6 need to know what "trace looks bad" actually looks like. A small detour or appendix on R-hat, divergences, and trace plots, all in PyMC + arviz.
-  - Effort: M
+- Companion exercises per chapter [DONE 2026-04-29]
+  - Each chapter has an `exercises.log` (and rendered `exercises.md`) with 5 to 7 inquiry-shaped exercises tied to that chapter's loops, two-lens, and citing specific expkit functions.
+- MCMC diagnostics mini-chapter [DONE 2026-04-29 as Appendix A1]
+  - chapters/A1-mcmc-diagnostics/ has Loop A (a healthy sampler), Loop B (Neal's funnel: centered vs non-centered parameterization), Loop C (R-hat and ESS sweep across run lengths), with PyMC traces saved to data/.
+- Hierarchical Bayesian deep-dive [DONE 2026-04-29 as Appendix A2]
+  - chapters/A2-hierarchical/ walks no/complete/partial pooling, the learned tau, and the effect of the prior on tau when N per segment is small.
 - Interactive playground
   - Inspiration: Nicky Case's interactive explainers (ncase.me). Patterns to steal:
     - Text -> small focused widget -> reflection text, repeated with increasing complexity (Parable of the Polygons).

@@ -1,0 +1,54 @@
+# Appendix A2: Hierarchical Bayesian models, a deeper look
+
+- Carried from Appendix A1
+  - We have the diagnostics. Now we need to know what the model is doing when the sampler is healthy. Hierarchical pooling is the part of Bayesian work that gets most cited and least understood; it deserves its own pass.
+
+# Loop A: no pooling, complete pooling, partial pooling
+
+- Try
+  - Eight segments of a synthetic A/B test. The simulator bakes in a true treatment effect for each segment drawn from a population-level Normal(0.05, 0.04). Each segment has a different sample size: half are large (about 800 users per arm), half are small (about 80 users per arm).
+  - Estimate the per-segment treatment effect three ways:
+    - No pooling: each segment has its own independent point estimate. Equivalent to running eight separate two-proportion tests.
+    - Complete pooling: ignore segment, fit one global effect. Equivalent to a single pooled two-proportion test.
+    - Partial pooling: the hierarchical Bayes model with effect_i ~ Normal(mu, tau), tau ~ HalfNormal(1), non-centered.
+- Observe
+  - The no-pooling estimate for the small segments is wildly noisy. One small segment whose true effect is +0.05 returns an empirical lift of -0.04 on this seed. The 95 percent CI from the two-proportion z covers zero by a wide margin.
+  - The complete-pooling estimate is the pooled lift, around +0.04 in this realization. It is sharp but it is the wrong answer for any segment whose true effect deviates noticeably from the population mean.
+  - The partial-pooling posterior on each segment is somewhere between the two. Large segments stay close to their no-pooling point estimate (the data dominates). Small segments are pulled hard toward the population mean (the prior dominates).
+  - ![No pooling vs complete pooling vs partial pooling](images/three_pooling_modes.png)
+- Hunch
+  - "Partial pooling" is not a compromise between two bad estimators. It is the right estimator for the actual data-generating process, in which segment effects are themselves draws from a population-level distribution. The math knows that small segments carry less information and weights them accordingly.
+
+# Loop B: tau is the dial, and it is learned
+
+- Try
+  - Run the same hierarchical model on three different synthetic populations: tau_true = 0.005 (segments are nearly identical), tau_true = 0.04 (segments differ moderately), tau_true = 0.15 (segments differ wildly). All eight segments per population, mixed sizes, same prior on tau (HalfNormal(0.1)).
+  - Read the posterior on tau. Read the average shrinkage factor across the eight segments: shrinkage_i = (independent_i - posterior_mean_i) / (independent_i - mu_posterior_mean), measured on the logit scale.
+- Observe
+  - tau_true = 0.005: posterior on tau concentrates near zero. Average shrinkage is close to 1, meaning every segment posterior gets pulled essentially to the population mean. The model has decided the segments are nearly identical and behaves accordingly.
+  - tau_true = 0.04: posterior on tau settles near 0.04. Average shrinkage is around 0.4: each segment posterior is roughly 60 percent of the way from the population mean to its own no-pooling estimate.
+  - tau_true = 0.15: posterior on tau settles near 0.15. Average shrinkage is small (less than 0.1). The model has decided the segments really do differ; pooling adds little.
+  - ![Tau learned across three populations](images/tau_learned.png)
+- Hunch
+  - The pooling strength is not a hyperparameter you choose. It is a quantity the data tells you, captured by the posterior on tau. Choosing the prior on tau is the analyst's job; everything else falls out.
+
+# Loop C: prior on tau matters when N is small
+
+- Try
+  - Take the tau_true = 0.04 case from Loop B but cut the per-segment sample size in half (so the small segments have only 40 per arm). Compare two priors: HalfNormal(0.05) and HalfNormal(0.5). The first regularizes hard toward "no segment differences"; the second regularizes weakly.
+- Observe
+  - With N small the data cannot distinguish "segments are identical" (tau near zero) from "segments differ moderately" (tau near 0.04). The posterior on tau spreads out.
+  - HalfNormal(0.05) prior: posterior on tau pulls toward zero. Per-segment estimates collapse toward the population mean. If you trust the prior, this is right; if you do not, you have washed out real heterogeneity.
+  - HalfNormal(0.5) prior: posterior on tau is broad. Per-segment estimates retain more of their no-pooling shape but with wider credible intervals. If you trust the prior, you are appropriately uncertain; if you do not, you have failed to regularize a small-N problem.
+  - ![Prior on tau changes everything when data are weak](images/prior_on_tau.png)
+- Hunch
+  - Prior choice on tau is an act of belief about how different the segments could be. With strong data the prior is irrelevant. With weak data the prior is the analyst's strongest lever and it should be defended explicitly. The standard advice (HalfNormal with scale around the largest plausible effect) is a sensible default but it is not magic.
+
+# The big question this appendix opens
+
+- Hierarchical pooling regularizes per-segment effects toward a common mean. What if the segments themselves have a structure (a tree, a graph, a covariance from demographics)? Hierarchical models extend naturally to nested groupings (cities within countries, products within categories) and to covariance-based structures (Gaussian processes over feature space). That is the territory of "going past A2" and is best read in a textbook on Bayesian data analysis (Gelman et al.) or one on multilevel modeling (Gelman and Hill).
+
+# Notebook and data
+
+- Companion notebook: [`notebook.ipynb`](notebook.ipynb)
+- Generation script: [`generate.py`](generate.py)

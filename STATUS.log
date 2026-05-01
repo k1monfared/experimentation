@@ -1,7 +1,7 @@
 - Project Status
-    - Last Updated: 2026-04-30
-    - Stage: Beta+
-    - Next Milestone: actually run the deferred Holm and Cochran-Mantel-Haenszel demonstrations across Ch.7/11/12, then promote to Production Ready
+    - Last Updated: 2026-04-29
+    - Stage: Production-candidate (was Beta+)
+    - Next Milestone: full reader-eye narrative pass (Cat 4), then Production Ready
 
 - Development Stages
     - [x] Initial Setup
@@ -30,17 +30,18 @@
         - Concrete fixes shipped: numerical errors in narrative aligned with code (Ch.1 toss sequence, Ch.2 rejection grid, Ch.3 stopping-N off by 4x, Ch.4 Fisher/normal-approx gaps, Ch.6 BF and posterior-predictive numbers, Ch.8 shipping rate at MMU, Ch.12 aggregate diff, Ch.15 ITT, Ch.18 joint ship rate). Library bugs squashed: Ch.16 frac_extreme symmetry-vs-calibration confusion, Ch.18 default_rng(0) reseed bug, Ch.13 relative_noise misuse on signed effects. New helpers: signal_to_noise, aa_calibration, bootstrap CI on predictivity().
         - Two-lens promise repaired in Ch.9, 13, 16, 17 (each now has concrete inference in at least one loop).
         - Cross-chapter handoffs tightened: Ch.1 declares canonical notation; verbatim "carried-from" lines align with the previous chapter's "big question" in Ch.2/8/12/19. Forward references that had no payoff are either rephrased honestly or deferred with a SKIPPED tag.
+    - [x] Production-candidate (Cat 1, 2, 3 polish pass)
+        - Cat 1 content gaps shipped: Holm, Bonferroni, BH, and Cochran-Mantel-Haenszel demonstrated in Ch.11 Loop C.5 with a new figure (multiplicity.png) and sidecar (data/multiplicity.npy). Forward references in Ch.7 and Ch.8 now point at the Loop C.5 demo. Notation drift cleanup standardized "p_hat" across Ch.4-Ch.5; SUTVA wording aligned and cross-referenced between Ch.15 and Ch.19.
+        - Cat 2 polish shipped: four new playground widgets (Ch.2 p-value visualizer, Ch.3 power slider, Ch.5 CI sweeper, Ch.14 novelty triple-view) bringing the live count to 8. Companion exercises.log + exercises.md per chapter (5-7 inquiry-shaped exercises each, two-lens, citing specific expkit functions). New library modules: power.continuous, power.ratio, inference.multitest (bonferroni / holm / benjamini_hochberg), inference.cmh. Two new appendices: A1 (MCMC diagnostics: healthy chains, the funnel, R-hat/ESS curves) and A2 (hierarchical Bayesian deep-dive: no-pooling vs complete-pooling vs partial-pooling, tau is learned, prior on tau).
+        - Cat 3 infrastructure shipped: LICENSE (MIT), CITATION.cff, scripts/install_pre_commit.sh + Makefile + CONTRIBUTING wiring, .github/workflows/ci.yml notebooks job that registers the expkit ipykernel and executes every chapters/*/notebook.ipynb end-to-end, .github/workflows/nightly.yml with full pytest + manifest-reproducibility check.
+        - 153 fast pytest tests passing (was 116) plus 1 slow PyMC test. Privacy guard remains clean across all commits.
     - [] Production Ready
         - Remaining work for Production:
-            - Holm / BH (Benjamini-Hochberg) demonstration spanning Ch.7/11/12.
-            - Cochran-Mantel-Haenszel demonstration in Ch.11 (the "if we ran it, here it is").
-            - Pin all remaining notation drift items in TODOs that are still SKIPPED.
-            - Optional: expand interactive playground past four widgets.
+            - Cat 4 reader-eye narrative pass (deliberately deferred until Cat 1-3 finished; user will direct when this kicks off).
     - [] Maintenance Mode
         - Future enhancements queued:
             - Interactive chart toggles
             - Side-by-side notebooks-as-blog-posts publishing pipeline
-            - Companion exercises per chapter
 
 - Technical Details
     - Tech Stack:
@@ -73,7 +74,8 @@
         - 2026-04-29: scaffold + Phase 1 library + Chapter 1 fully built; 18 chapter stubs created; 22 tests passing; reproducibility manifest populated for Chapter 1
         - 2026-04-29: privacy policy added to local instructions; local-only tooling artifacts untracked from git
         - 2026-04-29: Chapters 2-19 narratives, generators, notebooks, and images all built. Library expanded to cover power, full test family, bootstrap, multinomial, A/B, segments, novelty, dilution, metric quality, attribution, F-vs-B capstone, causal handoff. 42 tests passing.
-        - 2026-04-30: per-chapter critic+defender review wrote 19 TODO.log files; HIGH and MEDIUM/LOW items applied; book-level super-agent appended 56 cross-chapter items, 52 of which were applied; remaining items honestly deferred with SKIPPED tags. 116 fast tests passing (was 42), plus 1 slow PyMC test. Library helpers added: signal_to_noise, aa_calibration, bootstrap CI on predictivity. Code bugs squashed: frac_extreme calibration confusion, Ch.18 reseed bug, relative_noise misuse on signed effects.
+        - 2026-04-29: per-chapter critic+defender review wrote 19 TODO.log files; HIGH and MEDIUM/LOW items applied; book-level super-agent appended 56 cross-chapter items, 52 of which were applied; remaining items honestly deferred with SKIPPED tags. 116 fast tests passing (was 42), plus 1 slow PyMC test. Library helpers added: signal_to_noise, aa_calibration, bootstrap CI on predictivity. Code bugs squashed: frac_extreme calibration confusion, Ch.18 reseed bug, relative_noise misuse on signed effects.
+        - 2026-04-29: Cat 1 content gaps shipped (Holm/BH/CMH demonstrations in Ch.11 Loop C.5; cross-chapter notation cleanup; SUTVA wording aligned). Cat 2 polish shipped (four new playground widgets, exercises.log per chapter, power.continuous + power.ratio + inference.multitest + inference.cmh modules with tests, Appendix A1 MCMC diagnostics, Appendix A2 hierarchical Bayesian deep-dive). Cat 3 infra shipped (LICENSE + CITATION.cff, pre-commit installer, CI notebooks job, nightly slow-tests + manifest reproducibility job). 153 fast pytest tests passing (was 116).
 
 - Notes
     - Use loglog format for all .log documentation; render with `python scripts/render_chapters.py`

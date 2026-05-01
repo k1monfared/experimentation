@@ -1,0 +1,51 @@
+# Appendix A1: MCMC diagnostics
+
+- Carried from Chapter 6
+  - Chapter 6 fit a single-parameter Bernoulli-with-Beta-prior model in PyMC and the trace looked perfect. That was honest, and it was the easy case. Real Bayesian work requires looking at the chains the way a doctor reads bloodwork: trace, autocorrelation, R-hat, effective sample size, and divergences. This appendix shows what each diagnostic measures and what to do when it goes wrong.
+
+# Loop A: a healthy sampler
+
+- Try
+  - Refit Chapter 6's coin model: 200 tosses of a p = 0.55 coin, Beta(1, 1) prior, 4 chains, 2000 draws each after 1000 tuning steps. Save the InferenceData and read off the four diagnostics arviz computes by default.
+- Observe
+  - R-hat is 1.000 to four decimals on the parameter of interest p. R-hat compares between-chain variance to within-chain variance. Values close to 1 mean the chains have all converged to the same distribution; values above 1.01 mean they have not, and you should not trust posterior summaries.
+  - Effective sample size (ESS) for p is around 6,000 (out of 4 chains times 2000 draws = 8000 raw samples). ESS less than the raw count is normal because adjacent draws are correlated; the ratio (ESS / raw) is the usable fraction.
+  - Zero divergences. A divergence is the sampler telling you the trajectory it tried to follow ran off the curve of the posterior because it could not adapt its step size to the local geometry. One or two are usually fine; tens are a warning; hundreds mean the geometry is hostile and you should reparameterize.
+  - Trace plot: chains overlapping, no visible drift, no clumps stuck at one value. Autocorrelation drops to near zero by lag 5.
+  - ![Healthy diagnostics](images/healthy_chains.png)
+- Hunch
+  - On a well-conditioned problem the sampler is invisible: you write the model, you sample, you summarize the posterior. The diagnostics confirm there was nothing to see. Most of this appendix is about the cases where there *is* something to see.
+
+# Loop B: the funnel and why it bites
+
+- Try
+  - Fit a hierarchical model that the literature calls the funnel: a population scale parameter tau on the log scale, plus per-group offsets that get rescaled by tau. The classic Neal (2003) toy version is theta_i = mu + tau * z_i with z_i ~ Normal(0, 1) and tau ~ HalfNormal(1). When tau is small, all the z_i collapse together; when tau is large, they spread out. The joint posterior on (tau, z_i) looks like an inverted funnel: wide mouth at large tau, pinched neck at small tau.
+  - Run two versions of the model on the same data. The "centered" version writes theta_i ~ Normal(mu, tau) directly. The "non-centered" version writes theta_i = mu + tau * z_i with z_i ~ Normal(0, 1) standardized.
+- Observe
+  - The centered run finishes with 60-200 divergences (depending on seed), R-hat above 1.05 on tau, ESS around 200 out of 8000. The trace plot shows tau spending long stretches near zero and the z_i bouncing wildly: the sampler cannot follow the neck.
+  - The non-centered run finishes with 0-3 divergences, R-hat 1.00 on tau, ESS around 5,000 on tau. Same model, same prior, same data; the only difference is how the latent variables are written.
+  - ![Funnel: centered vs non-centered diagnostics](images/funnel_centered_vs_noncentered.png)
+- Hunch
+  - The funnel is not about the model being wrong; it is about the geometry being awful for HMC. The non-centered parameterization keeps every latent variable at unit scale, so the sampler's step size is good everywhere instead of needing to be tiny in the neck and large at the mouth. The implementation rule: any time you have a hierarchical scale parameter (group means, group variances, hierarchical regression coefficients) and the data are weak, write the latents non-centered. We used this in Chapter 11 Loop D for exactly the same reason.
+
+# Loop C: reading R-hat, ESS, and divergences in practice
+
+- Try
+  - For each diagnostic, list the threshold that triggers concern, the typical fix, and one place in the book where it has shown up.
+- Observe
+  - R-hat: concern above 1.01. Means the chains have not mixed. Fix: tune longer (more warmup), reparameterize (non-centered), or reconsider whether the posterior is actually identifiable.
+  - ESS: concern when ESS for any quantity you will report is under a few hundred. Fix: thin less (you do not need to thin at all in modern HMC), draw more, reparameterize, or accept that you cannot estimate fine quantiles of that quantity.
+  - Divergences: concern at any positive number for a model you trust. Tens to hundreds means reparameterize. The simplest first fix is `pm.sample(..., target_accept=0.95)` to make the sampler take smaller steps; that often clears small numbers without restructuring the model.
+  - Trace plots and rank plots: the eye is still the best detector for chains stuck in different modes (multimodality). When two chains land in different basins and never visit each other's basin, R-hat will already flag it but the trace plot tells you what is going on.
+  - ![R-hat and ESS sweep across run lengths](images/rhat_ess_curves.png)
+- Hunch
+  - These diagnostics are layered. A model that passes R-hat but fails ESS has converged but produces estimates with high variance. A model that fails R-hat but passes "no divergences" has simply not run long enough or has been written in a hostile parameterization. A model that passes everything except a divergence count near zero has a quiet warning that the geometry will bite at slightly different data.
+
+# The big question this appendix opens
+
+- You have a sampler, you have diagnostics, you can fix the funnel. What you still need is a recipe for choosing priors that do not pretend to know more than you do but also do not waste the data finding common-sense values. Chapter 6 introduced flat, skeptical, and informative priors at one extreme each. The hierarchical companion (Appendix A2) lays out the modeling pattern for when one parameter governs many groups, including how to set the priors on the population-level parameters tau and mu so the model regularizes appropriately.
+
+# Notebook and data
+
+- Companion notebook: [`notebook.ipynb`](notebook.ipynb)
+- Generation script: [`generate.py`](generate.py)

@@ -1,0 +1,9 @@
+{
+  "meta": {
+    "model": "Beta(1,1) + Binomial",
+    "n": 200,
+    "p_true": 0.55
+  },
+  "seed": 606,
+  "sha256": "5bca947bd8f3f4b92a978c36344fb3f54453a777f4ac9cd683b284175404afe7"
+}
