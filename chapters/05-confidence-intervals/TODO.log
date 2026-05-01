@@ -21,20 +21,20 @@
             - Wald coverage at p=0.5 hides the failure mode. The standard demonstration sweeps p from 0.01 to 0.99 at fixed N (e.g. N=30) and plots empirical coverage as a function of p for each method.
             - Add render_coverage_vs_p in generate.py: for each p in a grid, simulate 2000 to 5000 binomials, compute coverage for Wald, Wilson, Clopper-Pearson, Bayesian. Plot four lines.
             - Add as a new sub-loop in Loop D or a Loop D' titled "where exactly does Wald lie?". The narrative point is: Wald's coverage oscillates in p, dipping well below 0.95 at small p and large p, while Wilson stays close to nominal across the range and Clopper-Pearson stays at or above nominal everywhere.
-        - MEDIUM: acknowledge percentile bootstrap bias
+        - MEDIUM [APPLIED 2026-04-29]: acknowledge percentile bootstrap bias
             - In Loop A or Loop B add one sentence: percentile bootstrap is biased on skewed sampling distributions, particularly near 0 or 1, which is why BCa (bias-corrected and accelerated) exists. For symmetric, non-boundary cases it is fine.
             - Do not implement BCa here (out of scope, belongs in expkit/inference/bootstrap.py).
-        - MEDIUM: align trial count between notebook and generate.py
+        - MEDIUM [APPLIED 2026-04-29]: align trial count between notebook and generate.py
             - generate.py uses 5000 trials, notebook.ipynb Loop D uses 2000. Bump notebook to 5000 so the table the reader sees matches the chapter narrative, and so the Monte Carlo SE is small enough (~0.003) to claim three decimal places.
-        - MEDIUM: name the Wald failure regimes precisely
+        - MEDIUM [APPLIED 2026-04-29]: name the Wald failure regimes precisely
             - Current text: "Don't use Wald near boundaries. Don't use Wald at small N, period." This is correct but vague. Sharper version: Wald is unreliable when N * p_hat < 5 or N * (1 - p_hat) < 5, and is degenerate (collapses to a single point) when p_hat is exactly 0 or 1.
             - Edit Loop B "Rule of thumb" to give the n*p_hat heuristic.
-        - LOW: soften "Bayesian with a flat prior matches Clopper-Pearson very closely"
+        - LOW [APPLIED 2026-04-29]: soften "Bayesian with a flat prior matches Clopper-Pearson very closely"
             - With Beta(1,1) the lower edge at 0/10 is 0.002, Clopper-Pearson is 0.000; upper is 0.265 vs 0.308. They agree in shape, not "very closely". The Jeffreys prior Beta(0.5, 0.5) matches Clopper-Pearson more tightly.
             - Edit Loop B "Rule of thumb" to say "shape-similar but Bayesian Beta(1,1) is a bit narrower; Jeffreys Beta(0.5, 0.5) matches more tightly".
-        - LOW: clarify what "0.5 sits exactly on the lower edge" means at 60/100
+        - LOW [APPLIED 2026-04-29]: clarify what "0.5 sits exactly on the lower edge" means at 60/100
             - The Wilson lower bound at 60/100 is approximately 0.502, not 0.500. The narrative "exactly on the lower edge" is rhetorical, fine for the loglog tone, but consider "just barely above 0.5" for accuracy.
-        - LOW: add seed and trial-count provenance to coverage figure caption
+        - LOW [APPLIED 2026-04-29]: add seed and trial-count provenance to coverage figure caption
             - generate.py uses rng = default_rng(123), n_trials=5000. Mention in the figure title or caption so a reader reproducing gets the same numbers.
     - Out of scope
         - Implementing BCa bootstrap. Belongs in expkit/inference/bootstrap.py with its own tests. This chapter only needs to mention the caveat.

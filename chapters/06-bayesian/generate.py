@@ -114,8 +114,12 @@ def render_pymc_diagnostic(manifest):
     return out
 
 
-def render_bayes_factor():
-    """Bayes factor curve as evidence accumulates."""
+def render_bayes_factor(manifest=None):
+    """Bayes factor curve as evidence accumulates.
+
+    Saves the (N, BF_fair, BF_biased) curve to data/bayes_factor_curve.npy
+    so the chapter prose can cite specific N->BF numbers from a sidecar.
+    """
     apply_style()
     rng = np.random.default_rng(0)
     fair = rng.binomial(1, 0.5, size=2000)
@@ -127,15 +131,31 @@ def render_bayes_factor():
         bfs_fair.append(bayes_factor_point_vs_uniform(fair[:n], point=0.5))
         bfs_biased.append(bayes_factor_point_vs_uniform(biased[:n], point=0.5))
 
+    # Save the curve so chapter prose can quote specific (N, BF) values from a manifest entry.
+    from expkit.io.samples import save_samples
+    arr = np.column_stack([ns, np.array(bfs_fair), np.array(bfs_biased)])
+    res = save_samples(
+        arr,
+        DATA_DIR / "bayes_factor_curve",
+        seed=0,
+        meta={"columns": ["N", "BF_fair", "BF_biased"], "p_alt_uniform": True, "true_p_biased": 0.55},
+    )
+    if manifest is not None:
+        add_artifact(
+            manifest, path=res.path, kind="samples", seed=0, sha256=res.sha256,
+            description="Loop D: BF_10 vs N for a fair and a biased coin",
+        )
+
     fig, ax = plt.subplots()
     ax.plot(ns, bfs_fair, color=PALETTE["frequentist"], label="data from fair coin")
     ax.plot(ns, bfs_biased, color=PALETTE["bayesian"], label="data from p = 0.55")
-    ax.axhline(1, color=PALETTE["muted"], linestyle="--", linewidth=1, label="BF = 1 (no evidence either way)")
-    ax.axhline(10, color=PALETTE["highlight"], linestyle=":", linewidth=1, label="BF = 10 (strong evidence)")
+    ax.axhline(1, color=PALETTE["muted"], linestyle="--", linewidth=1, label="BF = 1 (no evidence)")
+    ax.axhline(10, color=PALETTE["highlight"], linestyle=":", linewidth=1, label="BF = 10 (strong for H1)")
+    ax.axhline(0.1, color=PALETTE["highlight"], linestyle=":", linewidth=1, label="BF = 0.1 (strong for H0)")
     ax.set_xscale("log")
     ax.set_yscale("log")
     ax.set_xlabel("N (log scale)")
-    ax.set_ylabel("Bayes factor (uniform alt vs point H0: p = 0.5)")
+    ax.set_ylabel("BF_10 (large = data favours alternative)")
     ax.set_title("Loop D: Bayes factor accumulates evidence with N")
     ax.legend()
     fig.tight_layout()
@@ -172,7 +192,7 @@ def main():
     paths = [
         render_priors_argue(manifest),
         render_pymc_diagnostic(manifest),
-        render_bayes_factor(),
+        render_bayes_factor(manifest),
         render_posterior_predictive(),
     ]
     for p in paths:

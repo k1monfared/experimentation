@@ -161,36 +161,6 @@ artifacts:
   seed: 42
   sha256: e7a730eedaf2527a9918e18a4154ab68caf2fab838a6f302a6a9e1fd0576d27a
   description: 'Loop D: per-run Bayesian stopping N'
-- path: chapters/06-bayesian/data/posterior_chapter6.nc
-  chapter: 06-bayesian
-  kind: idata
-  seed: 606
-  sha256: dbeb4a01916c5c287ccd8f9053c16f3654d870606afec93d47d64be3f18a0687
-  description: Chapter 6 PyMC posterior on p (200 tosses, p=0.55)
-- path: chapters/06-bayesian/images/priors_argue.png
-  chapter: 06-bayesian
-  kind: image
-  seed: derived
-  sha256: a998105a6cb823ec04311f624e4d4405ebab36a8e1da64bba2df0924d8dc5ab2
-  description: 'Chapter 6 figure: priors_argue.png'
-- path: chapters/06-bayesian/images/pymc_trace_vs_closed_form.png
-  chapter: 06-bayesian
-  kind: image
-  seed: derived
-  sha256: 1b24cbd22f6ffa73ade6c63bacb2a0d0ccb91ddc0d12b75e99177ed453af1c10
-  description: 'Chapter 6 figure: pymc_trace_vs_closed_form.png'
-- path: chapters/06-bayesian/images/bayes_factor.png
-  chapter: 06-bayesian
-  kind: image
-  seed: derived
-  sha256: 72395f91406b60972ac08a89e744d52d43d2c231055812198c994a29fedb6007
-  description: 'Chapter 6 figure: bayes_factor.png'
-- path: chapters/06-bayesian/images/posterior_predictive.png
-  chapter: 06-bayesian
-  kind: image
-  seed: derived
-  sha256: 991d2d36e8183e1df9387e85424ca2b016f9cffeb5561e5263c927c580400705
-  description: 'Chapter 6 figure: posterior_predictive.png'
 - path: chapters/07-the-die/images/count_wobble.png
   chapter: 07-the-die
   kind: image
@@ -407,30 +377,6 @@ artifacts:
   seed: derived
   sha256: af9662a3ffe35c7787f4bbc36b5befd82e7d62bf08ccb83af8a1455c897856aa
   description: 'Chapter 17 figure: bayesian_attribution.png'
-- path: chapters/04-test-family/images/pvalue_grid.png
-  chapter: 04-test-family
-  kind: image
-  seed: derived
-  sha256: 41af6cf6a1f68257cd441e9d3ada067e79f526829e2e7ba871bfa38eb910c751
-  description: 'Chapter 4 figure: pvalue_grid.png'
-- path: chapters/04-test-family/images/normal_vs_exact.png
-  chapter: 04-test-family
-  kind: image
-  seed: derived
-  sha256: b9e73ddee26bcdb86985f5862c585574c365e304969a6658453683a1cca62da7
-  description: 'Chapter 4 figure: normal_vs_exact.png'
-- path: chapters/04-test-family/images/edge_cases.png
-  chapter: 04-test-family
-  kind: image
-  seed: derived
-  sha256: 0dd82ac0cb6ccf5caf9e90ff38dab0ac98971d95ecae1dbd73d9b04d8e6bf40e
-  description: 'Chapter 4 figure: edge_cases.png'
-- path: chapters/04-test-family/images/bayes_alongside.png
-  chapter: 04-test-family
-  kind: image
-  seed: derived
-  sha256: 42f8b7f474b4447320cde8dc94be2fa51437625868c1a093d9260c3e4b01be19
-  description: 'Chapter 4 figure: bayes_alongside.png'
 - path: chapters/05-confidence-intervals/images/ci_method_comparison.png
   chapter: 05-confidence-intervals
   kind: image
@@ -582,3 +528,69 @@ artifacts:
   seed: derived
   sha256: 756dc3916514d56864ccc58bbb6e712898b2369ca3965fa2a4330763904fffb9
   description: 'Chapter 18 figure: joint_decision.png'
+- path: chapters/04-test-family/images/pvalue_grid.png
+  chapter: 04-test-family
+  kind: image
+  seed: derived
+  sha256: 41af6cf6a1f68257cd441e9d3ada067e79f526829e2e7ba871bfa38eb910c751
+  description: 'Chapter 4 figure: pvalue_grid.png'
+- path: chapters/04-test-family/images/normal_vs_exact.png
+  chapter: 04-test-family
+  kind: image
+  seed: derived
+  sha256: b9e73ddee26bcdb86985f5862c585574c365e304969a6658453683a1cca62da7
+  description: 'Chapter 4 figure: normal_vs_exact.png'
+- path: chapters/04-test-family/images/edge_cases.png
+  chapter: 04-test-family
+  kind: image
+  seed: derived
+  sha256: 0dd82ac0cb6ccf5caf9e90ff38dab0ac98971d95ecae1dbd73d9b04d8e6bf40e
+  description: 'Chapter 4 figure: edge_cases.png'
+- path: chapters/04-test-family/images/bayes_alongside.png
+  chapter: 04-test-family
+  kind: image
+  seed: derived
+  sha256: 42f8b7f474b4447320cde8dc94be2fa51437625868c1a093d9260c3e4b01be19
+  description: 'Chapter 4 figure: bayes_alongside.png'
+- path: chapters/04-test-family/data/numbers.json
+  chapter: 04-test-family
+  kind: data
+  seed: derived
+  sha256: e6cbfa38814b308b80c1298c8040710d3a4899c8e8744c1a6459431cfefd300f
+  description: 'Chapter 4 numerics: Loop A/B/C/D values cited in prose'
+- path: chapters/06-bayesian/data/posterior_chapter6.nc
+  chapter: 06-bayesian
+  kind: idata
+  seed: 606
+  sha256: 0d1b842e9f5948ffc0a908d7d0814f438a20cd10453770884442af3ed16a6915
+  description: Chapter 6 PyMC posterior on p (200 tosses, p=0.55)
+- path: chapters/06-bayesian/data/bayes_factor_curve.npy
+  chapter: 06-bayesian
+  kind: samples
+  seed: 0
+  sha256: d0017374d50510ed5e1a9160ec83681a9064a97b117a4d604910a05e96977398
+  description: 'Loop D: BF_10 vs N for a fair and a biased coin'
+- path: chapters/06-bayesian/images/priors_argue.png
+  chapter: 06-bayesian
+  kind: image
+  seed: derived
+  sha256: a998105a6cb823ec04311f624e4d4405ebab36a8e1da64bba2df0924d8dc5ab2
+  description: 'Chapter 6 figure: priors_argue.png'
+- path: chapters/06-bayesian/images/pymc_trace_vs_closed_form.png
+  chapter: 06-bayesian
+  kind: image
+  seed: derived
+  sha256: 1b24cbd22f6ffa73ade6c63bacb2a0d0ccb91ddc0d12b75e99177ed453af1c10
+  description: 'Chapter 6 figure: pymc_trace_vs_closed_form.png'
+- path: chapters/06-bayesian/images/bayes_factor.png
+  chapter: 06-bayesian
+  kind: image
+  seed: derived
+  sha256: ee7b06e29e088a97fce7fb94861eb1050a819be014d21131e402cfa3b9d33968
+  description: 'Chapter 6 figure: bayes_factor.png'
+- path: chapters/06-bayesian/images/posterior_predictive.png
+  chapter: 06-bayesian
+  kind: image
+  seed: derived
+  sha256: 991d2d36e8183e1df9387e85424ca2b016f9cffeb5561e5263c927c580400705
+  description: 'Chapter 6 figure: posterior_predictive.png'

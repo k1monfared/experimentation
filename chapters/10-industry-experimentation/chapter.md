@@ -3,11 +3,12 @@
 - Carried from Chapter 9
   - In industry, samples are huge, the cycle is fast, and one metric tends to dominate everything: clicks. The wine-and-small-print pathologies show up in tech-flavoured forms.
 
-# Loop A: industry runs on averages
+# Setup: industry runs on averages
 
-- Try / observe
+- Framing
   - The default product summary is "the average user clicked 4% more". This is a single number on a population-wide proxy.
   - Already two implicit choices were made: "average" (over what population?) and "click" (vs which other metric we could have measured?).
+  - This is framing, not a full inquiry loop. The two implicit choices are exactly what the loops below probe: Loop B questions "which metric", Loop C questions "which population".
 
 # Loop B: short-term clicks vs long-term retention
 
@@ -20,6 +21,9 @@
   - These curves are illustrative shapes (deterministic exponential decays), not fitted to data. The pure exponential form is a convenient cartoon. Real novelty curves vary in shape: some plateau, some collapse abruptly when the novelty wears off, some dip and recover. The qualitative point (a short-horizon click win can hide a long-horizon retention loss) holds across those shapes.
 - Hunch
   - "Did they click?" is fast and easy to measure. "Did they come back next month?" is what actually matters. The cheaper metric tends to win because it's the one we can read in a 1-week experiment.
+- Decision question
+  - Both stories are true at day 7: clicks are up, retention has barely begun to decay. Which metric do you ship on, and why?
+  - Shipping on clicks is defensible only if you genuinely believe the day-30 retention curve will not bend further. If the mechanism is novelty, that belief is wrong by construction. The honest answer is: do not ship on a 1-week click win when the long-horizon metric is still in motion. Either extend the horizon, or pre-commit to a retention-based ship rule before the experiment starts.
 
 # Loop C: averages hide structure
 
@@ -55,3 +59,12 @@
 
 - Companion notebook: [`notebook.ipynb`](notebook.ipynb)
 - Generation script: [`generate.py`](generate.py)
+
+# expkit modules exercised
+
+- Currently used in the visible text and notebook
+  - `expkit.plot.style.apply_style` for consistent figure styling.
+- To be exercised when the chapter is fleshed out
+  - `expkit.power` for sizing the guardrail family in Loop D (how many metrics, at what alpha, can a team afford before the family-wise rate becomes unmanageable).
+  - `expkit.inference` for the per-metric tests behind the guardrail panel and for the click vs retention comparisons in Loop B.
+  - `expkit.inference.bayes` (and a hierarchical PyMC model built on top) for the partial-pooling rewrite of Loop D's Bayesian section.

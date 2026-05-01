@@ -10,9 +10,10 @@
             - Add caption or in-figure annotation: "illustrative shapes, not fitted to data" so readers do not mistake the curves for measured dynamics.
             - Optional: add light Monte Carlo noise around the mean curves so the figure visually matches what a real dashboard would show.
             - Resolution: added illustrative-shape note + caveat that real novelty curves vary in shape (plateau, collapse, dip-and-recover); the pure exponential is a cartoon.
-        - Loop B decision question
+        - [APPLIED] Loop B decision question
             - Title says "Both stories are true" but the inquiry never asks the load-bearing question: "which metric would you ship on, and why?"
             - Add the explicit decision question at the end of Loop B so the loop closes cleanly per the 10-step inquiry pattern.
+            - Resolution: added a "Decision question" step at the end of Loop B that poses the explicit ship-decision question and lays out the honest answer (do not ship on a 1-week click win when the long-horizon metric is still moving; either extend the horizon or pre-commit to a retention-based ship rule).
         - [APPLIED] Loop C cohort segmentation
             - Lifts (-0.02, +0.03, +0.06) and fractions (0.10, 0.30, 0.60) are hand-picked. The engagement-level slice is well motivated (the chapter explicitly contrasts behaviour vs demographic slices in the closing question), but the numerical construction is not flagged.
             - Add a one-line note that the numbers are illustrative and chosen so the aggregate stays positive while the highest-value cohort regresses.
@@ -28,14 +29,17 @@
             - Rewrite to (a) name hierarchical / partial-pooling priors explicitly, (b) say flat-prior Bayes does not protect, (c) frame the choice as decision-theoretic (loss over the joint) rather than a free lunch.
             - This aligns with the project rule that PyMC is the canonical Bayesian path: the rewrite should sketch the hierarchical model, not hand-wave.
             - Resolution: replaced the misleading paragraph with a three-part rewrite. (a) flat-prior Bayes does not protect and reproduces the family-wise blow-up. (b) hierarchical Bayes with partial pooling shrinks individual lifts toward the population mean, and that shrinkage is what damps false alarms. (c) included a PyMC-style sketch (mu_lift, tau_lift hyperprior, lift_i ~ Normal(mu_lift, tau_lift)) and framed the decision as a loss over the joint posterior, not a marginal-CI count.
-        - expkit module references
+        - [APPLIED] expkit module references
             - The project narrative-style policy requires every chapter (including stubs) to list the expkit modules/functions it exercises. This chapter exercises none in the visible text.
             - At minimum, list which expkit modules would be used when the chapter is fleshed out (likely expkit.power for guardrail family sizing, expkit.inference for the per-metric tests, expkit.plot.style which is already imported).
-        - Loop A scope
+            - Resolution: added an "expkit modules exercised" section at the end of chapter.log that splits current usage (expkit.plot.style.apply_style) from planned usage when the chapter is fleshed out (expkit.power for guardrail family sizing, expkit.inference for the per-metric tests, expkit.inference.bayes plus a hierarchical PyMC model for the partial-pooling rewrite).
+        - [APPLIED] Loop A scope
             - Loop A is a single Try/Observe with no Hunch, no follow-up question, no loop closure. It functions as a preamble.
             - Either rename to "Setup" or "Framing" so it is not confused with a real inquiry loop, or extend it to close.
-        - Notebook cosmetic
+            - Resolution: renamed "Loop A: industry runs on averages" to "Setup: industry runs on averages" and changed the inner step from "Try / observe" to "Framing", with a note that the two implicit choices (which metric, which population) are exactly what Loop B and Loop C probe.
+        - [APPLIED] Notebook cosmetic
             - Day 1 retention prints as "-0.00%" because retention_lift starts at zero; cosmetic only, but consider formatting with abs() or clamping near-zero values to "+0.00%".
+            - Resolution: added a small `fmt()` helper in the Loop B cell that clamps |x| < 5e-5 to 0.0 before printing, so day 1 retention now prints as `+0.00%`. Re-executed the notebook to refresh outputs.
     - Out of scope
         - Replacing the synthetic figures with a real industry dataset. No public dataset matches the chapter's narrative cleanly; constructed examples are appropriate for an inquiry-driven pedagogical chapter as long as they are flagged as illustrative.
         - Implementing the hierarchical PyMC model for the guardrails. That belongs in Chapter 6 or in the chapter's flesh-out PR, not in this review.

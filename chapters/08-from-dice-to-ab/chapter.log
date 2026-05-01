@@ -18,8 +18,8 @@
     - Try
         - Switch from "did they convert?" (binary) to "how much revenue per user?" (continuous). Control mean = 10, treatment mean = 10.5, sigma = 4. N = 2000 per arm.
     - Observe
-        - Welch t-test: t = 2.7, p = 0.007. Reject the null.
-        - Bootstrap of the mean difference: 95% CI [0.13, 0.86], excluding 0.
+        - Welch t-test: t = 2.7, p = 0.007. Reject the null. We use Welch's t (no equal-variance assumption) because revenue per user typically has heavier tails in one arm than the other; Student's t with pooled variance is the right call when variances are known to match.
+        - Bootstrap of the mean difference: 95% CI [0.13, 0.86], excluding 0. The bootstrap here is 4000 percentile-method resamples; for skewed metrics, BCa is preferred and is also available in expkit.inference.bootstrap.
         - ![Continuous outcome](images/continuous_outcome.png)
     - Hunch
         - Bootstrap is non-parametric and lazy in the best way: throw the data at it, get a CI on whatever statistic you care about. For continuous outcomes with skewed distributions, it's often more honest than the t-test.
@@ -34,7 +34,7 @@
         - Pooled (N = 4000): the casual group dominates, so the pooled effect looks like the casual effect. The power-user group, where the absolute lift is the same but the relative lift is much smaller, gets washed out.
         - ![Stratified vs pooled](images/stratified_vs_pooled.png)
     - Hunch
-        - Pooling discards information. We will revisit this in chapter 11 when we talk about behavioural segmentation, and chapter 12 when subgroups openly contradict the pool (Simpson's paradox).
+        - Pooling discards information. The canonical frequentist combiner that respects the strata is the Cochran-Mantel-Haenszel test; we will revisit this in chapter 11 when we talk about behavioural segmentation, and chapter 12 when subgroups openly contradict the pool (Simpson's paradox).
 - Loop D: decision rule, both lenses
     - Note on MMU
         - MMU (minimum meaningful uplift) is an organizational and economic choice about what effect size is worth shipping, not a Bayesian invention. Either lens can use it. The frequentist analogue is "ship if the point estimate exceeds MMU and the lower bound of the 95% CI exceeds 0" (or, more strictly, "lower 95% CI bound > MMU", a one-sided non-inferiority style rule).
@@ -47,7 +47,8 @@
         - At true effect = 0.5pp (right at the MMU): frequentist ships about 7% of the time. Bayesian ships about 5%. The two rules agree more than you might expect because at this N the noise floor swamps the MMU bookkeeping; the gap widens at smaller N or larger MMU.
         - At true effect = 2pp: both rules ship reliably (above 50%, climbing past 90% at 4pp).
         - At true effect = -2pp: neither ships (we required positive direction).
-        - ![Decision rule](images/decision_rule.png)
+        - ![Frequentist H0:diff=0 vs Bayes with MMU: shipping rates over a sweep of true effects](images/decision_rule.png)
+        - Read the figure as "freq with H0:diff=0 vs Bayes with MMU", not freq-vs-Bayes in general. If the freq lens adopts an MMU too, via a one-sided non-inferiority CI, the two curves converge.
     - Hunch
         - The simple frequentist rule does not know what "matters". It just asks "is it different from zero?". The Bayesian rule, with an MMU, asks "is it meaningfully positive?". If you give the freq lens an MMU too, via a one-sided non-inferiority CI rule, the two lenses converge. The picture above is one specific freq rule against one specific Bayes rule, not freq-vs-Bayes in general.
 - Loop F: the PyMC version of the same A/B

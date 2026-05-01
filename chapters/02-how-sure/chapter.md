@@ -29,7 +29,7 @@
   - At N = 100 the boundaries roughly coincide, but only because we paired a *two-sided* frequentist test (which spends alpha equally on both tails) with a *one-sided* posterior probability (P(p > 0.5)). They are answering different questions, that they cross their respective thresholds at nearby observations is a feature of the symmetric prior, not a general law. The right Bayesian counterpart to a two-sided test is something like 2 * min(P(p < 0.5), P(p > 0.5)) or comparing the credible interval to the value 0.5.
   - ![Decision curves at N=10 and N=100](images/decision_curves.png)
 - Compare
-  - At small N: the prior matters. The Bayesian has assumed a uniform prior, which is not quite the same as "I have no information". A different prior would shift the curve. Meanwhile the frequentist has implicitly committed to "the coin is fair until proven otherwise". Different default assumptions, different answers.
+  - At small N: the prior matters. The Bayesian has assumed a uniform prior, which is not quite the same as "I have no information". A different prior would shift the curve. Meanwhile the frequentist has implicitly committed to "the coin is fair until proven otherwise", and the test only ever fails to reject H0, it never accepts it. Different default assumptions, different answers.
   - At large N: the data dominates. Both lenses say roughly the same thing.
 - Probe an edge case
   - "What if I really do believe the coin is probably fair?" Then a Beta(50, 50) prior is honest. With 6/10 we barely budge. With 60/100 we move noticeably. With 600/1000 we're as convinced as the frequentist.
@@ -42,7 +42,7 @@
 - Try
   - Same N = 100 sampling distribution, three different rejection thresholds: alpha = 0.10, 0.05, 0.01.
 - Observe
-  - At alpha = 0.10 the rejection region is roughly outside [42, 58]. At 0.05, outside [40, 60]. At 0.01, outside [37, 63].
+  - At alpha = 0.10 we reject at k <= 41 or k >= 59 (roughly outside [42, 58]). At 0.05, k <= 39 or k >= 61 (outside [40, 60]). At 0.01, k <= 36 or k >= 64 (outside [37, 63]).
   - ![Alpha sweep](images/alpha_sweep.png)
 - Question
   - Which alpha is "right"? There is no abstract answer. Strict thresholds (0.01) reduce false positives but pay for them with missed real effects. Loose thresholds (0.10) catch more real effects but ship more junk.

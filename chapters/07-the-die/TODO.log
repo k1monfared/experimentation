@@ -23,9 +23,9 @@
             - Loop D's "Probe an edge case" mentions Holm and BH but neither is implemented or run on the simulated data.
             - Either (a) keep the mention but mark it as "we will pick these up in Chapter 11 when segments multiply the comparison count," or (b) add a thin expkit.inference.multiple module with holm() and bh() and a one-table comparison on the same 1000-trial fair-die simulation.
             - Recommendation: option (a) for this chapter; option (b) is its own task in Area 1 of the roadmap.
-        - Item 6: tighten the loaded-vector prose
+        - Item 6 [APPLIED]: tighten the loaded-vector prose
             - Current: "face 6 has p = 1/3, the others share 2/3". Correct, but the actual code uses 2/15 per face (5 * 2/15 = 2/3 = 10/15). Either keep the prose as is and add the per-face value in parentheses, or just write "p = (2/15, 2/15, 2/15, 2/15, 2/15, 1/3)" to match the code.
-        - Item 7: anchor the "21-23%" approximate claim to a computed number
+        - Item 7 [APPLIED]: anchor the "21-23%" approximate claim to a computed number
             - chapter.md says "about 21-23%". The notebook shows 0.214. generate.py runs 1000 trials and the figure prints the value to three decimal places, but the prose number is given as a range.
             - Replace "about 21-23%" with the exact value from generate.py's run (cite seed = SEEDS["monte_carlo"] = 72, n_trials = 1000) so the prose and the figure agree to the digit.
             - Same treatment for "about 4%" (Bonferroni).

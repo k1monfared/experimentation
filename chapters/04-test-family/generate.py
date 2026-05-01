@@ -2,17 +2,18 @@
 
 from __future__ import annotations
 
+import json
 import sys
 from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
 import yaml
-from scipy import stats
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 
+from expkit.inference.bayes import coin_posterior_conjugate  # noqa: E402
 from expkit.inference.binomial import binom_test_exact  # noqa: E402
 from expkit.inference.chi2 import goodness_of_fit  # noqa: E402
 from expkit.inference.fisher import fisher_exact_2x2  # noqa: E402
@@ -176,21 +177,27 @@ def fisher_reference_sweep(k: int = 60, n: int = 100, multipliers=(1, 10, 100, 1
 
 
 def render_bayes_alongside_frequentist():
-    """For each scenario in Loop A, also show the Beta-binomial conjugate posterior summary."""
+    """For each scenario in Loop A, also show the Beta-binomial conjugate posterior summary.
+
+    Uses the library's own ``coin_posterior_conjugate`` and
+    ``ConjugatePosterior.credible_interval`` rather than calling scipy directly,
+    so the chapter exercises its own modules.
+    """
     apply_style()
-    from scipy.stats import beta as beta_dist
+    from scipy.stats import beta as beta_dist  # density curve only; CI comes from the library
+
     cases = [(6, 10), (60, 100), (600, 1000), (6000, 10000)]
     fig, axes = plt.subplots(1, len(cases), figsize=(13, 3.6), sharey=True)
     ps = np.linspace(0, 1, 1000)
     for ax, (k, n) in zip(axes, cases):
-        post_a, post_b = 1 + k, 1 + (n - k)
-        ax.plot(ps, beta_dist.pdf(ps, post_a, post_b), color=PALETTE["bayesian"])
+        seq = np.concatenate([np.ones(k, dtype=int), np.zeros(n - k, dtype=int)])
+        post = coin_posterior_conjugate(seq)
+        ax.plot(ps, beta_dist.pdf(ps, post.alpha, post.beta), color=PALETTE["bayesian"])
         ax.axvline(0.5, color=PALETTE["muted"], linestyle="--", linewidth=1)
-        # 95% credible interval shaded
-        lo = beta_dist.ppf(0.025, post_a, post_b)
-        hi = beta_dist.ppf(0.975, post_a, post_b)
+        # 95% credible interval shaded (from the library helper)
+        lo, hi = post.credible_interval(0.95)
         ax.axvspan(lo, hi, color=PALETTE["bayesian"], alpha=0.15)
-        ax.set_title(f"{k}/{n}\nBeta({post_a},{post_b})")
+        ax.set_title(f"{k}/{n}\nBeta({int(post.alpha)},{int(post.beta)})")
         ax.set_xlim(0, 1)
         ax.set_xlabel("p")
     axes[0].set_ylabel("posterior density")
@@ -202,6 +209,73 @@ def render_bayes_alongside_frequentist():
     return out
 
 
+def write_numbers_json() -> Path:
+    """Surface the exact values cited in chapter.log so prose stays in sync with code.
+
+    Writes ``data/numbers.json`` with Loop A p-values, Loop B normal-vs-exact gaps,
+    Loop C edge-case p-values, Loop D Bayesian summaries, and the Fisher reference sweep.
+    The chapter prose cites these to three or four significant figures; if the code
+    output drifts, regenerate this file and update chapter.log accordingly.
+    """
+    out: dict = {}
+
+    # Loop A
+    loop_a_cases = [(6, 10), (60, 100), (600, 1000), (6000, 10000)]
+    out["loop_a"] = {
+        f"{k}/{n}": {name: float(p) for name, p in collect_pvalues(k, n).items()}
+        for k, n in loop_a_cases
+    }
+
+    # Loop B: max |p_z - p_exact| at each n
+    loop_b_ns = [10, 25, 50, 100, 250, 500, 1000]
+    loop_b: dict[str, float] = {}
+    for n in loop_b_ns:
+        diffs = []
+        for k in range(0, n + 1):
+            ex = binom_test_exact(k, n).p_value
+            z = one_sample_z(k, n).p_value
+            if not np.isnan(z):
+                diffs.append(abs(z - ex))
+        loop_b[f"n={n}"] = float(max(diffs))
+    out["loop_b_max_abs_gap"] = loop_b
+
+    # Loop C edge cases
+    loop_c_cases = [(0, 10), (10, 10), (1, 1), (0, 100), (100, 100)]
+    loop_c: dict = {}
+    for k, n in loop_c_cases:
+        try:
+            res = collect_pvalues(k, n)
+            loop_c[f"{k}/{n}"] = {name: (None if (isinstance(p, float) and np.isnan(p)) else float(p)) for name, p in res.items()}
+        except Exception as e:
+            loop_c[f"{k}/{n}"] = {"error": str(e)}
+    out["loop_c"] = loop_c
+
+    # Loop D Bayesian summaries
+    loop_d: dict = {}
+    for k, n in loop_a_cases:
+        seq = np.concatenate([np.ones(k, dtype=int), np.zeros(n - k, dtype=int)])
+        post = coin_posterior_conjugate(seq)
+        lo, hi = post.credible_interval(0.95)
+        loop_d[f"{k}/{n}"] = {
+            "alpha": float(post.alpha),
+            "beta": float(post.beta),
+            "mean": float(post.mean),
+            "ci95_low": float(lo),
+            "ci95_high": float(hi),
+            "prob_p_gt_half": float(post.prob_greater_than(0.5)),
+        }
+    out["loop_d"] = loop_d
+
+    # Fisher reference sweep at 60/100
+    out["fisher_reference_sweep_60_100"] = {
+        f"reference_size={rn}": float(p) for rn, p in fisher_reference_sweep(60, 100, multipliers=(1, 10, 100, 10000))
+    }
+
+    path = DATA_DIR / "numbers.json"
+    path.write_text(json.dumps(out, indent=2, sort_keys=True))
+    return path
+
+
 def main():
     ensure_dirs()
     manifest = load_manifest()
@@ -211,11 +285,12 @@ def main():
         render_edge_cases(),
         render_bayes_alongside_frequentist(),
     ]
-    fisher_reference_sweep()
+    numbers_path = write_numbers_json()
     for p in paths:
         add_artifact(manifest, path=p, kind="image", seed="derived", sha256=_sha256_file(p), description=f"Chapter 4 figure: {p.name}")
+    add_artifact(manifest, path=numbers_path, kind="data", seed="derived", sha256=_sha256_file(numbers_path), description="Chapter 4 numerics: Loop A/B/C/D values cited in prose")
     save_manifest(manifest)
-    print(f"Chapter 4: wrote {len(paths)} figures")
+    print(f"Chapter 4: wrote {len(paths)} figures and {numbers_path.name}")
 
 
 if __name__ == "__main__":

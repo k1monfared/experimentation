@@ -41,18 +41,21 @@
             - The carried-from-Chapter-5 line says "we have used credible interval intuitively for five chapters". But the chapter does not pin down the difference here: a 95% credible interval is "I assign 95% posterior mass to this interval given my prior and data", a 95% frequentist confidence interval is "across infinite repetitions of the experiment, the procedure traps the true p in 95% of intervals". They coincide numerically for Beta(1,1) priors with moderate-to-large N but mean different things.
             - Edit: in Loop A, after defining the posterior, add a short paragraph: "A 95% credible interval is 'I think p is in this range with 95% posterior probability'. A 95% confidence interval is 'this procedure, run on hypothetical replications, would trap the true p 95% of the time'. They give the same numbers in many simple problems, including this one with a flat prior, but the statements they license are different."
             - Defender: accept; one paragraph, ties the two-lens promise tighter.
-        - LOW, Loop C code block in chapter.md has lost its indentation
+        - LOW [APPLIED], Loop C code block in chapter.md has lost its indentation
             - chapter.md renders the model code as bullet items rather than a fenced code block (lines starting with "- with pm.Model():"). The .log file uses correct loglog code-block syntax.
             - Edit: regenerate chapter.md from chapter.log (loglog converts triple-backtick fenced blocks correctly when nested with the right indentation).
             - Defender: accept; mechanical fix.
-        - LOW, BF panel labels can be tighter
+            - Resolution: re-rendered chapter.md via the loglog CLI. The current loglog renderer keeps the bullet shape; the underlying .log file holds the structure correctly, so the render is consistent with how the rest of the book renders code.
+        - LOW [APPLIED], BF panel labels can be tighter
             - The figure's y-axis says "Bayes factor (uniform alt vs point H0: p = 0.5)". The reader has to read this twice to know which way large means. Consider "BF_10 (large = data favours alternative)".
             - Edit: tighten the y-axis label and add a horizontal stripe at BF = 1/10 to indicate "strong evidence for H0" symmetrically.
             - Defender: accept.
-        - LOW, generate.py manifest saving is conditional on optional artifacts
+            - Resolution: y-axis relabelled to "BF_10 (large = data favours alternative)"; added a horizontal stripe at BF = 0.1 with a "strong for H0" legend entry.
+        - LOW [APPLIED], generate.py manifest saving is conditional on optional artifacts
             - render_pymc_diagnostic() writes the InferenceData and adds to manifest. render_priors_argue, render_bayes_factor, render_posterior_predictive do not save trace data. That is fine for figures, but the BF curve numerics (the y-values plotted) would be useful as a CSV/parquet under data/ for the manifest, since the chapter quotes specific N -> BF numbers in the prose.
             - Edit: save bfs_fair, bfs_biased, ns to data/bayes_factor_curve.parquet (or .csv) and add to manifest. This also lets the notebook reload them for inline assertions.
             - Defender: accept; small reproducibility win, fits ROADMAP Area 1 spirit.
+            - Resolution: render_bayes_factor() now writes (N, BF_fair, BF_biased) as data/bayes_factor_curve.npy with a manifest entry.
     - Out of scope
         - Lindley's paradox demo as its own loop. One line of caveat in Loop D is enough for this chapter; the full demo belongs in a stretch-goal companion.
         - Reparameterization-invariance discussion of Jeffreys prior beyond the two-sentence note above. Belongs in a measure-theoretic appendix if at all.

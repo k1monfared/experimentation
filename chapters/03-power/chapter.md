@@ -12,7 +12,7 @@
   - ![Power curves](images/power_curves.png)
 - Vocabulary
   - That probability is *power*. It is 1 minus the false-negative rate (type II error, beta). 80% power is conventional. 95% if you really cannot afford to miss.
-  - Note the asymmetry: a strict alpha drives down false positives but does NOT drive up power. Power is set by N + the size of the effect we want to detect, not by alpha alone.
+  - Note the asymmetry: a strict alpha drives down false positives. Holding N and the effect fixed, lowering alpha actually *reduces* power, the rejection threshold is harder to clear. Power is set primarily by N and the size of the effect we want to detect, with alpha as a tradeoff knob.
 - Probe an edge case
   - Small effects on the same plot. p = 0.51 is a tiny bias. Even at N = 10,000 we catch it just over half the time (power around 0.52). p = 0.70 is a huge bias, N = 50 already gives us decent power.
 
@@ -21,9 +21,11 @@
 - Try
   - Invert the question. For each candidate truth, what is the smallest N at which we have 80% power? At 95% power?
 - Observe
-  - p = 0.51 needs about 19,600 tosses for 80% power. p = 0.52 needs about 4,900. p = 0.55 needs about 780. p = 0.60 needs about 200. p = 0.70 needs about 50.
+  - p = 0.51 needs about 19,600 tosses for 80% power. p = 0.52 needs about 4,900. p = 0.55 needs about 783. p = 0.60 needs about 200. p = 0.70 needs about 50.
   - Halving the effect roughly quadruples the required N. This is the 1/effect^2 rule of thumb everyone quotes.
   - ![Required N](images/required_n.png)
+- Formula sketch
+  - The rule of thumb has a closed form. For a two-sided test of a proportion at significance alpha and power 1 - beta, the required N is roughly n approx (z_{alpha/2} + z_beta)^2 sigma^2 / delta^2, where delta is the effect, sigma^2 is the per-toss variance under the null (about p_0(1-p_0)), and z_q is the standard-normal quantile. Plug alpha = 0.05, beta = 0.2: z_{0.025} approx 1.96, z_{0.2} approx 0.84, so the prefactor is about (1.96 + 0.84)^2 = 7.85. For p_0 = 0.5, delta = 0.05 that gives n approx 7.85 (0.25) / 0.0025 = 785, matching the simulation. The 1/delta^2 scaling falls right out.
 - Hunch
   - This is why huge tech companies care about sample size. Their effects are tiny. A 0.5pp lift on a 5% baseline is real money, and detecting it needs gigantic Ns.
 
@@ -50,8 +52,8 @@
   - The Bayesian stopping rule is *adaptive*: it uses the evidence as it accrues. It can stop earlier when data are unusually informative, later when borderline. With 200 runs at truth = 0.55 and a CI-width target the variance of the stopping time is small. Make the truth closer to 0.5, or shrink the target width, and the spread of stopping Ns widens.
   - The frequentist version of adaptive testing exists, group sequential tests with alpha-spending, but it is more involved and pays for the early-look option in alpha.
 - Edge case
-  - What if I let myself "peek" without alpha-spending and stop the first time p < 0.05? I will reject far more than 5% of the time even when the truth is fair. This is "p-hacking by peeking" and it breaks the frequentist guarantee.
-  - The Bayesian posterior is invariant to the stopping rule for *parameter estimation*: the posterior mean, the credible interval, and the posterior probability of any interval are the same whether you fixed N up front or stopped on the data. This is the likelihood principle. It does not extend to every Bayesian quantity: a Bayes factor against a point null can still depend on prior choice in a sequential design, so a Bayes-factor stopping rule is not automatically safe. Use a posterior-precision or posterior-probability criterion and the invariance holds.
+  - What if I let myself "peek" without alpha-spending and stop the first time p < 0.05? I will reject far more than 5% of the time even when the truth is fair. To make this concrete, simulate 2,000 fair-coin runs of N = 1,000 tosses, peek every 10 tosses, and stop on the first p < 0.05. The empirical rejection rate is about 0.33, roughly 7 times the nominal 0.05. This is "p-hacking by peeking" and it breaks the frequentist guarantee. It is exactly what alpha-spending procedures are designed to prevent: budget the alpha across the looks instead of spending the full alpha at every look.
+  - The Bayesian posterior is invariant to the stopping rule for *parameter estimation*: the posterior mean, the credible interval, and the posterior probability of any interval are the same whether you fixed N up front or stopped on the data. This is the likelihood principle. It does not extend to every Bayesian quantity. A Bayes factor against a point null can still depend on the prior under sequential designs (the same data can favour the null more or less depending on how spread the alternative prior is). So a Bayes-factor stopping rule is not automatically safe even though a posterior-precision or posterior-probability rule is. The invariance result is about parameter posteriors, not about every Bayesian summary.
 - Method note
   - Loops A through C all use `normal_approx_power`, which is the normal approximation to the test statistic. Loop D's stopping rule uses the exact Beta posterior (Beta(1+heads, 1+tails)). They are different machinery answering different questions. When comparing against `simulate_rejection_rate` (which uses scipy.stats.binomtest) expect small numerical drift versus the normal approximation.
 

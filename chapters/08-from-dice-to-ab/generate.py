@@ -191,7 +191,7 @@ def render_decision_rule():
     ax.set_xlabel("true effect (treatment minus control)")
     ax.set_ylabel("ship rate (over runs)")
     ax.set_ylim(0, 1.05)
-    ax.set_title("Loop E: shipping rates differ when truth is between 0 and MMU")
+    ax.set_title("Loop D: freq (H0: diff=0) vs Bayes (with MMU), shipping rate vs truth")
     ax.legend(fontsize=8)
     fig.tight_layout()
     out = IMG_DIR / "decision_rule.png"

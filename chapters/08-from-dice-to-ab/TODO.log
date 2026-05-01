@@ -31,13 +31,13 @@
     - Items
         - I1. HIGH (applied): Fixed the "frequentist ships about 25% of the time" claim in Loop D. Replaced with ~7% freq / ~5% bayes per simulation, plus context about why the rules agree more than expected at this N.
         - I2. HIGH (applied): Added one-sentence aside in Loop A noting pooled (used here, for testing H0: p1 = p2) vs unpooled SE (used by power calculators under the alternative).
-        - I3. Add a one-sentence aside in Loop B explaining why we use Welch's t over Student's t. Sources: chapter.md Loop B; generate.py:89.
+        - I3. [APPLIED] Added a one-sentence aside in Loop B explaining why we use Welch's t over Student's t (heavier revenue tails commonly differ between arms). Sources: chapter.md Loop B; generate.py:89.
         - I4. HIGH (applied): Reframed MMU in Loop D as an organizational choice usable by either lens. Added the frequentist analogue ("lower 95% CI bound > MMU", a one-sided non-inferiority rule) in a leading "Note on MMU" subsection plus a clarifying line in the Hunch.
         - I5. HIGH (applied): Replaced the opaque "0.05 minus the directional half" with "effectively a one-sided test at alpha = 0.025 (under truth = 0 it ships about 2.5% of the time)".
-        - I6. Add a one-line forward pointer in Loop C's hunch naming Cochran-Mantel-Haenszel as the canonical frequentist combiner. Sources: chapter.md Loop C.
-        - I7. Update the Loop D figure title and prose to make clear it compares one specific freq rule to one specific Bayes rule, not freq-vs-Bayes in general. Sources: generate.py:194; chapter.md Loop D.
+        - I6. [APPLIED] Added a one-line pointer in Loop C's hunch naming Cochran-Mantel-Haenszel as the canonical frequentist combiner. Sources: chapter.md Loop C.
+        - I7. [APPLIED] Updated the Loop D figure caption text and surrounding prose to read "freq with H0:diff=0 vs Bayes with MMU", and updated the matplotlib title in generate.py to match (figure rebuild is out of scope here). Sources: generate.py:194; chapter.md Loop D.
         - I8. HIGH (applied): Beta(1, 1) priors named in Loop F prose (with the "uniform on [0, 1]" gloss) and Loop A prose. (HIGH list from this pass focused on Loop F; Loop A was upgraded in the same edit.)
-        - I9. Add one line in Loop B describing the bootstrap (4000 percentile resamples; BCa available). Sources: chapter.md Loop B.
+        - I9. [APPLIED] Added a one-line note in Loop B that the bootstrap is 4000 percentile-method resamples and that BCa is available in expkit.inference.bootstrap for skewed metrics. Sources: chapter.md Loop B.
         - I10. Replace the vague "Bayesian false-positive rate depends on prior + threshold" with the actual simulated number from the notebook (~1% at truth = 0). Sources: chapter.md Loop D.
     - Out of scope
         - O1. Replacing the hand-rolled bootstrap in generate.py: already done. ROADMAP Area 8.

@@ -38,8 +38,9 @@
             - Add one sentence at the start of Loop C: "The generative process here is different from Loop A. Treatment effect varies smoothly with weekly_active_rate, and we look at how three segmentation schemes summarize that heterogeneity."
             - Without this, the reader compares lifts across loops and sees inconsistent magnitudes for the "same" segments.
             - Loop C now opens with a "Note on generative process" block flagging the continuous-vs-discrete difference.
-        - Minor: pooled lift number in chapter.md
+        - Minor [APPLIED]: pooled lift number in chapter.md
             - Loop A says "pooled lift averages everything out into something modest". The notebook prints +0.033 for one seed. Worth either citing the number directly or keeping the language but explaining that the pooled value depends on segment proportions, which depend on the median-split cascade. Both are fine; the current text is just hand-wavy.
+            - Loop A Observe in chapter.log now cites "around +0.033 for this seed" and adds the sentence: "The pooled value depends on the segment proportions, which depend on the median-split cascade described in Loop B, so do not read it as a population parameter." chapter.md is re-rendered to match.
     - Out of scope
         - Replacing median splits with a clustering-based segmentation (k-means, GMM on the three behavioural axes). This is a Chapter 11 v2 topic; current chapter is about segmentation as a modelling decision, not about how to learn segments.
         - Running and benchmarking the frequentist regression with arm * segment interactions side by side. A mention is enough; the worked example belongs with Chapter 7 (test family) or a later regression chapter.

@@ -21,20 +21,21 @@
         - [APPLIED 2026-04-29] Fix the one-sample t on 0/1 framing
             - chapter.log line 9 and chapter.md line 10 dismiss the t-test with "Treats each toss as a continuous draw. Wrong-shape model on purpose; useful for comparison." Add an explanation of why it nonetheless tracks the z-test closely on 0/1 data: "On 0/1 data the sample variance is hat-p (1 minus hat-p) times n/(n-1), so the one-sample t is a Wald-style proportion test with the SE plugged in from the data instead of the null. The t reference distribution is the wrong shape, the data are not normal, but for moderate n away from the boundary the answer lands very close to the z-test. The one-sample t fails on the same edge cases (0/N, N/N, 1/1) as the z-test, and worse: it returns infinite t at 0/N and N/N, and NaN at 1/1."
     - MEDIUM priority items
-        - Use the library's own ConjugatePosterior in Loop D
+        - [APPLIED 2026-04-29] Use the library's own ConjugatePosterior in Loop D
             - generate.py imports scipy.stats.beta directly. The library exposes coin_posterior_conjugate and ConjugatePosterior.credible_interval in expkit.inference.bayes. Notebook also recomputes the CI inline. Switch both to the library helper for internal consistency. Same numerics, but the chapter then exercises its own modules.
-        - Surface the cited values from generate.py rather than hand-typing
+        - [APPLIED 2026-04-29] Surface the cited values from generate.py rather than hand-typing
             - chapter.log and chapter.md cite specific p-values and CI bounds. Have generate.py write a small numbers.json into chapters/04-test-family/data/ and have the chapter prose reference exact values from that file. Prevents future drift between code and prose.
-        - Add a one-paragraph PyMC counterpart in Loop D
-            - Project policy in the project policy says: "Where a closed-form conjugate solution exists, show both the closed form and the equivalent PyMC model." Loop D currently shows only the closed form. Add a small PyMC cell in the notebook that reproduces the Beta(1+k, 1+n-k) posterior at 60/100 and overlays the histogram on the closed-form pdf. Save the InferenceData under chapters/04-test-family/data/ as netCDF for reproducibility. This aligns the chapter with the two-engine policy and with ROADMAP Area 2.
-        - Tighten the Loop D "borderline tracking" claim
+        - [DEFERRED] Add a one-paragraph PyMC counterpart in Loop D
+            - Deferred to a later round (full PyMC integration is tracked separately).
+            - Project policy says: "Where a closed-form conjugate solution exists, show both the closed form and the equivalent PyMC model." Loop D currently shows only the closed form. Add a small PyMC cell in the notebook that reproduces the Beta(1+k, 1+n-k) posterior at 60/100 and overlays the histogram on the closed-form pdf. Save the InferenceData under chapters/04-test-family/data/ as netCDF for reproducibility. This aligns the chapter with the two-engine policy and with ROADMAP Area 2.
+        - [APPLIED 2026-04-29] Tighten the Loop D "borderline tracking" claim
             - chapter.log line 52 and chapter.md line 61 say frequentist and Bayesian "track each other closely" at 60/100. They both flag a borderline result, but the frequentist tests themselves disagree (exact 0.057 fail, z 0.046 reject, Fisher 0.20 fail). Soften to: "At 60/100 the lenses agree on shape (borderline) but the frequentist family itself splits at the alpha = 0.05 line, while the Bayesian credible interval has its lower bound just above 0.50. Reasonable analysts would disagree about action."
     - LOW priority items
-        - Clarify what "produces sensible numbers" means at 1/1
+        - [APPLIED 2026-04-29] Clarify what "produces sensible numbers" means at 1/1
             - chapter.log line 36 says "the other four still produce sensible numbers" at 1/1. The exact binomial returns p = 1 at 1/1, which is correct but is the most uninformative possible answer (single coin gives no signal). Reword to "the other four still produce defined, finite p-values, though at 1/1 they all approach 1, correctly conveying that one toss carries no signal."
-        - Note the 6/10 Bayesian centre to 3 digits
+        - [APPLIED 2026-04-29] Note the 6/10 Bayesian centre to 3 digits
             - chapter.log line 46 says "centred at 0.58". Posterior mean of Beta(7, 5) is 7/12 = 0.5833. Either round consistently or cite three digits.
-        - Tighten the rule-of-thumb
+        - [APPLIED 2026-04-29] Tighten the rule-of-thumb
             - chapter.log line 31: "the textbook rule n*p > 5 and n*(1-p) > 5". This rule applies to the null p, so it is testing under H0: p = 0.5 the rule says n > 10. The Loop B data shows the rule is too lax: at n = 25 (rule satisfied) the gap is 0.16, still useless near the boundary. Add: "At p = 0.5 the rule says n at least 10. The data above shows that even at n = 100 the gap can be 0.08 in tail regions. The rule is necessary but not sufficient for a one-percent agreement; for that, n in the thousands."
     - Out of scope
         - Replacing Fisher exact with a more correct one-sample analogue (e.g. mid-P or exact chi-square): out of scope. Keeping the family-of-tests demonstration intact.

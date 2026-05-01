@@ -10,11 +10,13 @@
         - For 6/10, 60/100, 600/1000 compute five 95% intervals: Wald, Wilson, Clopper-Pearson, percentile bootstrap, Bayesian credible (Beta(1,1) prior).
     - Observe
         - At 6/10 the intervals are wide and a little different from each other: Wald [0.30, 0.90], Wilson [0.31, 0.83], Clopper-Pearson [0.26, 0.88], bootstrap [0.30, 0.90], Bayesian [0.32, 0.81]. They all contain 0.5 -- consistent with our earlier "no signal" conclusion.
-        - At 60/100 the intervals tighten to about [0.50, 0.69]. The methods are now nearly indistinguishable. 0.5 sits exactly on the lower edge -- that's the borderline result we've been chasing.
+        - At 60/100 the intervals tighten to about [0.50, 0.69]. The methods are now nearly indistinguishable. 0.5 sits just barely above the lower edge (Wilson lower bound is approximately 0.502), the borderline result we've been chasing.
         - At 600/1000 the intervals collapse to about [0.57, 0.63]. 0.5 is far away.
         - ![Method comparison](images/ci_method_comparison.png)
     - Hunch
         - At moderate-to-large N, the choice of interval method does not matter for almost any decision. At small N or at extremes, the choices matter and the bad ones get embarrassingly wrong.
+    - A note on the percentile bootstrap
+        - The percentile bootstrap is a benign default in symmetric, non-boundary cases like 60/100. It is biased on skewed sampling distributions and near 0 or 1, which is exactly where Wald already fails. The bias-corrected and accelerated (BCa) variant exists for those regimes; we use the simpler percentile form here and flag the caveat.
 - Loop B: edge cases break Wald
     - Try
         - 0/10, 10/10, 0/100, 100/100. Compute the same intervals.
@@ -25,7 +27,8 @@
         - Bayesian at 0/10 with Beta(1, 1) prior: posterior is Beta(1, 11), 95% credible [0.002, 0.265]. Honest about uncertainty.
         - ![Boundary failures](images/boundary_failures.png)
     - Rule of thumb
-        - Don't use Wald near boundaries. Don't use Wald at small N, period. Wilson is a good default. Clopper-Pearson is safe but conservative. Bayesian with a flat prior matches Clopper-Pearson very closely. Bootstrap is fine when you don't have a closed-form analytic option.
+        - Don't use Wald near boundaries. Don't use Wald at small N. A sharper version of "small": Wald is unreliable when N * p_hat < 5 or N * (1 - p_hat) < 5, and is degenerate (collapses to a single point) when p_hat is exactly 0 or 1.
+        - Wilson is a good default. Clopper-Pearson is safe but conservative. Bayesian with a flat Beta(1, 1) prior is shape-similar to Clopper-Pearson but a bit narrower; the Jeffreys prior Beta(0.5, 0.5) matches Clopper-Pearson more tightly. Bootstrap (percentile) is fine when you don't have a closed-form analytic option, with the caveat above for skewed or boundary cases.
 - Loop C: priors that argue
     - Try
         - 60 heads in 100 tosses, viewed through three different priors: flat Beta(1,1), skeptical Beta(50,50), tail-leaning Beta(2,8).
@@ -44,6 +47,7 @@
         - At N = 10 the gap narrows but Wald is still visibly low; the others remain near 0.95.
         - At N = 20, 50, 100 all four methods cluster around 0.95 to 0.96. The differences are small here because Wald's failure modes (counts at the boundary 0 or N) become rare.
         - ![Coverage simulation across N](images/coverage_simulation.png)
+        - Reproducibility: seed = 123, 5000 trials per N at p = 0.5.
     - Hunch
         - "95%" only means what you think it means if the construction is honest about the model. Wald isn't, at small N. Wilson stays near 95% across the N grid. Clopper-Pearson is conservative on purpose.
 - Loop D': where exactly does Wald lie?
@@ -55,6 +59,7 @@
         - Clopper-Pearson sits at or above 0.95 everywhere, the price of its guaranteed conservatism.
         - Bayesian (flat prior) tracks Clopper-Pearson in shape, slightly tighter.
         - ![Coverage vs true p](images/coverage_vs_p.png)
+        - Reproducibility: seed = 456, 3000 trials per p, N fixed at 30.
     - Hunch
         - Single-point coverage checks (like "at p = 0.5") are the wrong test. The right question is whether coverage holds across the parameter space. Wald fails this test at any moderate N, which is why textbooks built around Wald give the wrong intuition for confidence in small-sample binomial work.
 - The big question that opens Chapter 6

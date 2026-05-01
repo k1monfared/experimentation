@@ -14,6 +14,8 @@
         - Middle-aged sedentary: 0. Indistinguishable from noise.
         - ![External validity](images/external_validity.png)
         - Note: those numbers are the segment lifts we injected into the simulator (the ground truth). The figure shows estimates from a finite sample of 20K users, so the bars are noisy versions of those targets and won't match exactly.
+        - These per-segment effects are illustrative numbers we picked to make the external-validity point, not predictions from a biological or pharmacological model of alcohol response.
+        - Each bar is an average treatment effect within the segment, the mean lift across people in that group, not the effect any one individual would experience.
     - Hunch
         - Internal validity (does the effect hold in the studied population?) and external validity (does the effect generalize?) are different questions. Studies are usually designed for internal validity. The press release is about external validity. The gap between them is where most "wine is good for you" stories live. Statisticians call this the transportability or reference-class problem, and there is a formal literature on when an internally valid effect can be carried to a new population.
 - Loop B: what does "good" mean?

@@ -1,0 +1,13 @@
+{
+  "meta": {
+    "columns": [
+      "N",
+      "BF_fair",
+      "BF_biased"
+    ],
+    "p_alt_uniform": true,
+    "true_p_biased": 0.55
+  },
+  "seed": 0,
+  "sha256": "d0017374d50510ed5e1a9160ec83681a9064a97b117a4d604910a05e96977398"
+}

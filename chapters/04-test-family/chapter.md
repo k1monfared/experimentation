@@ -36,7 +36,7 @@
   - The gap is shrinking like 1/sqrt(n), and you need n in the thousands to be inside 0.01.
   - ![Normal vs exact](images/normal_vs_exact.png)
 - Rule of thumb
-  - The textbook rule "use normal-approx when n*p > 5 and n*(1-p) > 5" is a decent approximation of where this plot becomes flat. For automated tooling, prefer exact when feasible -- modern computers do not care.
+  - The textbook rule "use normal-approx when n*p > 5 and n*(1-p) > 5" is a decent approximation of where this plot becomes flat. At p = 0.5 the rule says n at least 10. The data above shows the rule is necessary but not sufficient: even at n = 100 the gap can be about 0.08 in tail regions, and at n = 1000 it is still about 0.025. For agreement inside one percent you need n in the thousands. For automated tooling, prefer exact when feasible -- modern computers do not care.
 
 # Loop C: edge cases
 
@@ -55,13 +55,14 @@
 - Try
   - For each of 6/10, 60/100, 600/1000, 6000/10000, compute the Beta posterior under a flat Beta(1,1) prior. Plot the posterior, mark the 95% credible interval, mark p = 0.5.
 - Observe
-  - At 6/10: posterior Beta(7, 5), wide, centred at 0.58. The 95% CI ranges from about 0.32 to 0.81. p = 0.5 is comfortably inside.
+  - At 6/10: posterior Beta(7, 5), wide, centred at 0.583 (mean 7/12). The 95% CI ranges from about 0.32 to 0.81. p = 0.5 is comfortably inside.
   - At 60/100: posterior Beta(61, 41), centred at 0.598, 95% CI [0.50, 0.69]. p = 0.5 is right on the boundary -- echoing the borderline frequentist result.
   - At 600/1000: posterior Beta(601, 401), narrow, centred at 0.60, 95% CI [0.57, 0.63]. p = 0.5 is far outside.
   - At 6000/10000: vanishingly narrow around 0.60.
   - ![Bayesian view](images/bayes_alongside.png)
 - Compare
-  - The frequentist tests asked "is the data surprising under p = 0.5?" The Bayesian asks "is p = 0.5 plausible given the data?" The answers track each other closely, especially at large N. The disagreement at 60/100 is not a flaw in either lens; it is a genuinely borderline case where reasonable analysts might disagree.
+  - The frequentist tests asked "is the data surprising under p = 0.5?" The Bayesian asks "is p = 0.5 plausible given the data?" At 6/10 and at very large N the two lenses agree on shape and on action.
+  - At 60/100 the lenses agree on shape (both call it borderline), but the frequentist family itself splits at the alpha = 0.05 line: exact says 0.057 (do not reject), z and chi-square say 0.046 (reject), Fisher says 0.20 (do not reject). The Bayesian credible interval has its lower bound just at 0.50. Reasonable analysts would disagree about action.
 
 # The big question that opens Chapter 5
 
@@ -73,3 +74,4 @@
 
 - Companion notebook: [`notebook.ipynb`](notebook.ipynb)
 - Generation script: [`generate.py`](generate.py)
+- Numerics cited above are surfaced as [`data/numbers.json`](data/numbers.json) so prose stays in sync with code.

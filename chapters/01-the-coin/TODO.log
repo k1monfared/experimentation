@@ -13,31 +13,31 @@
             - Actual final fractions across seeds [101..106] are {0.46, 0.48, 0.48, 0.52, 0.52, 0.53}; no 0.55
             - Edit to: "One run lands at 0.46, another at 0.53"
             - Propagate to chapter.md line 42 and to the follow-on Question line ("If a perfectly fair coin can give 0.46 or 0.55 ...") -> change 0.55 to 0.53 there too (chapter.log line 40, chapter.md line 45)
-        - MEDIUM (applied): Loop A Bayesian framing equates "P(p>0.5)" with "probability the coin is rigged"
+        - [APPLIED] MEDIUM (applied): Loop A Bayesian framing equates "P(p>0.5)" with "probability the coin is rigged"
             - chapter.log line 29: "The answer to 'is this rigged?' went from 94% sure-it-is to 73% lean-toward-it"
             - This conflates "p > 0.5" with "rigged"; a coin with p = 0.501 is technically "rigged" under that definition but indistinguishable from fair in any practical sense
             - Edit: replace "is this rigged?" with "is the coin biased toward heads?" and add a short half-sentence: "(we are still using a coarse 'p > 0.5' notion of bias; chapter 2 will sharpen this with a region of practical equivalence)"
-        - MEDIUM (applied): Loop D 'Frequentist take' overclaims at N=10
+        - [APPLIED] MEDIUM (applied): Loop D 'Frequentist take' overclaims at N=10
             - chapter.log line 71: "At N = 10, no test is going to reliably distinguish a 0.50 coin from a 0.55 coin"
             - Strictly, power at N=10 against p=0.55 is small but nonzero; "no test" reads as absolute
             - Edit to: "At N = 10, no reasonable test has appreciable power to distinguish a 0.50 coin from a 0.55 coin"
-        - MEDIUM (applied): Loop B 'Bayesian take' parenthetical underspecifies prior conditions for convergence
+        - [APPLIED] MEDIUM (applied): Loop B 'Bayesian take' parenthetical underspecifies prior conditions for convergence
             - chapter.log line 44: "(At larger N, with a flat prior, frequentist and Bayesian intervals converge. ...)"
             - Convergence holds with any proper prior whose support covers the truth, not specifically the flat one
             - Edit to: "(At larger N, for any reasonable prior with support across (0, 1), the data dominate and the two intervals converge. We will see them diverge in interesting cases later, especially when the prior is informative or N is small.)"
-        - LOW (applied): Loop B Wilson CI illustration uses k=50 hypothetically while none of the six runs hit 50/100
+        - [APPLIED] LOW (applied): Loop B Wilson CI illustration uses k=50 hypothetically while none of the six runs hit 50/100
             - chapter.log line 42 says "Wilson interval at N = 100 with 50 heads"; it is presented as illustrative, but readers will look for 50/100 in the figure and not find it
             - Edit to: "For instance, a Wilson interval at N = 100 with 50 heads is roughly [0.40, 0.60]; the closest run in the figure (53/100) gives [0.43, 0.62]."
-        - LOW (applied): Big-question recap in Loop A inherits the "94% sure-it-is" wording
+        - [APPLIED] LOW (applied): Big-question recap in Loop A inherits the "94% sure-it-is" wording
             - chapter.log line 29 and again line 81 in 'big question' frame the Bayesian numbers as "sure-it-is" / "posterior probability of bias is 0.73"
             - Once line 29 is softened (medium item above), update line 81 in parallel: "The frequentist said 'p-value is 0.75, not rare'. The Bayesian said 'posterior probability that p > 0.5 is 0.73'."
-        - LOW (applied): 'Probe an edge case' in Loop C says "stopping at toss 30" without flagging the connection to optional stopping
+        - [APPLIED] LOW (applied): 'Probe an edge case' in Loop C says "stopping at toss 30" without flagging the connection to optional stopping
             - chapter.log line 60 hints at the issue but stops short of naming it
             - Append one short clause: "This is the optional-stopping problem; chapter 3 quantifies it under power, chapter 18 under decision rules."
-        - LOW (applied): Two-lens endcap text says "For the fair coin" without telling the reader which fair sequence it uses
+        - [APPLIED] LOW (applied): Two-lens endcap text says "For the fair coin" without telling the reader which fair sequence it uses
             - chapter.log line 75: it is the long_seq (seed 7), not the Loop B seeds nor Loop D's seed 21
             - Edit to: "For the long fair-coin sequence (the same one used in Loop C), frequentist Wilson intervals and Bayesian credible intervals at N = 10, 100, 1000, 10000 line up almost on top of each other."
-        - LOW (applied): chapter.md is stale relative to chapter.log and must be re-rendered after edits
+        - [APPLIED] LOW (applied): chapter.md is stale relative to chapter.log and must be re-rendered after edits
             - After applying the above edits to chapter.log, regenerate chapter.md via the loglog tool so the two stay in sync
     - Out of scope
         - Defining a region of practical equivalence (ROPE) formally -> chapter 2/6 territory; this chapter only motivates
