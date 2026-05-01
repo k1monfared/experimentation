@@ -161,60 +161,6 @@ artifacts:
   seed: 42
   sha256: e7a730eedaf2527a9918e18a4154ab68caf2fab838a6f302a6a9e1fd0576d27a
   description: 'Loop D: per-run Bayesian stopping N'
-- path: chapters/04-test-family/images/pvalue_grid.png
-  chapter: 04-test-family
-  kind: image
-  seed: derived
-  sha256: 41af6cf6a1f68257cd441e9d3ada067e79f526829e2e7ba871bfa38eb910c751
-  description: 'Chapter 4 figure: pvalue_grid.png'
-- path: chapters/04-test-family/images/normal_vs_exact.png
-  chapter: 04-test-family
-  kind: image
-  seed: derived
-  sha256: b9e73ddee26bcdb86985f5862c585574c365e304969a6658453683a1cca62da7
-  description: 'Chapter 4 figure: normal_vs_exact.png'
-- path: chapters/04-test-family/images/edge_cases.png
-  chapter: 04-test-family
-  kind: image
-  seed: derived
-  sha256: 0dd82ac0cb6ccf5caf9e90ff38dab0ac98971d95ecae1dbd73d9b04d8e6bf40e
-  description: 'Chapter 4 figure: edge_cases.png'
-- path: chapters/04-test-family/images/bayes_alongside.png
-  chapter: 04-test-family
-  kind: image
-  seed: derived
-  sha256: 42f8b7f474b4447320cde8dc94be2fa51437625868c1a093d9260c3e4b01be19
-  description: 'Chapter 4 figure: bayes_alongside.png'
-- path: chapters/05-confidence-intervals/images/ci_method_comparison.png
-  chapter: 05-confidence-intervals
-  kind: image
-  seed: derived
-  sha256: 65cb0144b564c661c67ef49289f6b0b5e89080f860c2d86a6e0a435d5d98b071
-  description: 'Chapter 5 figure: ci_method_comparison.png'
-- path: chapters/05-confidence-intervals/images/boundary_failures.png
-  chapter: 05-confidence-intervals
-  kind: image
-  seed: derived
-  sha256: d45a3dff793d6507ba30babaaa67eaca450770fd639da97821675b03ed635e14
-  description: 'Chapter 5 figure: boundary_failures.png'
-- path: chapters/05-confidence-intervals/images/three_priors.png
-  chapter: 05-confidence-intervals
-  kind: image
-  seed: derived
-  sha256: 8017106433eb3a040fae17f120826f27ae9fdde797a6f709fd789fd7b8abfa57
-  description: 'Chapter 5 figure: three_priors.png'
-- path: chapters/05-confidence-intervals/images/coverage_simulation.png
-  chapter: 05-confidence-intervals
-  kind: image
-  seed: derived
-  sha256: 97d5dfab6cef9be4c7a10f09441d3db290041656c8ca63d6cff3488ae4f3b5ff
-  description: 'Chapter 5 figure: coverage_simulation.png'
-- path: chapters/05-confidence-intervals/data/coverage_rates.npy
-  chapter: 05-confidence-intervals
-  kind: samples
-  seed: 123
-  sha256: e17961f6a97f59c795290f9555268aff15280bb26aceb29924a06a08d529118c
-  description: 'Loop D: empirical coverage rates'
 - path: chapters/06-bayesian/data/posterior_chapter6.nc
   chapter: 06-bayesian
   kind: idata
@@ -299,37 +245,6 @@ artifacts:
   seed: derived
   sha256: afab660cb25cda950ba634d324a345f799e7070db2c156bde5c3a62e6fb6b9fb
   description: 'Chapter 9 figure: tradeoff.png'
-- path: chapters/13-metric-tree/images/metric_tree.png
-  chapter: 13-metric-tree
-  kind: image
-  seed: derived
-  sha256: 70921ac7d7833489a426b438596bbae356ddbd33443a9c2ed3b928c2134a74b0
-  description: 'Chapter 13 figure: metric_tree.png'
-- path: chapters/13-metric-tree/images/noise_vs_speed.png
-  chapter: 13-metric-tree
-  kind: image
-  seed: derived
-  sha256: a0af4b466b418e7345f185412d9b115db38c8803c2dde5333947738505fc1312
-  description: 'Chapter 13 figure: noise_vs_speed.png'
-- path: chapters/13-metric-tree/images/predictivity.png
-  chapter: 13-metric-tree
-  kind: image
-  seed: derived
-  sha256: e32f5264be66fd6b97ffeab7f4c1b879b687253140bf4d405f78d3cbec83e502
-  description: 'Chapter 13 figure: predictivity.png'
-- path: chapters/13-metric-tree/images/proxy_lies.png
-  chapter: 13-metric-tree
-  kind: image
-  seed: derived
-  sha256: f8def6cd18f87e52455e25ca16c563b45538ac071521e8dfbab1d2fe956c7ff0
-  description: 'Chapter 13 figure: proxy_lies.png'
-- path: chapters/13-metric-tree/data/predictivity_pairs.npy
-  chapter: 13-metric-tree
-  kind: samples
-  seed: 0
-  sha256: ce9ef2a9bb5ca00f6607e89cb6d687df2cbf12c925e0033891b98cccf6223f16
-  description: 'Loop C: short-term vs long-term effect pairs across 200 simulated
-    experiments'
 - path: chapters/14-novelty/data/novelty_event_log.parquet
   chapter: 14-novelty
   kind: samples
@@ -348,78 +263,6 @@ artifacts:
   seed: derived
   sha256: f614207fbc36ca283c83ad4dc5dfe5a68bc099ad393f363c350fdbcdd7081743
   description: 'Chapter 14 figure: decay_shapes.png'
-- path: chapters/15-dilution/images/itt_vs_per_protocol.png
-  chapter: 15-dilution
-  kind: image
-  seed: derived
-  sha256: 69b883f6b7c110a7439ea3406abfae61075ddd16b08fcd2c7b0046f185b044e3
-  description: 'Chapter 15 figure: itt_vs_per_protocol.png'
-- path: chapters/15-dilution/images/dilution_sweep.png
-  chapter: 15-dilution
-  kind: image
-  seed: derived
-  sha256: 936af8b2c7e3609e55ab2460ccf76054c37815f3f3c3ada6012b8132c307f91c
-  description: 'Chapter 15 figure: dilution_sweep.png'
-- path: chapters/15-dilution/images/ratio_metric.png
-  chapter: 15-dilution
-  kind: image
-  seed: derived
-  sha256: d4f2e0936a220757af03f1cf0068542186a40caa019dbf4797c4c16dfa572a39
-  description: 'Chapter 15 figure: ratio_metric.png'
-- path: chapters/16-metric-quality/images/variance_comparison.png
-  chapter: 16-metric-quality
-  kind: image
-  seed: derived
-  sha256: 05697960358a741c684b112ebe5aa53060ef0ed372d16bee2972a9a35e465b77
-  description: 'Chapter 16 figure: variance_comparison.png'
-- path: chapters/16-metric-quality/images/cuped.png
-  chapter: 16-metric-quality
-  kind: image
-  seed: derived
-  sha256: 12b7cb3811aec21445faba8a086798f39dc00b967d441610aefae846ee32fe90
-  description: 'Chapter 16 figure: cuped.png'
-- path: chapters/16-metric-quality/images/aa_stability.png
-  chapter: 16-metric-quality
-  kind: image
-  seed: derived
-  sha256: 166b44c8d4c9bc67ec4369476d1d1a51f8f6db3f6bfef70b2f54fa3309813118
-  description: 'Chapter 16 figure: aa_stability.png'
-- path: chapters/16-metric-quality/images/predictivity_grid.png
-  chapter: 16-metric-quality
-  kind: image
-  seed: derived
-  sha256: 62e83a57343c972330b65c370d9fa6b677f7b4ffc57a6bd5851aca2df521c89a
-  description: 'Chapter 16 figure: predictivity_grid.png'
-- path: chapters/18-frequentist-vs-bayesian-shipping/data/ship_decisions.csv
-  chapter: 18-frequentist-vs-bayesian-shipping
-  kind: samples
-  seed: 180
-  sha256: b110b9d34e0cc5a023e9c88daf15cd717fd0ffdfc4e99b2dcf097053bd4e6414
-  description: 'Loop A-E: 2,000 simulated A/B tests with frequentist + Bayesian decisions'
-- path: chapters/18-frequentist-vs-bayesian-shipping/images/ship_by_truth.png
-  chapter: 18-frequentist-vs-bayesian-shipping
-  kind: image
-  seed: derived
-  sha256: f18ba002c5ef7767566236146eedf1aa684c17377943f6f5c8a3fa31ed24bac7
-  description: 'Chapter 18 figure: ship_by_truth.png'
-- path: chapters/18-frequentist-vs-bayesian-shipping/images/confusion_matrix.png
-  chapter: 18-frequentist-vs-bayesian-shipping
-  kind: image
-  seed: derived
-  sha256: 433d2b0ebf09463509f8dac879dcab217c851f1c9b630f6cc656d976ce3f3e99
-  description: 'Chapter 18 figure: confusion_matrix.png'
-- path: chapters/18-frequentist-vs-bayesian-shipping/images/cost_analysis.png
-  chapter: 18-frequentist-vs-bayesian-shipping
-  kind: image
-  seed: derived
-  sha256: 3d4ca73c6714a2a1829b003dfc7c385f03f8131be21318f7e56e2c2a26135820
-  description: 'Chapter 18 figure: cost_analysis.png'
-- path: chapters/18-frequentist-vs-bayesian-shipping/images/joint_decision.png
-  chapter: 18-frequentist-vs-bayesian-shipping
-  kind: image
-  seed: derived
-  sha256: 376aba524991098c2ca86f20c843e27351b8a649cee5a33260fe7c814237a859
-  description: 'Chapter 18 figure: joint_decision.png'
 - path: chapters/19-causal-handoff/images/selection_bias.png
   chapter: 19-causal-handoff
   kind: image
@@ -564,3 +407,178 @@ artifacts:
   seed: derived
   sha256: af9662a3ffe35c7787f4bbc36b5befd82e7d62bf08ccb83af8a1455c897856aa
   description: 'Chapter 17 figure: bayesian_attribution.png'
+- path: chapters/04-test-family/images/pvalue_grid.png
+  chapter: 04-test-family
+  kind: image
+  seed: derived
+  sha256: 41af6cf6a1f68257cd441e9d3ada067e79f526829e2e7ba871bfa38eb910c751
+  description: 'Chapter 4 figure: pvalue_grid.png'
+- path: chapters/04-test-family/images/normal_vs_exact.png
+  chapter: 04-test-family
+  kind: image
+  seed: derived
+  sha256: b9e73ddee26bcdb86985f5862c585574c365e304969a6658453683a1cca62da7
+  description: 'Chapter 4 figure: normal_vs_exact.png'
+- path: chapters/04-test-family/images/edge_cases.png
+  chapter: 04-test-family
+  kind: image
+  seed: derived
+  sha256: 0dd82ac0cb6ccf5caf9e90ff38dab0ac98971d95ecae1dbd73d9b04d8e6bf40e
+  description: 'Chapter 4 figure: edge_cases.png'
+- path: chapters/04-test-family/images/bayes_alongside.png
+  chapter: 04-test-family
+  kind: image
+  seed: derived
+  sha256: 42f8b7f474b4447320cde8dc94be2fa51437625868c1a093d9260c3e4b01be19
+  description: 'Chapter 4 figure: bayes_alongside.png'
+- path: chapters/05-confidence-intervals/images/ci_method_comparison.png
+  chapter: 05-confidence-intervals
+  kind: image
+  seed: derived
+  sha256: 65cb0144b564c661c67ef49289f6b0b5e89080f860c2d86a6e0a435d5d98b071
+  description: 'Chapter 5 figure: ci_method_comparison.png'
+- path: chapters/05-confidence-intervals/images/boundary_failures.png
+  chapter: 05-confidence-intervals
+  kind: image
+  seed: derived
+  sha256: d45a3dff793d6507ba30babaaa67eaca450770fd639da97821675b03ed635e14
+  description: 'Chapter 5 figure: boundary_failures.png'
+- path: chapters/05-confidence-intervals/images/three_priors.png
+  chapter: 05-confidence-intervals
+  kind: image
+  seed: derived
+  sha256: 8017106433eb3a040fae17f120826f27ae9fdde797a6f709fd789fd7b8abfa57
+  description: 'Chapter 5 figure: three_priors.png'
+- path: chapters/05-confidence-intervals/images/coverage_simulation.png
+  chapter: 05-confidence-intervals
+  kind: image
+  seed: derived
+  sha256: e83cfbeceee8756d4f543fe506d09fe1356c1d491aa4680f812b5371cd5f928d
+  description: 'Chapter 5 figure: coverage_simulation.png'
+- path: chapters/05-confidence-intervals/images/coverage_vs_p.png
+  chapter: 05-confidence-intervals
+  kind: image
+  seed: derived
+  sha256: 62db549e2aff4d22ee5c9ae978e36c9cbfcfafe74a51b1bce6cf3071741b24da
+  description: 'Chapter 5 figure: coverage_vs_p.png'
+- path: chapters/05-confidence-intervals/data/coverage_rates.npy
+  chapter: 05-confidence-intervals
+  kind: samples
+  seed: 123
+  sha256: 231fbc717c2cb26a90da69d9673269d8872a24efa99249f4a523435d0a8c53f8
+  description: 'Loop D: empirical coverage rates across N'
+- path: chapters/05-confidence-intervals/data/coverage_vs_p.npy
+  chapter: 05-confidence-intervals
+  kind: samples
+  seed: 456
+  sha256: 202f5c74152eebf42b601bcdd31b2b7beae836fb164c7610c906834856036bdf
+  description: 'Loop D: empirical coverage as a function of p at fixed N'
+- path: chapters/13-metric-tree/images/metric_tree.png
+  chapter: 13-metric-tree
+  kind: image
+  seed: derived
+  sha256: 70921ac7d7833489a426b438596bbae356ddbd33443a9c2ed3b928c2134a74b0
+  description: 'Chapter 13 figure: metric_tree.png'
+- path: chapters/13-metric-tree/images/noise_vs_speed.png
+  chapter: 13-metric-tree
+  kind: image
+  seed: derived
+  sha256: 3b565436132a8de49facc68e91dc5b27810ba0fd26ca71a45c8e13b95fe95f57
+  description: 'Chapter 13 figure: noise_vs_speed.png'
+- path: chapters/13-metric-tree/images/predictivity.png
+  chapter: 13-metric-tree
+  kind: image
+  seed: derived
+  sha256: e1727d4f90f7638d0ac1debe618588d9cc82356613983545e0da1f4e99a05cf9
+  description: 'Chapter 13 figure: predictivity.png'
+- path: chapters/13-metric-tree/images/proxy_lies.png
+  chapter: 13-metric-tree
+  kind: image
+  seed: derived
+  sha256: 177286f2d74ab3203351be997f0a28ac8478dbae7952600ec606dc06bbd821f7
+  description: 'Chapter 13 figure: proxy_lies.png'
+- path: chapters/13-metric-tree/data/predictivity_pairs.npy
+  chapter: 13-metric-tree
+  kind: samples
+  seed: 0
+  sha256: ce9ef2a9bb5ca00f6607e89cb6d687df2cbf12c925e0033891b98cccf6223f16
+  description: 'Loop C: short-term vs long-term effect pairs across 200 simulated
+    experiments'
+- path: chapters/13-metric-tree/data/predictivity_bootstrap_r.npy
+  chapter: 13-metric-tree
+  kind: samples
+  seed: 0
+  sha256: 8d3fd092907464d259dee11d2d371422cfdeabd4ace87bec262be4178772f9dc
+  description: 'Loop C: bootstrap distribution of Pearson r (1000 resamples)'
+- path: chapters/15-dilution/images/itt_vs_per_protocol.png
+  chapter: 15-dilution
+  kind: image
+  seed: derived
+  sha256: 69b883f6b7c110a7439ea3406abfae61075ddd16b08fcd2c7b0046f185b044e3
+  description: 'Chapter 15 figure: itt_vs_per_protocol.png'
+- path: chapters/15-dilution/images/dilution_sweep.png
+  chapter: 15-dilution
+  kind: image
+  seed: derived
+  sha256: 530c2d2fe6eeaa995071038d31ea3d918dc0f54b62b3d0ceea27865db3a2a8b0
+  description: 'Chapter 15 figure: dilution_sweep.png'
+- path: chapters/15-dilution/images/ratio_metric.png
+  chapter: 15-dilution
+  kind: image
+  seed: derived
+  sha256: d4f2e0936a220757af03f1cf0068542186a40caa019dbf4797c4c16dfa572a39
+  description: 'Chapter 15 figure: ratio_metric.png'
+- path: chapters/16-metric-quality/images/variance_comparison.png
+  chapter: 16-metric-quality
+  kind: image
+  seed: derived
+  sha256: 05697960358a741c684b112ebe5aa53060ef0ed372d16bee2972a9a35e465b77
+  description: 'Chapter 16 figure: variance_comparison.png'
+- path: chapters/16-metric-quality/images/cuped.png
+  chapter: 16-metric-quality
+  kind: image
+  seed: derived
+  sha256: 12b7cb3811aec21445faba8a086798f39dc00b967d441610aefae846ee32fe90
+  description: 'Chapter 16 figure: cuped.png'
+- path: chapters/16-metric-quality/images/aa_stability.png
+  chapter: 16-metric-quality
+  kind: image
+  seed: derived
+  sha256: 09ec92fe1c55cad5ada10bd041c89843f96b667abd0a9530e4f2785c9db9f229
+  description: 'Chapter 16 figure: aa_stability.png'
+- path: chapters/16-metric-quality/images/predictivity_grid.png
+  chapter: 16-metric-quality
+  kind: image
+  seed: derived
+  sha256: 3aed4b2b440ba554ee608129c0ba4f73d2004b51b54ccd195c121b63d7021c8f
+  description: 'Chapter 16 figure: predictivity_grid.png'
+- path: chapters/18-frequentist-vs-bayesian-shipping/data/ship_decisions.csv
+  chapter: 18-frequentist-vs-bayesian-shipping
+  kind: samples
+  seed: 180
+  sha256: 50d0e757baf8951269db7071de8f324f40b69b7bf1fb42dd1934c8eab2b61889
+  description: 'Loop A-E: 2,000 simulated A/B tests with frequentist + Bayesian decisions'
+- path: chapters/18-frequentist-vs-bayesian-shipping/images/ship_by_truth.png
+  chapter: 18-frequentist-vs-bayesian-shipping
+  kind: image
+  seed: derived
+  sha256: 3d7672ac6b164c2ec4b7c53ebde59c8b141c6edfaf2a5be83e06ecee759bafea
+  description: 'Chapter 18 figure: ship_by_truth.png'
+- path: chapters/18-frequentist-vs-bayesian-shipping/images/confusion_matrix.png
+  chapter: 18-frequentist-vs-bayesian-shipping
+  kind: image
+  seed: derived
+  sha256: 453b79ebc04d5076db694ecd59535fb177c5a838d86d1219705167d76078d451
+  description: 'Chapter 18 figure: confusion_matrix.png'
+- path: chapters/18-frequentist-vs-bayesian-shipping/images/cost_analysis.png
+  chapter: 18-frequentist-vs-bayesian-shipping
+  kind: image
+  seed: derived
+  sha256: 7f1c70690d31e03f2e19974b3f664a8af54cb780b31f186fb00df19064ef0e85
+  description: 'Chapter 18 figure: cost_analysis.png'
+- path: chapters/18-frequentist-vs-bayesian-shipping/images/joint_decision.png
+  chapter: 18-frequentist-vs-bayesian-shipping
+  kind: image
+  seed: derived
+  sha256: 756dc3916514d56864ccc58bbb6e712898b2369ca3965fa2a4330763904fffb9
+  description: 'Chapter 18 figure: joint_decision.png'

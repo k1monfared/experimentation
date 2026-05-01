@@ -49,8 +49,14 @@ def add_artifact(m, *, path, kind, seed, sha256, description):
 def run_simulator(n_runs: int, n_per_arm: int, mmu: float = 0.005, seed: int = 0) -> pd.DataFrame:
     """Run n_runs synthetic A/B tests with effects drawn from a population.
 
-    Records frequentist decision (p < 0.05 and direction positive) and Bayesian
-    decision (P(diff > MMU) > 0.95) along with the true effect.
+    Records frequentist decisions (one rule "in the wild" without an MMU gate, one
+    "matched" rule with a point-estimate MMU gate) and the Bayesian decision
+    (P(diff > MMU) > 0.95) along with the true effect.
+
+    Population caveat: true_diff is drawn from Normal(0, 0.01). About 38% of mass
+    lies within +/- MMU and ~95% within +/- 0.02, which drives the murky-middle
+    framing. Different effect populations (heavy-tailed, skewed positive, mixture
+    of zeros plus a discrete spike) would shift the cost trade-offs.
     """
     rng = np.random.default_rng(seed)
     rows = []
@@ -63,13 +69,26 @@ def run_simulator(n_runs: int, n_per_arm: int, mmu: float = 0.005, seed: int = 0
         exp = two_arm_binary(n_per_arm, pc, pt, seed=int(rng.integers(0, 2**30)))
         z = two_proportion_z(int(exp.treatment.sum()), n_per_arm, int(exp.control.sum()), n_per_arm)
         f_ship = (z.p_value < 0.05) and (z.point_estimate > 0)
-        # Bayesian
+        # Matched frequentist rule: p < 0.05 AND point estimate > MMU (not just > 0).
+        # Lets the reader separate "lens effect" from "with-MMU vs without-MMU effect".
+        f_ship_matched = (z.p_value < 0.05) and (z.point_estimate > mmu)
+        # Bayesian: posterior P(diff > MMU) > 0.95 via Beta-Binomial conjugate.
         a_c, b_c = 1 + int(exp.control.sum()), 1 + (n_per_arm - int(exp.control.sum()))
         a_t, b_t = 1 + int(exp.treatment.sum()), 1 + (n_per_arm - int(exp.treatment.sum()))
-        local = np.random.default_rng(0)
+        # Bug fix: previously local rng was reseeded to 0 every iteration, which
+        # correlated the Monte-Carlo noise across all runs. Spawn a per-run rng
+        # from the outer rng instead so each posterior draw is independent.
+        local = np.random.default_rng(rng.integers(0, 2**30))
         diffs = local.beta(a_t, b_t, 4000) - local.beta(a_c, b_c, 4000)
         b_ship = (diffs > mmu).mean() > 0.95
-        rows.append({"true_diff": true_diff, "f_ship": f_ship, "b_ship": b_ship, "obs_diff": z.point_estimate, "p": z.p_value})
+        rows.append({
+            "true_diff": true_diff,
+            "f_ship": f_ship,
+            "f_ship_matched": f_ship_matched,
+            "b_ship": b_ship,
+            "obs_diff": z.point_estimate,
+            "p": z.p_value,
+        })
     return pd.DataFrame(rows)
 
 

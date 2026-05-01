@@ -3,29 +3,29 @@
     - Summary
         - Chapter 15 covers ITT vs per-protocol, CACE-style rescaling, and the delta method for ratio metrics. The inquiry-loop shape and two-lens framing are in place, and the three figures cover the right conceptual points. The chapter is statistically directionally correct, but several claims are imprecise about assumptions, the CACE estimator is invoked without naming its identifying conditions, the delta method appears as a black box, the dilution sweep hides sampling variability, and the headline numbers in chapter.md disagree with the notebook output for the same seed. Two rounds of critic + defender produced the following items.
     - Items
-        - Per-protocol bias: tighten language
+        - [APPLIED 2026-04-29] Per-protocol bias: tighten language
             - Current text says per-protocol is "biased when compliance correlates with the outcome" and "biased without further structure", which is vague.
             - Replace with: per-protocol naive subsetting is unbiased only when compliance is exogenous (independent of potential outcomes given assignment). Whenever compliance is endogenous, that is, the users who comply differ in their potential outcome from non-compliers, the per-protocol contrast is biased for both the policy effect and the among-compliers effect.
             - Add one concrete example: motivated users are both more likely to visit settings and more likely to convert, so per-protocol overstates the among-compliers effect.
-        - CACE: name the identifying assumptions
+        - [APPLIED 2026-04-29] CACE: name the identifying assumptions
             - Loop B mentions "rescale by 1/compliance" and calls it CACE without stating what makes that valid.
             - Add a short paragraph naming the Imbens and Angrist conditions: random assignment, monotonicity, that is no defiers, exclusion restriction, that is assignment affects outcomes only through actual treatment uptake, SUTVA, and a non-zero first stage. Note that under those conditions the Wald or instrumental-variables estimator ITT effect divided by compliance rate identifies the among-compliers effect.
             - Flag that violations of exclusion are common in software experiments, for example a banner shown to the treatment arm changes behavior even for users who never click through.
-        - Delta method: show the one-line derivation, not just the result
+        - [APPLIED 2026-04-29] Delta method: show the one-line derivation, not just the result
             - Current Loop C uses delta_two_arm as a black box.
             - Add a short sidebar: for a ratio R equals X bar over Y bar, a first-order Taylor expansion around the means gives Var R approximately equals one over mu Y squared times Var X plus mu X squared over mu Y to the fourth times Var Y minus two mu X over mu Y cubed times Cov X Y. Then point at the implementation in expkit.metrics.delta.
             - Mention regularity conditions: mu Y bounded away from zero, finite second moments, large enough n for the linearization to hold.
-        - Dilution sweep: show sampling variability
+        - [APPLIED 2026-04-29] Dilution sweep: show sampling variability
             - The Loop B figure plots one ITT and one per-protocol point per visit probability with no uncertainty band.
             - Either run several seeds per visit probability and plot a band of plus or minus two empirical SEs, or overlay analytical CIs computed from the per-arm proportions. The current plot makes it look like ITT scales perfectly linearly when in fact the small-visit-rate end is noisy and the per-protocol estimate has wide CIs at low compliance because the visited subsample is small.
-        - Numbers in chapter.md do not match notebook output for the same seed
+        - [APPLIED 2026-04-29] Numbers in chapter.md do not match notebook output for the same seed
             - chapter.md and chapter.log claim ITT around plus 1.2pp and per-protocol around plus 10pp.
             - notebook.ipynb with seed 150, n equals 20000, visit_prob equals 0.12, true among-visitors lift equals 0.10 prints ITT equals minus 0.0039 and per-protocol equals plus 0.0826.
             - Either the prose should describe expected values with their SE, for example ITT expected approximately equal to 0.012 with SE around 0.006 so a single draw can land near zero or even negative, and similarly for per-protocol, or the seed and n should be chosen so the notebook reproduces the headline numbers. Right now the chapter looks wrong against its own companion notebook.
-        - Linearity of ITT scaling assumes homogeneous among-visitors effect
+        - [APPLIED 2026-04-29] Linearity of ITT scaling assumes homogeneous among-visitors effect
             - Loop B states ITT scales linearly with the visit rate. That holds only when the per-visitor effect is constant across compliance types, that is, no effect heterogeneity by compliance.
             - Add a one-sentence caveat: if compliers and would-be compliers have different effect sizes, the ITT-over-compliance ratio recovers the complier average causal effect, not the population average treatment effect on the treated, and the linear scaling argument is an approximation.
-        - Bayesian commentary is thin and lacks a PyMC model
+        - [DEFERRED] Bayesian commentary is thin and lacks a PyMC model
             - The two-lens block says "posterior over the per-visitor effect, marginalized over compliance" but shows no model.
             - Project rules require PyMC as the canonical Bayesian engine. Add a small PyMC model with a latent compliance indicator per user, or a Beta prior on the compliance rate combined with a Normal prior on the among-visitors effect, and show the posterior on the among-visitors effect with its credible interval.
             - At minimum, add a stub in notebook.ipynb that loads or fits the model and saves an arviz InferenceData file under data, consistent with the project convention.

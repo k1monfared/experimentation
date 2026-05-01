@@ -5,25 +5,29 @@
         - Core claims (clickbait dynamics, aggregate-vs-cohorts, guardrails FWER) are directionally correct but several figures and one paragraph need framing or technical fixes.
         - Highest-priority issue: the "Bayesian sidesteps" paragraph in Loop D is technically misleading and must be rewritten.
     - Items
-        - Loop B clickbait_curves figure
+        - [APPLIED] Loop B clickbait_curves figure
             - Curves are deterministic exponential shapes (0.10 * exp(-d/7), -0.05 * (1 - exp(-d/14))), no noise, no CI band.
             - Add caption or in-figure annotation: "illustrative shapes, not fitted to data" so readers do not mistake the curves for measured dynamics.
             - Optional: add light Monte Carlo noise around the mean curves so the figure visually matches what a real dashboard would show.
+            - Resolution: added illustrative-shape note + caveat that real novelty curves vary in shape (plateau, collapse, dip-and-recover); the pure exponential is a cartoon.
         - Loop B decision question
             - Title says "Both stories are true" but the inquiry never asks the load-bearing question: "which metric would you ship on, and why?"
             - Add the explicit decision question at the end of Loop B so the loop closes cleanly per the 10-step inquiry pattern.
-        - Loop C cohort segmentation
+        - [APPLIED] Loop C cohort segmentation
             - Lifts (-0.02, +0.03, +0.06) and fractions (0.10, 0.30, 0.60) are hand-picked. The engagement-level slice is well motivated (the chapter explicitly contrasts behaviour vs demographic slices in the closing question), but the numerical construction is not flagged.
             - Add a one-line note that the numbers are illustrative and chosen so the aggregate stays positive while the highest-value cohort regresses.
-        - Loop D independence assumption
+            - Resolution: added one-line illustrative-numbers note in Loop C Observe step.
+        - [APPLIED] Loop D independence assumption
             - rng.uniform(0, 1) under H0 gives independent uniform p-values. The 64% naive FWER is correct under independence, but real guardrail metrics are correlated (sessions, clicks, time-on-page all share variance).
             - Add a single sentence noting that 64% is the independence upper bound; correlated guardrails inflate less, but the qualitative story is unchanged.
-        - Loop D Bayesian paragraph (highest priority)
+            - Resolution: added independence-upper-bound note + correlated-guardrails caveat in Loop D Observe step.
+        - [APPLIED] Loop D Bayesian paragraph (highest priority)
             - Current text: "a posterior over the joint of all 20 metric lifts. Reading marginals does not blow up the family-wise rate -- the prior + likelihood machinery accounts for the joint already."
             - This is misleading. A flat-prior Bayesian marginal credible interval excluding zero behaves much like the naive frequentist test; there is no built-in family-wise control.
             - The actual mechanism is a hierarchical prior that shrinks all 20 lifts toward zero (partial pooling). Shrinkage is what damps the false-alarm rate, not "Bayesian machinery" generically.
             - Rewrite to (a) name hierarchical / partial-pooling priors explicitly, (b) say flat-prior Bayes does not protect, (c) frame the choice as decision-theoretic (loss over the joint) rather than a free lunch.
             - This aligns with the project rule that PyMC is the canonical Bayesian path: the rewrite should sketch the hierarchical model, not hand-wave.
+            - Resolution: replaced the misleading paragraph with a three-part rewrite. (a) flat-prior Bayes does not protect and reproduces the family-wise blow-up. (b) hierarchical Bayes with partial pooling shrinks individual lifts toward the population mean, and that shrinkage is what damps false alarms. (c) included a PyMC-style sketch (mu_lift, tau_lift hyperprior, lift_i ~ Normal(mu_lift, tau_lift)) and framed the decision as a loss over the joint posterior, not a marginal-CI count.
         - expkit module references
             - The project narrative-style policy requires every chapter (including stubs) to list the expkit modules/functions it exercises. This chapter exercises none in the visible text.
             - At minimum, list which expkit modules would be used when the chapter is fleshed out (likely expkit.power for guardrail family sizing, expkit.inference for the per-metric tests, expkit.plot.style which is already imported).

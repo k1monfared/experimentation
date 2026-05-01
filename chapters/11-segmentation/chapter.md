@@ -6,11 +6,12 @@
 # Loop A: demographic slicing vs behavioural slicing
 
 - Try
-  - 5,000 users, four behavioural segments (active contributor, active consumer, silent intentional, passive consumer). Random country and age. Treatment helps contributors (+10pp), helps active consumers (+4pp), hurts silent intentionals (-3pp), is neutral on passive consumers.
+  - 5,000 users, four behavioural segments (active contributor, active consumer, silent intentional, passive consumer). Random country and age. The simulator injects per-segment treatment lifts of +10pp for active_contributor, +4pp for active_consumer, -3pp for silent_intentional, and 0 for passive_consumer. These are the simulator ground truth, baked in by construction, not numbers we discovered in the data.
   - Slice by country (uninformative). Slice by behavioural segment (very informative).
 - Observe
   - By country: lifts are roughly equal across A, B, C. Country tells us nothing.
-  - By behavioural segment: contributors gain a lot, silent intentionals actually lose. The pooled lift averages everything out into something modest.
+  - By behavioural segment: contributors gain a lot, silent intentionals actually lose. The pooled lift averages everything out into something modest, around +0.033 for this seed. The pooled value depends on the segment proportions, which depend on the median-split cascade described in Loop B, so do not read it as a population parameter.
+  - The empirical per-segment lifts in this realization come out near +0.066, +0.129, -0.040, and +0.030 (one realization, seed 110), which differ from the injected +0.10, +0.04, -0.03, 0.0. That gap is sampling noise, and Loop D is what lets us recover the injected values within posterior uncertainty.
   - ![Demographic vs behavioural](images/demographic_vs_behavioral.png)
 - Hunch
   - Demographic features are descriptive but rarely *the cause* of differential treatment effects. Behaviour is closer to the cause.
@@ -25,11 +26,16 @@
   - Silent intentionals: low active rate but high intent when they do show up.
   - Passive consumers: low everywhere.
   - ![Segment signatures](images/segment_signature.png)
+  - How the labels are built: the thresholds in label_behavioral are simple medians on each of the three axes, applied as a cascade. Default is passive_consumer. Override to active_contributor when high_active and high_contrib. Else override to active_consumer when high_active and not high_contrib and high_intent. Else override to silent_intentional when not high_active and high_intent.
+  - Consequence: segment sizes are unbalanced. With seed 110, n = 5000, the realized counts are passive_consumer 1898, silent_intentional 1249, active_contributor 1228, active_consumer 625. The "active_consumer" bucket is the smallest because it requires the joint condition high_active and not high_contrib and high_intent, which is a small slice of the joint distribution. This matters when we compare per-segment power and when we read the "tiny segments borrow strength" claim in Loop D.
+  - Why medians: medians are chosen so the labels are well-defined for any input, not because of a domain rule. A real product would tune the cuts to its own behaviour distribution.
 - Hunch
   - These segments are not arbitrary buckets. They have visibly different signatures. Their relationship to product changes is therefore more interpretable than a country slice.
 
 # Loop C: three different segmentations, three stories
 
+- Note on generative process
+  - Loop C is different from Loop A and Loop D. Here the treatment effect varies *continuously* with weekly_active_rate, via treatment_p = base + (weekly_active_rate - 0.4) * 0.3. There is no per-segment lift baked in. Loops A and D inject heterogeneity *discretely* by behavioural segment. We are looking at how three segmentation schemes summarize the same underlying continuous heterogeneity, so do not compare per-segment magnitudes across loops; the data-generating process is not the same.
 - Try
   - Same population, same treatment. Three different segmentation schemes:
     - tenure (new vs veteran)
@@ -45,14 +51,19 @@
 
 # Two-lens commentary
 
-- Frequentist: typically runs a test per segment with a multiple-testing correction. Independent inference per segment.
+- Frequentist: two standard routes.
+  - Per-segment two-proportion z test or chi-square, with Bonferroni or Holm correction across the segments. Independent inference per segment. Pays a multiple-testing power tax that grows with the number of segments. Appropriate when segments are pre-registered and few.
+  - One logistic regression on the whole table with arm, segment, and arm:segment interaction terms. Read the per-segment effect off the interaction coefficients. One model, no Bonferroni in the same form. Interpretation lives on the logit scale and depends on contrast coding. Preferable when segments are many or when the analysis is post-hoc.
 - Bayesian: a hierarchical model where each segment has its own treatment effect drawn from a population-level distribution. Partial pooling. Segments with little data borrow strength from the global mean.
-- The two views often agree directionally; the Bayesian view is more honest about uncertainty in tiny segments.
+- The two views often agree directionally. The Bayesian view is more honest about uncertainty in tiny segments, and partial pooling replaces the explicit multiple-testing correction with a regularization toward the population.
 
 # Loop D: hierarchical Bayesian model with PyMC
 
+- Frame
+  - Loop D is a *recovery* exercise. The simulator bakes in the lifts +10, +4, -3, 0 by segment. We test whether the hierarchical model can recover those known values within its posterior uncertainty, and how it differs from the no-pooling per-segment estimates that simply read off the empirical lifts. This is a controlled check, not a discovery.
 - Try
-  - We fit a hierarchical model: each segment has a logit baseline and a treatment effect drawn from a population-level Normal(mu, tau). Non-centered parameterization keeps the sampler healthy near the funnel at tau = 0.
+  - We fit a hierarchical model: each segment has a logit baseline and a treatment effect drawn from a population-level Normal(mu, tau). We use a non-centered parameterization for the per-segment effects.
+  - Why non-centered: in the centered form effect[s] ~ Normal(mu, tau), the latent space rescales with tau, so when tau is small the joint posterior pinches into a narrow neck (the "funnel") whose curvature changes with tau. NUTS has to take very small steps inside the neck and large steps outside it, which produces divergences and biased posterior tails. The non-centered form effect[s] = mu + tau * z[s] with z[s] ~ Normal(0, 1) keeps the latent z at unit scale regardless of tau, so the geometry is well-conditioned even when tau is near 0. Standard hierarchical-modelling guidance (see Betancourt and Girolami on hierarchical model geometry).
   - The model in shorthand:
     - ```
     - baseline[s] ~ Normal(0, 2)
@@ -64,11 +75,12 @@
     - ```
   - We feed in the same per-segment success counts the independent test would use.
 - Observe
-  - The hierarchical posterior on each per-segment effect tracks its true value (+10pp for active_contributor, +4pp for active_consumer, -3pp for silent_intentional, ~0 for passive_consumer).
-  - Compared to the independent point estimates, the hierarchical estimates pull *slightly* toward the population mean. The pull is small here because each segment has thousands of users; with smaller segments the regularization would matter much more.
+  - The hierarchical posterior on each per-segment effect recovers the simulator-injected values within posterior uncertainty (+10pp for active_contributor, +4pp for active_consumer, -3pp for silent_intentional, ~0 for passive_consumer).
+  - Compared to the independent point estimates, the hierarchical estimates pull toward the population mean. The pull is small here because each segment has hundreds to thousands of users; with smaller segments the regularization would matter much more.
+  - Quantify the shrinkage. Read off the posterior of tau (the population scale of segment effects on the logit scale): its posterior mean and 95 percent CI, plus mu's posterior mean. Then for each segment compute shrinkage = (independent_estimate - posterior_mean) / (independent_estimate - mu_posterior_mean), on the logit scale. Values near 0 mean "no pooling, segment dominates its own posterior". Values near 1 mean "full pooling, segment's posterior collapses to the population mean". With segments in the hundreds to low thousands here, shrinkage is small (single-digit percent for the large segments, larger for active_consumer which has the smallest n). The notebook prints these numbers; with n_per_segment around 100 the shrinkage would be much larger and visibly visible on the plot.
   - ![Hierarchical effects](images/hierarchical_effects.png)
 - Hunch
-  - Hierarchical pooling is the Bayesian alternative to multiple-comparisons correction. Instead of paying a Bonferroni-style power tax, you let the model regularize toward the population. Small segments borrow strength; large segments dominate their own posterior. No knob to tune by hand.
+  - Hierarchical pooling is the Bayesian alternative to a Bonferroni / Holm correction or to an arm:segment interaction regression. Instead of paying a multiple-testing power tax or fitting a flat interaction model, you let the hierarchy regularize toward the population. Small segments borrow strength; large segments dominate their own posterior. No knob to tune by hand, and tau itself is a parameter you read off rather than a tuning choice.
 
 # The big question that opens Chapter 12
 

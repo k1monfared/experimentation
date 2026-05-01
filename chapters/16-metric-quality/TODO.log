@@ -5,17 +5,17 @@
         - The chapter's narrative is sound. Fixes are mostly hardening of the supporting code and one sentence of qualifier in Loop B and Loop C.
         - Bayesian lens is currently absent from this chapter. Out of scope for this review, but flagged for a later pass since the project rule is two lenses from Chapter 1.
     - Items
-        - Loop B, CUPED: clarify single-covariate framing
+        - HIGH (applied): Loop B, CUPED: clarify single-covariate framing
             - chapter.log Loop B currently calls theta "the OLS slope" without naming the single-covariate restriction or the orthogonality-with-treatment requirement.
             - Edit chapter.log Loop B "Try" to note: theta is the slope of y on a single pre-experiment covariate x. With multiple covariates, theta becomes the OLS coefficient vector. The covariate must be measured pre-treatment so theta cannot soak up part of the effect.
             - Edit expkit/metrics/variance.py docstring of cuped: state the assumption that x is pre-treatment, explain that the estimator is unbiased only when x is uncorrelated with arm assignment in expectation, and note that the arm argument is currently accepted but ignored.
             - Concrete code item: either implement pooled-within-arm theta when arm is supplied, or remove the arm parameter and document the single-covariate limitation. Recommended: implement pooled theta as a one-liner that fits OLS within each arm and averages, then test in tests/test_metrics_variance.py.
-        - Loop C, A/A stability: frac_extreme is tautological for calibration
+        - HIGH (applied): Loop C, A/A stability: frac_extreme is tautological for calibration
             - In expkit/metrics/quality.py line 29, frac_extreme uses 1.96 * arr.std(ddof=1), which is the empirical std of the same array. Under any symmetric distribution this fraction is essentially fixed by shape, not by calibration of the test. It checks distribution shape, not whether the test rejects at the nominal alpha.
             - Edit chapter.log Loop C "Observe" to soften the claim: frac_extreme near 5 percent confirms the empirical distribution is roughly symmetric and concentrated, but a true calibration check needs each trial's own standard error, not the pooled empirical std.
             - Add a new helper aa_calibration(pvalues, alpha) in expkit/metrics/quality.py that returns the empirical rejection rate from per-trial p-values. Add a unit test in tests/test_metrics_quality.py.
             - Optionally extend render_aa_stability in generate.py to compute a z statistic per trial using sqrt(2/n_per_arm) and report empirical alpha. Optional, since the figure is already useful.
-        - Loop D, predictivity: r without uncertainty
+        - HIGH (applied): Loop D, predictivity: r without uncertainty
             - With 200 simulated experiments, the reported r values of +0.6, 0.0, and -0.3 are statistically distinguishable, but the chapter presents them as point estimates. A reader copying this approach with 30 experiments will get noisy r values.
             - Edit expkit/metrics/quality.py predictivity() to also return a bootstrap CI for r. Default to 1000 resamples, return r_ci_lower and r_ci_upper alongside pearson_r.
             - Edit chapter.log Loop D "Observe" to add the CIs and one sentence on why CI matters: predictivity itself has variance and the metric of metrics deserves the same scrutiny we apply to the underlying metrics.

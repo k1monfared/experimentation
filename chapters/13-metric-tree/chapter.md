@@ -15,7 +15,8 @@
   - Click-level: cheap to read in a day, but a 4% lift in clicks doesn't always mean a 4% lift in retention.
   - First-layer proxies: a 1-week experiment can give you a noisy read on conversion.
   - Top-level: revenue and retention need months of data and have huge noise relative to the effect we're hoping to see.
-  - ![Noise vs speed](images/noise_vs_speed.png)
+  - ![Noise vs speed (schematic)](images/noise_vs_speed.png)
+  - The figure is schematic, not measured. The CV values and day counts are illustrative; real numbers vary by product and team.
 - Hunch
   - The bottom of the tree gives quick clean reads of *something*, but that something might not be the truth. The top gives the truth, slowly.
 
@@ -24,11 +25,14 @@
 - Try
   - Simulate 200 experiments. Each has a true latent effect. We measure a short-term metric (noisy proxy) and a long-term metric (less noisy, closer to the truth).
 - Observe
-  - Pearson r between short and long is around 0.29. R^2 around 0.08. The short-term metric is correlated with the long-term one, but the noise dominates at the per-experiment level.
+  - Pearson r between short and long is around 0.29 with a 95 percent bootstrap CI of roughly [0.15, 0.41] across the 200 simulated experiments. Spearman rho lands close to Pearson r here because the simulated link is linear, but on real metric pairs (saturating, threshold-shaped) Spearman is the safer summary.
+  - R^2 around 0.08. The short-term metric is correlated with the long-term one, but the noise dominates at the per-experiment level.
   - Most of the time the short-term metric points the right way. Some experiments diverge sharply.
   - ![Predictivity](images/predictivity.png)
 - Hunch
-  - "Predictive validity" is a property of metric pairs, not individual metrics. Some short-term metrics ARE predictive of long-term outcomes; others are not. Choosing your headline metric is choosing this correlation.
+  - Pearson assumes linearity; for monotone non-linear pairs, report Spearman as well.
+  - "Predictive validity" is a property of metric pairs, not individual metrics, and it is itself a distribution rather than a point estimate. The bootstrap CI on r reminds us that the headline correlation is uncertain, and that two metric pairs with the same r can differ in stability across slices.
+  - Some short-term metrics ARE predictive of long-term outcomes; others are not. Choosing your headline metric is choosing this correlation.
 
 # Loop D: proxies that lie
 
@@ -36,6 +40,7 @@
   - Three candidate proxies for the same true effect: a clean one, a noisy-but-correct one, and a lying one (anti-correlated with truth).
 - Observe
   - Clean proxy r ~ 0.7. Noisy r ~ 0.4. Lying r ~ -0.3.
+  - Anti-correlation is not theoretical. Clicks can rise while revenue falls when bounce rate dominates: a low-quality clickbait variant pulls clicks but burns brand and reduces revenue. Time-on-page can rise when users are stuck rather than engaged. Chapter 16 examines the mechanism in depth.
   - ![Proxy lies](images/proxy_lies.png)
 - Hunch
   - You can verify which is which only by tracking the long-term metric anyway. The proxy economy is built on faith that the proxies you chose actually predict.

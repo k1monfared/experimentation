@@ -6,9 +6,16 @@
       "Clopper-Pearson",
       "Bayesian"
     ],
-    "n": 20,
-    "n_trials": 5000
+    "n_grid": [
+      5,
+      10,
+      20,
+      50,
+      100
+    ],
+    "n_trials": 5000,
+    "p": 0.5
   },
   "seed": 123,
-  "sha256": "e17961f6a97f59c795290f9555268aff15280bb26aceb29924a06a08d529118c"
+  "sha256": "231fbc717c2cb26a90da69d9673269d8872a24efa99249f4a523435d0a8c53f8"
 }

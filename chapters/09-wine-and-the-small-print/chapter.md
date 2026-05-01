@@ -16,8 +16,9 @@
   - Teens: -5pp. Harm.
   - Middle-aged sedentary: 0. Indistinguishable from noise.
   - ![External validity](images/external_validity.png)
+  - Note: those numbers are the segment lifts we injected into the simulator (the ground truth). The figure shows estimates from a finite sample of 20K users, so the bars are noisy versions of those targets and won't match exactly.
 - Hunch
-  - Internal validity (does the effect hold in the studied population?) and external validity (does the effect generalize?) are different questions. Studies are usually designed for internal validity. The press release is about external validity. The gap between them is where most "wine is good for you" stories live.
+  - Internal validity (does the effect hold in the studied population?) and external validity (does the effect generalize?) are different questions. Studies are usually designed for internal validity. The press release is about external validity. The gap between them is where most "wine is good for you" stories live. Statisticians call this the transportability or reference-class problem, and there is a formal literature on when an internally valid effect can be carried to a new population.
 
 # Loop B: what does "good" mean?
 
@@ -26,11 +27,13 @@
     - resting heart rate (a proxy)
     - exercise tolerance (a different proxy)
     - all-cause mortality (the thing we actually care about)
+  - To illustrate the gap between proxies and the outcome we actually care about, suppose the three effects look roughly like this.
 - Observe
   - Resting heart rate: -3% (good), 95% CI [-5%, -1%]. Significant.
   - Exercise tolerance: +1%, 95% CI [-1%, +3%]. Indistinguishable from noise.
   - All-cause mortality: -0.2%, 95% CI [-1%, +0.6%]. Indistinguishable from noise on the metric that actually matters.
   - ![Outcome choice](images/outcome_choice.png)
+  - These intervals are illustrative, not derived from a fresh simulation; the point is the shape of the disagreement between proxies and the thing we actually care about.
 - Hunch
   - "Wine reduces resting heart rate" is true. "Wine improves health" is a leap. Choosing which outcome to publish is a decision the reader does not see.
 
@@ -56,6 +59,7 @@
   - ![Tradeoff](images/tradeoff.png)
 - Hunch
   - This is what a "decision" actually is once you take the data seriously: a posterior on each outcome, a utility weighting, and a threshold. The utility function is *not* a statistical question. It is a values question.
+  - One caveat for later: the curve above plugs point estimates into U. Proper expected utility is E[U(theta)] integrated over the joint posterior of target and harm effects, which Chapter 6's Bayesian machinery makes possible and a later chapter on decision theory will treat directly.
 
 # The big question that opens Chapter 10
 

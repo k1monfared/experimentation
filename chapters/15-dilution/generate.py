@@ -67,27 +67,49 @@ def render_itt_vs_per_protocol():
 
 
 def render_dilution_sweep():
-    """As visit rate goes up, ITT effect approaches the true among-visitors effect."""
+    """As visit rate goes up, ITT effect approaches the true among-visitors effect.
+
+    Each visit_probability is run with multiple seeds, so we can plot a band of
+    plus or minus two empirical SEs around the mean ITT and per-protocol estimate.
+    This makes it visible that low-visit-rate ITT and per-protocol both have wide CIs.
+    """
     apply_style()
     rng = np.random.default_rng(0)
     visit_probs = np.linspace(0.02, 0.95, 30)
-    itts = []
-    pps = []
+    n_reps = 20
+    n_users = 8000
     true_pp = 0.10
-    for v in visit_probs:
-        df = settings_page_experiment(n_users=8000, visit_prob=float(v), base_rate=0.20, treatment_lift_among_visitors=true_pp, seed=int(rng.integers(0, 2**30)))
-        itts.append(df[df["arm"] == "treatment"]["outcome"].mean() - df[df["arm"] == "control"]["outcome"].mean())
-        sub = df[df["visited"]]
-        pps.append(sub[sub["arm"] == "treatment"]["outcome"].mean() - sub[sub["arm"] == "control"]["outcome"].mean())
+    itts = np.zeros((len(visit_probs), n_reps))
+    pps = np.zeros((len(visit_probs), n_reps))
+    for i, v in enumerate(visit_probs):
+        for r in range(n_reps):
+            df = settings_page_experiment(n_users=n_users, visit_prob=float(v), base_rate=0.20, treatment_lift_among_visitors=true_pp, seed=int(rng.integers(0, 2**30)))
+            itts[i, r] = df[df["arm"] == "treatment"]["outcome"].mean() - df[df["arm"] == "control"]["outcome"].mean()
+            sub = df[df["visited"]]
+            if len(sub[sub["arm"] == "treatment"]) > 0 and len(sub[sub["arm"] == "control"]) > 0:
+                pps[i, r] = sub[sub["arm"] == "treatment"]["outcome"].mean() - sub[sub["arm"] == "control"]["outcome"].mean()
+            else:
+                pps[i, r] = np.nan
+    itt_mean = itts.mean(axis=1)
+    itt_se = itts.std(axis=1, ddof=1) / np.sqrt(n_reps)
+    pp_mean = np.nanmean(pps, axis=1)
+    pp_se = np.nanstd(pps, axis=1, ddof=1) / np.sqrt(n_reps)
+    # Bands: plus or minus two empirical SEs across reps (CI on the mean estimate).
+    # We also draw a wider band of plus or minus the empirical sd of a single estimate
+    # to convey "what a single experiment of this size would look like".
+    itt_sd = itts.std(axis=1, ddof=1)
+    pp_sd = np.nanstd(pps, axis=1, ddof=1)
     fig, ax = plt.subplots()
-    ax.plot(visit_probs, itts, color=PALETTE["frequentist"], label="ITT effect")
-    ax.plot(visit_probs, pps, color=PALETTE["bayesian"], label="per-protocol effect")
+    ax.fill_between(visit_probs, itt_mean - 2 * itt_sd, itt_mean + 2 * itt_sd, color=PALETTE["frequentist"], alpha=0.18, label="ITT plus or minus 2 SD across single experiments")
+    ax.fill_between(visit_probs, pp_mean - 2 * pp_sd, pp_mean + 2 * pp_sd, color=PALETTE["bayesian"], alpha=0.18, label="per-protocol plus or minus 2 SD")
+    ax.plot(visit_probs, itt_mean, color=PALETTE["frequentist"], label="ITT effect (mean over reps)")
+    ax.plot(visit_probs, pp_mean, color=PALETTE["bayesian"], label="per-protocol effect (mean over reps)")
     ax.axhline(true_pp, color=PALETTE["highlight"], linestyle=":", linewidth=1, label=f"true among-visitors effect = {true_pp}")
     ax.axhline(0, color=PALETTE["muted"], linestyle="--", linewidth=1)
     ax.set_xlabel("visit probability")
     ax.set_ylabel("measured treatment - control")
     ax.set_title("Loop B: ITT scales with the visit rate; per-protocol does not")
-    ax.legend()
+    ax.legend(fontsize=8, loc="upper left")
     fig.tight_layout()
     out = IMG_DIR / "dilution_sweep.png"
     fig.savefig(out)

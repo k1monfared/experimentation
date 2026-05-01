@@ -39,15 +39,20 @@
 
 - Try
   - Logistic regression in PyMC: P(convert) = sigmoid(intercept + sum_c coef[c] * count[c]) where count[c] is the number of times user touched channel c. Weakly informative priors on the coefficients (Normal(0, 0.5) on the logit scale). Sample with NUTS over the 20,000 simulated journeys.
+  - Because we generated journeys from a logistic-additive model and fit a logistic-additive model, this is a recovery check, not a test of the method against real journeys. Real customer journeys violate the assumption that channels combine additively in their touch counts. Sequence matters in practice, channels can interact, and the linear-additive form discards both.
 - Observe (left panel)
   - The posterior 95% credible intervals on the channel coefficients bracket the true values for every channel. direct's coefficient sits highest (true 0.20), search second (0.10), email (0.05), social (0.04), display (0.02). The model recovers the underlying causal structure.
+  - At n = 20,000 the 95% CI half-width is roughly 0.040 for the strongest channel (direct) and around 0.036 to 0.038 for the weaker channels (email, social, display). The two lowest-coefficient channels (display at true 0.02, social at true 0.04) sit with posterior means at 0.052 and 0.058 and HDIs that exclude zero, so the recovery is not borderline. Bulk ESS is roughly 2,500 to 3,300 across coefficients with R-hat at 1.00, so the diagnostic is clean.
 - Observe (right panel)
-  - Take the posterior coefficient means, clip to non-negative, normalize, and treat as "share of true value". Compare to first-touch / last-touch / linear / time-decay shares.
-  - The Bayesian shares match the *true* shares closely. The four heuristics each diverge: first-touch overweights first-channel-of-journey distributions (search and social), last-touch overweights direct (the closer), linear blurs everything toward equal, time-decay sits between linear and last-touch.
+  - Take the posterior coefficient means, clip to non-negative, normalize, and treat as a relative-weight comparison. Compare to first-touch, last-touch, linear, and time-decay shares.
+  - The Bayesian relative weights match the *true* relative weights closely. The four heuristics each diverge: first-touch overweights first-channel-of-journey distributions (search and social), last-touch overweights direct (the closer), linear blurs everything toward equal, time-decay sits between linear and last-touch.
+  - Footnote on scales: heuristic shares partition observed credit on the probability scale, while the Bayesian column normalises non-negative logit-scale coefficients. The two are comparable in spirit as relative weights, but the chart should be read as a comparison of relative weights rather than identically scaled probabilities.
   - ![Bayesian attribution](images/bayesian_attribution.png)
 - Hunch
-  - When you have data and a willingness to write down a likelihood, the Bayesian model gives you the *causal* attribution. The heuristics give you accounting choices. Different objects.
-  - Caveat: the Bayesian model is only as good as its specification. We assumed channels combine linearly on the logit scale and that touch counts are the right covariate. If the true mechanism is "the SEQUENCE matters" or "channels interact", the linear model is wrong. The same critique applies to all attribution; the Bayesian version just makes the assumptions explicit.
+  - When you have data and a willingness to write down a likelihood, the Bayesian model gives you the *causal* attribution under that likelihood. The heuristics give you accounting choices. Different objects.
+  - Caveat on order-blindness: touch-count covariates collapse the journey to a bag of channels. First-touch and last-touch heuristics are answering a question the Bayesian model literally cannot see, since the design matrix discards order. If the analyst believes first-touch or last-touch positions carry information, add binary first_is_X and last_is_X columns to the design matrix. The model can then estimate a position effect on top of the count effect. This is a forward direction rather than a fix applied here.
+  - Caveat on multicollinearity: when channels co-occur strongly in journeys (for example email and direct in lifecycle messaging), individual coefficient posteriors widen and may overlap zero even though the joint effect is large. The Bayesian model surfaces this in the posterior. Heuristic schemes give a single number per channel and silently split credit anyway.
+  - Caveat on specification: the Bayesian model is only as good as its specification. We assumed channels combine linearly on the logit scale and that touch counts are the right covariate. If the true mechanism is "the SEQUENCE matters" or "channels interact", the linear model is wrong. The same critique applies to all attribution. The Bayesian version just makes the assumptions explicit.
 
 # The big question that opens Chapter 18
 

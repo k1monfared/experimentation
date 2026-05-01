@@ -13,9 +13,10 @@ REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 
 from expkit.io.samples import _sha256_file  # noqa: E402
-from expkit.metrics.quality import predictivity, stability_aa  # noqa: E402
+from expkit.metrics.quality import aa_calibration, predictivity, stability_aa  # noqa: E402
 from expkit.metrics.variance import cuped, variance_reduction_ratio  # noqa: E402
 from expkit.plot.style import PALETTE, apply_style  # noqa: E402
+from scipy import stats  # noqa: E402
 
 CHAPTER = "16-metric-quality"
 CHAPTER_DIR = Path(__file__).resolve().parent
@@ -95,23 +96,36 @@ def render_cuped(manifest):
 
 
 def render_aa_stability():
-    """Run an A/A test many times. Empirical false positive rate should match alpha."""
+    """Run an A/A test many times. Empirical false positive rate should match alpha.
+
+    We compute two summaries:
+      - stability_aa on the effects vector (shape check; tautological for calibration).
+      - aa_calibration on per-trial p-values (proper calibration check vs alpha).
+    """
     apply_style()
     rng = np.random.default_rng(0)
     n_per_arm = 500
     n_trials = 5000
-    effects = []
-    for _ in range(n_trials):
+    effects = np.empty(n_trials)
+    p_values = np.empty(n_trials)
+    for i in range(n_trials):
         c = rng.normal(0, 1, n_per_arm)
         t = rng.normal(0, 1, n_per_arm)
-        effects.append(t.mean() - c.mean())
-    s = stability_aa(np.array(effects))
+        effects[i] = t.mean() - c.mean()
+        # Per-trial Welch t-test gives each trial its own SE under the null.
+        p_values[i] = stats.ttest_ind(t, c, equal_var=False).pvalue
+    s = stability_aa(effects)
+    cal = aa_calibration(p_values, alpha=0.05)
     fig, ax = plt.subplots()
     ax.hist(effects, bins=50, color=PALETTE["frequentist"], alpha=0.7)
     ax.axvline(0, color=PALETTE["muted"], linestyle="--", linewidth=1)
     ax.set_xlabel("measured effect (treatment - control)")
     ax.set_ylabel(f"count over {n_trials} A/A tests")
-    ax.set_title(f"Loop C: A/A test distribution. mean = {s['mean']:+.4f}, frac |effect| > 1.96 std = {s['frac_extreme']:.3f}")
+    ax.set_title(
+        f"Loop C: A/A test. mean = {s['mean']:+.4f}, "
+        f"empirical alpha = {cal['empirical_rate']:.3f} "
+        f"(95% CI [{cal['ci_95_low']:.3f}, {cal['ci_95_high']:.3f}], nominal {cal['alpha']:.2f})"
+    )
     fig.tight_layout()
     out = IMG_DIR / "aa_stability.png"
     fig.savefig(out)
@@ -131,13 +145,17 @@ def render_predictivity_grid(manifest):
     long_term = truth * 0.95 + rng.normal(0, 0.005, n)
     fig, axes = plt.subplots(1, 3, figsize=(13, 3.6), sharey=True)
     for ax, x, label in zip(axes, [short_a, short_b, short_c], ["good A", "noise B", "liar C"]):
-        pred = predictivity(x, long_term)
+        pred = predictivity(x, long_term, n_boot=1000, seed=0)
         ax.scatter(x, long_term, alpha=0.5)
-        ax.set_xlabel(f"short-term {label} (r={pred['pearson_r']:+.2f})")
+        ax.set_xlabel(
+            f"short-term {label}\n"
+            f"r = {pred['pearson_r']:+.2f} "
+            f"(95% CI [{pred['ci_95_low']:+.2f}, {pred['ci_95_high']:+.2f}])"
+        )
         ax.axvline(0, color=PALETTE["muted"], linestyle="--", linewidth=1)
         ax.axhline(0, color=PALETTE["muted"], linestyle="--", linewidth=1)
     axes[0].set_ylabel("long-term metric")
-    fig.suptitle("Loop D: predictivity score lets us pick metrics worth optimizing")
+    fig.suptitle("Loop D: predictivity with bootstrap 95% CI on r (n_boot=1000, seed=0)")
     fig.tight_layout()
     out = IMG_DIR / "predictivity_grid.png"
     fig.savefig(out)

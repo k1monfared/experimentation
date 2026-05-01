@@ -3,23 +3,23 @@
     - Summary
         - Chapter 7 walks four loops on a 6-sided die: face-count wobble, chi-square goodness-of-fit, Dirichlet-multinomial posterior, and a multiple-comparisons trap with Bonferroni correction. Numerics in chapter.md, notebook.ipynb, and generate.py agree. Loaded vector [2/15, 2/15, 2/15, 2/15, 2/15, 1/3] sums to 1; the "others share 2/3" prose is consistent. Variance-per-face claim N*(1/6)*(5/6) matches the binomial marginal of a multinomial. Naive FWER (0.214 in notebook, ~21-23% in chapter) and Bonferroni FWER (0.046) reproduce. Reviewer's main concerns are unstated assumptions and an over-strong Bayesian claim about multiplicity, not numerical errors.
     - Items
-        - Item 1: state the chi-square goodness-of-fit large-sample assumption explicitly
+        - Item 1 [APPLIED]: state the chi-square goodness-of-fit large-sample assumption explicitly
             - Loop B says nothing about expected counts >= 5 (the standard rule of thumb for the chi-square approximation to the multinomial likelihood-ratio statistic).
             - generate.py uses np.geomspace(30, 6000, 60), so the smallest N is 30 with expected 5 per face: right at the boundary. At N=60 expected is 10 per face, comfortably above.
             - Add one line in Loop B noting "the chi-square approximation needs expected counts of roughly 5 or more per face; here the smallest N=30 sits at that boundary, and from N=60 onward we are well clear of it."
-        - Item 2: name the negative covariance among multinomial cells
+        - Item 2 [APPLIED]: name the negative covariance among multinomial cells
             - Loop A claims variance per face is N*(1/6)*(5/6) (correct as a marginal), but the chapter never mentions that the cell counts are negatively correlated: cov(c_i, c_j) = -N*p_i*p_j for i != j.
             - This is exactly what makes Loop D's naive family-wise type-I rate (~0.214) come in below the 1 - 0.95^6 = 0.265 independent-tests upper bound. Without that piece, the reader cannot reconcile "six tests at 0.05" with "21-23% not 26.5%."
             - Add a one-sentence aside in Loop A or Loop D pointing this out.
-        - Item 3: soften the Bayesian "no multiple-comparisons paradox" framing
+        - Item 3 [APPLIED]: soften the Bayesian "no multiple-comparisons paradox" framing
             - Current Loop D claim: "There is no separate multiple-comparisons knob to turn -- the prior + likelihood machinery handles the joint correctly by construction."
             - That is too strong. Dirichlet(1, 1, 1, 1, 1, 1) is symmetric (exchangeable) but not hierarchical. If the reader scans 100 marginal credible intervals and reports the most extreme one, Bayesian multiplicity reappears in the decision rule. The proper Bayesian remedy is hierarchical shrinkage (a learned concentration parameter, or partial pooling toward a common mean), not "the Dirichlet handles it."
             - Reword the paragraph to: "The joint posterior is correct by construction, but the multiplicity discipline moves from the test threshold to the decision rule. Reporting only the most extreme marginal across many faces is still a selection effect; the Bayesian remedy is hierarchical pooling, which Chapter 11 picks up."
-        - Item 4: replace "by N ~ 200 the test reliably rejects" with the empirical curve crossing
+        - Item 4 [APPLIED]: replace "by N ~ 200 the test reliably rejects" with the empirical curve crossing
             - The notebook shows loaded-die p = 5.9e-15 at N=200, which is far past "reliably rejects" - it is "essentially always rejects."
             - The honest single-shot N is wherever the empirical detection rate crosses ~0.8. The data exist (chi2_pvalues_grid.npy across 60 N values); pick the smallest N in the grid where the loaded p-value first stays below 0.05 in a Monte Carlo loop, or just say "by N around 60 the loaded test already rejects in the single-shot run we plot."
             - Optional: add a short Monte Carlo for the loaded die to compute the actual detection probability vs N, mirroring Chapter 3's power treatment.
-        - Item 5: name Holm and Benjamini-Hochberg as forward references, not as alternatives "we ran"
+        - Item 5 [APPLIED]: name Holm and Benjamini-Hochberg as forward references, not as alternatives "we ran"
             - Loop D's "Probe an edge case" mentions Holm and BH but neither is implemented or run on the simulated data.
             - Either (a) keep the mention but mark it as "we will pick these up in Chapter 11 when segments multiply the comparison count," or (b) add a thin expkit.inference.multiple module with holm() and bh() and a one-table comparison on the same 1000-trial fair-die simulation.
             - Recommendation: option (a) for this chapter; option (b) is its own task in Area 1 of the roadmap.

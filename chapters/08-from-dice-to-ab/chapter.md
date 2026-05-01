@@ -6,13 +6,15 @@
 # Loop A: two-arm binary outcome
 
 - Try
-  - Two website variants. Control converts at 5%, treatment at 6%. We allocate N users to each arm and compute the two-proportion z-test and the Bayesian posterior on the difference.
+  - Two website variants. Control converts at 5%, treatment at 6%. We allocate N users to each arm and compute the two-proportion z-test and the Bayesian posterior on the difference. The Bayesian side uses uniform Beta(1, 1) priors on each arm's conversion rate.
 - Observe (N = 1000)
   - z = 1.0, p = 0.31. Frequentist: cannot reject the null.
   - Bayesian posterior on (treatment - control): centred near 0.005, but the 95% CI runs from about -0.013 to +0.025. P(difference > 0) is around 0.78. Both lenses say "we don't know yet".
   - ![Two-arm binary at N=1000 vs N=10000](images/two_arm_binary.png)
 - Try (N = 10000)
   - Same effect, ten times the data. z = 3.2, p < 0.002. P(diff > 0) > 0.999. Both lenses now agree the effect is real.
+- Aside on the SE
+  - The two-proportion z above uses the pooled p_hat in its standard error, which is the right form for testing the null H0: p1 = p2. Sample-size and power calculators usually use the unpooled SE (computed under the alternative), so the two formulas will not match exactly. We will revisit this when we reconcile with the power module.
 - Hunch
   - At any given effect size there is a sample-size threshold below which neither lens can speak. Above that threshold both lenses speak in the same direction. Power, again.
 
@@ -43,23 +45,25 @@
 
 # Loop D: decision rule, both lenses
 
+- Note on MMU
+  - MMU (minimum meaningful uplift) is an organizational and economic choice about what effect size is worth shipping, not a Bayesian invention. Either lens can use it. The frequentist analogue is "ship if the point estimate exceeds MMU and the lower bound of the 95% CI exceeds 0" (or, more strictly, "lower 95% CI bound > MMU", a one-sided non-inferiority style rule).
 - Try
-  - Frequentist rule: "ship if p < 0.05 and direction positive".
-  - Bayesian rule: "ship if P(treatment - control > MMU) > 0.95", where MMU (minimum meaningful uplift) is 0.5pp.
+  - Frequentist rule (the simple version we compare here): "ship if p < 0.05 and direction positive". Note the freq lens could also adopt MMU via a one-sided CI rule; we pick the simpler version to make the contrast visible.
+  - Bayesian rule: "ship if P(treatment - control > MMU) > 0.95", where MMU is 0.5pp.
   - Vary the true effect from -2pp to +4pp. For each truth run 300 simulated experiments at N = 2000 per arm. Plot the ship rate of each rule.
 - Observe
-  - At true effect = 0: both rules ship around 2-3% of the time. Frequentist false-positive rate is alpha = 0.05 minus the directional half. Bayesian false-positive rate depends on prior + threshold.
-  - At true effect = 0.5pp (right at the MMU): frequentist ships about 25% of the time. Bayesian ships about 5%. The Bayesian is *deliberately* conservative about effects right at the meaningful threshold; the frequentist isn't aware there is a meaningful threshold.
-  - At true effect = 2pp: both rules ship reliably (>90%).
+  - At true effect = 0: both rules ship around 2-3% of the time. The frequentist rule "p < 0.05 AND direction positive" is effectively a one-sided test at alpha = 0.025 (under truth = 0 it ships about 2.5% of the time). The Bayesian false-ship rate at truth = 0 is small, around 1-2% with Beta(1, 1) priors and MMU = 0.5pp.
+  - At true effect = 0.5pp (right at the MMU): frequentist ships about 7% of the time. Bayesian ships about 5%. The two rules agree more than you might expect because at this N the noise floor swamps the MMU bookkeeping; the gap widens at smaller N or larger MMU.
+  - At true effect = 2pp: both rules ship reliably (above 50%, climbing past 90% at 4pp).
   - At true effect = -2pp: neither ships (we required positive direction).
   - ![Decision rule](images/decision_rule.png)
 - Hunch
-  - The frequentist test does not know what "matters". It just asks "is it different from zero?". The Bayesian rule, with an MMU, asks "is it meaningfully positive?". Different question, different decisions, especially in the cracks between zero and the meaningful threshold.
+  - The simple frequentist rule does not know what "matters". It just asks "is it different from zero?". The Bayesian rule, with an MMU, asks "is it meaningfully positive?". If you give the freq lens an MMU too, via a one-sided non-inferiority CI rule, the two lenses converge. The picture above is one specific freq rule against one specific Bayes rule, not freq-vs-Bayes in general.
 
 # Loop F: the PyMC version of the same A/B
 
 - Try
-  - Take Loop A's "easy to detect" case (5% control, 6% treatment, N = 10,000 per arm) and fit it explicitly with PyMC. Two independent Beta(1, 1) priors, two binomial likelihoods, a deterministic ``diff = p_treatment - p_control``. Sample with NUTS.
+  - Take Loop A's "easy to detect" case (5% control, 6% treatment, N = 10,000 per arm) and fit it explicitly with PyMC. Two independent uniform Beta(1, 1) priors on each arm's conversion rate, two binomial likelihoods, a deterministic ``diff = p_treatment - p_control``. Sample with NUTS. Beta(1, 1) is uniform on [0, 1], so we are saying we have no prior preference about either arm's true rate before seeing data.
 - Observe
   - The PyMC posterior on each arm sits exactly at its true probability. The posterior on the difference is centred near 0.01 (the truth), with most mass above zero.
   - Cross-check: the closed-form Beta posterior on each arm, sampled directly, lines up with the PyMC posterior. We expect that for this conjugate model -- it's a sanity check.

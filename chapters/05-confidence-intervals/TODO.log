@@ -8,16 +8,16 @@
         - Coverage at p = 0.5 is the most forgiving point for Wald. Wald's coverage oscillates badly as p varies (Brown, Cai, DasGupta 2001). A coverage-vs-p sweep at fixed N is needed to honestly show where Wald lies.
         - Bootstrap percentile is presented as a benign fallback. The known caveat (percentile bootstrap is biased on skewed sampling distributions and near boundaries, BCa exists exactly for this) is not mentioned.
     - Items
-        - HIGH: state the interpretation difference between frequentist CI and Bayesian credible interval
+        - HIGH [APPLIED 2026-04-29]: state the interpretation difference between frequentist CI and Bayesian credible interval
             - Add a short callout (3 to 5 sentences) at the top of Loop A or as a separate "What does 95% mean?" subsection.
             - Frequentist 95% CI: under repeated experiments, 95% of the constructed intervals would contain the true p. The interval [0.30, 0.90] does NOT mean "p is in [0.30, 0.90] with probability 0.95". p is fixed; the interval is the random object.
             - Bayesian 95% credible interval: given the prior and the data, p falls in [0.32, 0.81] with posterior probability 0.95. This IS a probability statement about p.
             - Tie this back to chapter.log Loop A and chapter.md Loop A.
-        - HIGH: extend Loop D coverage simulation to a grid of N
+        - HIGH [APPLIED 2026-04-29]: extend Loop D coverage simulation to a grid of N
             - Currently render_coverage_simulation runs at N=20 only. The chapter claims "Drop to N=10 or N=5 and Wald's coverage falls visibly below the nominal 95%" but no figure shows this.
             - Edit generate.py render_coverage_simulation to sweep N in {5, 10, 20, 50, 100}, each with 5000 trials at p=0.5, and plot one bar group per N or a small-multiples panel.
             - Update Loop D narrative in chapter.log and chapter.md to reference what the new figure actually shows.
-        - HIGH: add a coverage-vs-p sweep at fixed N
+        - HIGH [APPLIED 2026-04-29]: add a coverage-vs-p sweep at fixed N
             - Wald coverage at p=0.5 hides the failure mode. The standard demonstration sweeps p from 0.01 to 0.99 at fixed N (e.g. N=30) and plots empirical coverage as a function of p for each method.
             - Add render_coverage_vs_p in generate.py: for each p in a grid, simulate 2000 to 5000 binomials, compute coverage for Wald, Wilson, Clopper-Pearson, Bayesian. Plot four lines.
             - Add as a new sub-loop in Loop D or a Loop D' titled "where exactly does Wald lie?". The narrative point is: Wald's coverage oscillates in p, dipping well below 0.95 at small p and large p, while Wilson stays close to nominal across the range and Clopper-Pearson stays at or above nominal everywhere.

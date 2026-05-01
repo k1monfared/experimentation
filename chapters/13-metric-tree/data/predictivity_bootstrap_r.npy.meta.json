@@ -1,0 +1,8 @@
+{
+  "meta": {
+    "n_boot": 1000,
+    "stat": "pearson_r"
+  },
+  "seed": 0,
+  "sha256": "8d3fd092907464d259dee11d2d371422cfdeabd4ace87bec262be4178772f9dc"
+}

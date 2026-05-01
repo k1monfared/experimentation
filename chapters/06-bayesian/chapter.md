@@ -11,13 +11,17 @@
   - Bayes' rule combines them: posterior(p | data) is proportional to likelihood(data | p) * prior(p). Normalize so it integrates to 1.
   - For Beta priors and Bernoulli likelihoods this is a closed form: Beta(a, b) prior plus k heads in n tosses gives Beta(a + k, b + n - k) posterior. Conjugate.
   - For everything more complicated than this, we use PyMC and let the sampler do the math.
+- On "uninformative" priors
+  - We use Beta(1, 1) throughout. It is uniform on the natural p scale, which makes it a transparent default. It is not the only "uninformative" choice. Jeffreys prior for the binomial proportion is Beta(0.5, 0.5), which is uniform on the arcsine-transformed scale and invariant under reparameterization. Both are common defaults. The right one depends on what you want to be invariant to. Beta(1, 1) is enough for transparent exposition.
+- Credible interval vs confidence interval
+  - We've used "credible interval" intuitively for five chapters. Now is the moment to pin down the difference. A 95% credible interval says, "given my prior and the data, I assign 95% posterior probability to this range." A 95% frequentist confidence interval says, "across infinite repetitions of the experiment, the procedure traps the true p in 95% of intervals." With a flat prior and moderate-to-large N the two intervals coincide numerically in this Beta-Binomial setup, but the statements they license are different. From here on we report both when the difference matters.
 
 # Loop B: priors that argue
 
 - Try
   - Same data: 6 heads in 10 tosses, then 600 in 1000. Four priors: flat Beta(1,1), skeptical Beta(50,50), tail-leaning Beta(2,8), heads-leaning Beta(8,2).
 - Observe
-  - At 6/10 the four posteriors are quite different. The flat prior posterior is wide and centred near 0.58. The skeptical prior barely moves -- it stays close to 0.5. The tail-leaning prior pulls the posterior down to 0.43. The heads-leaning prior pulls it up to 0.67.
+  - At 6/10 the four posteriors are quite different. The flat prior posterior is wide and centred near 0.58 (posterior mean of Beta(7, 5)). The skeptical prior barely moves, with posterior mean 0.51, basically a tight blob at 0.5. The tail-leaning prior Beta(2, 8) yields Beta(8, 12), a posterior mean of 0.40. The heads-leaning prior Beta(8, 2) yields Beta(14, 6), a posterior mean of 0.70.
   - At 600/1000 every posterior collapses to almost the same narrow blob centred at 0.60. The data has overwhelmed the prior.
   - ![Priors argue](images/priors_argue.png)
 - Hunch
@@ -40,21 +44,24 @@
 - Observe
   - The two chains track each other. The histogram of MCMC draws sits exactly under the closed-form curve. Sanity confirmed.
   - ![PyMC trace and histogram vs closed form](images/pymc_trace_vs_closed_form.png)
+  - Diagnostics from a typical run (saved trace, see `data/posterior_chapter6.nc`): R-hat on p is 1.00, ESS_bulk is approximately 1400, ESS_tail is approximately 2700, divergences is 0. R-hat near 1.00 says the chains agree on the marginal. ESS counts effectively-independent draws from the autocorrelated MCMC samples. Divergences flag funnel-like geometry the sampler could not handle. Zero divergences here is what we want.
 - Why bother with PyMC if the closed form is right there?
   - Because in 99% of real problems the closed form does not exist. PyMC + the same Bayesian recipe extends to: hierarchical models with partial pooling, ratios, transformations, censoring, latent variables, mixtures, anything. From here on we use PyMC where it earns its keep.
 
 # Loop D: Bayes factors, the Bayesian "p-value"
 
 - Try
-  - Compute BF_{10}: the Bayes factor for the alternative H1 (p ~ Uniform on [0,1]) vs the null H0 (p = 0.5). It's the ratio of marginal likelihoods. > 1 means the data prefers H1, < 1 prefers H0.
-  - Run two simulated experiments side by side: one with a fair coin, one with p = 0.55. Track BF_{10} as N grows.
+  - Compute BF_{10}: the Bayes factor for the alternative H1 vs the null H0 (p = 0.5). It's the ratio of marginal likelihoods. > 1 means the data prefers H1, < 1 prefers H0.
+  - Heavy caveat up front, before the demo: a Bayes factor is not interpretable without a prior on the alternative parameter. We pick H1 with p ~ Uniform(0, 1), which is the natural pair to a Beta(1, 1) baseline. That choice imports a real modelling commitment: it spreads alternative mass into p = 0.05 and p = 0.95 just as much as into p = 0.5. A Beta(2, 2), or a tighter local alternative around 0.5, would give very different BF curves. The number we report is "the Bayes factor under this specific prior on H1," not "the Bayes factor."
+  - Lindley's paradox is the extreme version of this: with a vague-enough prior on H1 the BF can favour H0 even when frequentist evidence points to H1.
+  - With that on the table: run two simulated experiments side by side, one with a fair coin and one with p = 0.55, and track BF_{10} as N grows.
 - Observe
   - For the fair coin, BF_{10} drifts up and down near 1 forever. There's no consistent evidence against H0 because H0 is true.
-  - For the biased coin, BF_{10} grows slowly at first (small N hides the bias) and then takes off. By N = 1000 it is well past 10 (strong evidence). By N = 2000 it is past 100.
+  - For the biased coin, BF_{10} grows slowly at first (small N hides the bias) and then takes off. With seed 0 (the trace plotted in the figure), BF_{10} is approximately 970 at N = 1000 and approximately 290000 at N = 2000. Note the log-scale y-axis on the figure. BF growth at a fixed true effect scales roughly as exp(c * N), which is why log-scale axes are necessary.
   - ![Bayes factor](images/bayes_factor.png)
 - Compare
   - Frequentist analogue: a sequential p-value would also catch the bias eventually, but interpreting "p < 0.05 in this peek" requires alpha-spending machinery. The Bayes factor is interpretable directly: BF = 30 means the data is 30 times more likely under the alternative than under the null. No multiple-testing adjustment needed.
-  - Caveat: BF depends on the choice of alternative. A Uniform(0, 1) is permissive. A Beta(50, 50) alternative would be far more conservative -- it expects the coin to be near-fair under H1 too. Different alternatives, different BFs. Like the prior, this is a feature you must justify.
+  - The trade is the prior on H1. The frequentist test does not need one. The Bayesian test gets a directly interpretable evidence ratio in exchange for declaring it. Pick the trade you'd rather defend.
 
 # Loop E: posterior predictive -- a different question
 
@@ -63,7 +70,7 @@
   - That's the posterior predictive: sample p from the posterior, then sample heads ~ Binomial(20, p). It marginalizes over our uncertainty about p.
 - Observe
   - The predictive distribution is wider than a simple Binomial(20, p_hat). It accounts for the fact that we are not sure what p is.
-  - The mode is around 12 (since true p ~ 0.6) but the spread covers 6 through 18. If we had pretended p = 0.6 was known, we would have under-stated the spread.
+  - On this realization (50 tosses with seed=11) we observed 33 heads, so the posterior on p centres near 0.65 rather than the underlying 0.60. The predictive mode is 13, with 95% of predictive mass between 8 and 18 heads. If we had plugged in the posterior-mean point estimate p_hat = 0.65 and used Binomial(20, 0.65), the 95% interval would be roughly [8, 17], visibly narrower because it ignores our remaining uncertainty about p.
   - ![Posterior predictive](images/posterior_predictive.png)
 - Hunch
   - This is one of the things the Bayesian framework gives us almost for free: a coherent story about predictions, not just parameter estimation. Frequentist prediction intervals exist but are clumsier.

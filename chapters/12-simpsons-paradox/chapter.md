@@ -10,10 +10,10 @@
   - Now bias the assignment: treatment over-represented in low-baseline segment B. (Specifically: 20% treatment in A, 80% treatment in B.)
 - Observe
   - Per segment: A control 0.80, A treatment 0.85. B control 0.20, B treatment 0.25. Each segment up by +5pp.
-  - Aggregate: control mean is dominated by segment-A users (because most controls came from A). Treatment mean is dominated by segment-B users (because most treatments came from B). So control overall ≈ 0.69, treatment overall ≈ 0.39. Aggregate diff is *negative* despite every segment being *positive*.
+  - Aggregate: control mean is dominated by segment-A users (because most controls came from A). Treatment mean is dominated by segment-B users (because most treatments came from B). With these specs (segment-A fraction 0.20, baselines 0.80 and 0.20, treatment-share-in-A 0.20, +5pp lift each), the analytic pooled means come out to control overall 0.500 and treatment overall 0.285, an aggregate diff of -21pp. Aggregate diff is *negative* despite every segment being *positive*.
   - ![Paradox construction](images/paradox_construction.png)
 - Hunch
-  - Simpson's paradox is a numerical fact about weighted averages. It is not a paradox in any deep sense; it is a consequence of the assignment mechanism not being independent of segment.
+  - Simpson's paradox is a numerical fact about weighted averages: which weighted average dominates depends on the assignment mechanism. But which weighted average is the *right* one to report is a causal question, not an arithmetic one. We come back to this in Loop E.
 
 # Loop B: when does the sign flip?
 
@@ -35,7 +35,7 @@
   - Imbalanced: aggregate effect distribution is shifted. Many runs show the wrong sign.
   - ![Paradox impossible vs possible](images/paradox_impossible.png)
 - Rule of thumb
-  - Random assignment (proper A/B testing with no segment-correlated bias) prevents Simpson's paradox by construction. The paradox shows up most often in observational data, in opt-in experiments, or in poorly-implemented assignment that correlates with segment membership.
+  - Random assignment (proper A/B testing with no segment-correlated bias) makes Simpson's paradox vanishingly unlikely with sufficient N. In expectation the assignment mechanism is independent of segment, so the paradox cannot arise. In a single finite-sample run with small N and strong segment-by-baseline interaction, chance imbalance can still produce a sign flip. Stratified or block-randomized assignment removes even this finite-sample risk. The paradox shows up most often in observational data, in opt-in experiments, or in poorly-implemented assignment that correlates with segment membership.
 
 # Loop D: two lenses on the paradox
 
@@ -45,9 +45,17 @@
   - A hierarchical Bayesian model partitions variance into segment-level and population-level. The posterior on each segment is +5pp; the population-level effect is also +5pp; the apparent aggregate "lie" disappears because the model knows about segment membership.
   - In PyMC: per-segment treatment effect ~ Normal(mu, tau), with mu ~ Normal(0, 1) and tau ~ HalfNormal(1). Observe the per-segment outcomes. Posterior mu is the average treatment effect across segments, weighted appropriately.
 
+# Aside: confounder or mediator?
+
+- The arithmetic of Loop A is innocent. The interpretation is not. Two DAGs produce the *same* numbers but demand opposite analyses.
+  - Confounder DAG: segment causes both treatment assignment and outcome (segment to treatment, segment to outcome). Here segment is a backdoor path. Conditioning on segment removes the spurious aggregate signal and reveals the within-segment effect. This is the case in Loop A and in the Berkeley example below.
+  - Mediator DAG: treatment causes segment, segment causes outcome (treatment to segment to outcome). Here segment lies *on* the causal path. Conditioning on it blocks the very effect you are trying to measure, and the per-segment table understates or zeroes out the true effect.
+- The arithmetic alone cannot distinguish these. You need a substantive claim about the data-generating process. Same numbers, opposite right answers.
+
 # Loop E: a Berkeley-style example
 
 - Try
+  - Inspired by Bickel, Hammel, O'Connell (1975), "Sex Bias in Graduate Admissions: Data from Berkeley", Science 187:398-404. Numbers below are synthetic for clarity; the real data has six departments and the same qualitative pattern.
   - Two departments. Department A is hard (low acceptance ~20%) and most female applicants apply there. Department B is easy (high acceptance ~65%) and most male applicants apply there. Within each department, women have a slightly *higher* acceptance rate than men.
 - Observe
   - Aggregate: men have a higher acceptance rate (because most men apply to the easy department).
@@ -60,13 +68,15 @@
 
 - Try
   - Take Loop A's data (two segments, +5pp lift each, but treatment overrepresented in segment B). Fit the same hierarchical Bayesian model from Chapter 11 (per-segment effect drawn from a population-level Normal). The model gets the segment label as part of its inputs.
+  - Note: with only two segments the population variance tau is barely identified by the data. The sampler needs a high target_accept (around 0.99) and long tuning to behave. With more segments this gets easier; do not copy a two-cluster setup blindly.
 - Observe
   - The per-segment posterior on (treatment - control) for each segment is centred near +5pp, exactly the truth.
-  - The naive aggregate (no segment context) gives -16pp. Misleading.
+  - The naive aggregate (no segment context) gives roughly -21pp (the analytic value computed in Loop A). Misleading.
   - The Bayesian population-level mu (translated to a probability-scale "average effect" around the average baseline) is also near +5pp.
   - ![Hierarchical recovery](images/hierarchical_recovery.png)
+  - Caveat: this synthetic data has no unobserved confounders by construction. In observational data, segment captures only the confounding it is correlated with. The model recovers the within-segment effect, not the causal effect, unless segment exhausts the confounding.
 - Hunch
-  - The hierarchical model dissolves Simpson's paradox by construction. As long as the segment label is fed in, the model partitions variance correctly. The paradox lives in the *aggregation* you choose to report -- and by writing down a per-segment model, you've already made that choice consciously.
+  - The hierarchical model dissolves Simpson's paradox when the segment is a confounder we want to adjust for, *and* the model is correctly specified with the right segment label. If the segment is a mediator on the causal path from treatment to outcome, conditioning on it would remove part of the effect we are trying to measure. The model needs the right DAG, not just the segment label. The paradox lives in the *aggregation* you choose to report, and by writing down a per-segment model you have already made that choice consciously.
 
 # The big question that opens Chapter 13
 

@@ -140,45 +140,114 @@ def render_three_priors():
     return out
 
 
-def render_coverage_simulation(manifest):
-    """Simulate 5,000 fair-coin experiments at N=20 and check empirical coverage."""
-    apply_style()
-    n = 20
-    n_trials = 5000
-    rng = np.random.default_rng(123)
-    counts = rng.binomial(n, 0.5, size=n_trials)
+def _coverage_at(n, p, n_trials, rng):
+    """Compute empirical coverage of the true p for four methods at sample size n."""
+    counts = rng.binomial(n, p, size=n_trials)
     methods = {"Wald": "normal", "Wilson": "wilson", "Clopper-Pearson": "beta"}
     coverage = {name: 0 for name in methods}
     coverage["Bayesian"] = 0
     for k in counts:
         for name, m in methods.items():
             lo, hi = proportion_confint(int(k), n, alpha=0.05, method=m)
-            if lo <= 0.5 <= hi:
+            if lo <= p <= hi:
                 coverage[name] += 1
-        # Bayesian credible interval
         a, b = 1 + int(k), 1 + (n - int(k))
         lo = float(beta_dist.ppf(0.025, a, b))
         hi = float(beta_dist.ppf(0.975, a, b))
-        if lo <= 0.5 <= hi:
+        if lo <= p <= hi:
             coverage["Bayesian"] += 1
+    return {name: coverage[name] / n_trials for name in coverage}
 
-    rates = {name: coverage[name] / n_trials for name in coverage}
-    save_samples(np.array(list(rates.values())), DATA_DIR / "coverage_rates", seed=123, meta={"n": n, "n_trials": n_trials, "methods": list(rates)})
 
-    fig, ax = plt.subplots()
-    names = list(rates)
-    vals = list(rates.values())
+def render_coverage_simulation(manifest):
+    """Sweep N and plot empirical coverage at p = 0.5 for four methods."""
+    apply_style()
+    n_grid = [5, 10, 20, 50, 100]
+    n_trials = 5000
+    rng = np.random.default_rng(123)
+    rates_by_n = {n: _coverage_at(n, 0.5, n_trials, rng) for n in n_grid}
+
+    method_names = list(rates_by_n[n_grid[0]].keys())
+    matrix = np.array([[rates_by_n[n][m] for m in method_names] for n in n_grid])
+    save_samples(
+        matrix,
+        DATA_DIR / "coverage_rates",
+        seed=123,
+        meta={"n_grid": n_grid, "n_trials": n_trials, "methods": method_names, "p": 0.5},
+    )
+
+    fig, ax = plt.subplots(figsize=(9, 4.2))
     cmap = plt.get_cmap("viridis")
-    bars = ax.bar(names, vals, color=[cmap(i / max(1, len(names) - 1)) for i in range(len(names))])
-    ax.axhline(0.95, color=PALETTE["muted"], linestyle="--", linewidth=1, label="nominal 95% coverage")
-    for b, v in zip(bars, vals):
-        ax.text(b.get_x() + b.get_width() / 2, v + 0.005, f"{v:.3f}", ha="center")
+    width = 0.18
+    x = np.arange(len(n_grid))
+    for j, name in enumerate(method_names):
+        vals = [rates_by_n[n][name] for n in n_grid]
+        offset = (j - (len(method_names) - 1) / 2) * width
+        bars = ax.bar(x + offset, vals, width, label=name, color=cmap(j / max(1, len(method_names) - 1)))
+        for b, v in zip(bars, vals):
+            ax.text(b.get_x() + b.get_width() / 2, v + 0.005, f"{v:.2f}", ha="center", fontsize=7)
+    ax.axhline(0.95, color=PALETTE["muted"], linestyle="--", linewidth=1, label="nominal 95%")
+    ax.set_xticks(x)
+    ax.set_xticklabels([f"N = {n}" for n in n_grid])
     ax.set_ylabel("empirical coverage of true p = 0.5")
-    ax.set_ylim(0.85, 1.02)
-    ax.set_title(f"Loop D: empirical coverage at N = {n} ({n_trials} simulated experiments)")
-    ax.legend()
+    ax.set_ylim(0.55, 1.02)
+    ax.set_title(f"Loop D: empirical coverage across N (seed = 123, {n_trials} trials per N)")
+    ax.legend(loc="lower right", fontsize=8)
     fig.tight_layout()
     out = IMG_DIR / "coverage_simulation.png"
+    fig.savefig(out)
+    plt.close(fig)
+    return out
+
+
+def render_coverage_vs_p(manifest):
+    """Sweep p in (0, 1) at fixed N and plot coverage curves for four methods."""
+    apply_style()
+    n = 30
+    n_trials = 3000
+    p_grid = np.linspace(0.02, 0.98, 49)
+    rng = np.random.default_rng(456)
+    method_names = ["Wald", "Wilson", "Clopper-Pearson", "Bayesian"]
+    methods = {"Wald": "normal", "Wilson": "wilson", "Clopper-Pearson": "beta"}
+
+    curves = {name: np.zeros_like(p_grid) for name in method_names}
+    for i, p in enumerate(p_grid):
+        counts = rng.binomial(n, p, size=n_trials)
+        cov = {name: 0 for name in method_names}
+        for k in counts:
+            for name, m in methods.items():
+                lo, hi = proportion_confint(int(k), n, alpha=0.05, method=m)
+                if lo <= p <= hi:
+                    cov[name] += 1
+            a, b = 1 + int(k), 1 + (n - int(k))
+            lo = float(beta_dist.ppf(0.025, a, b))
+            hi = float(beta_dist.ppf(0.975, a, b))
+            if lo <= p <= hi:
+                cov["Bayesian"] += 1
+        for name in method_names:
+            curves[name][i] = cov[name] / n_trials
+
+    matrix = np.array([curves[name] for name in method_names])
+    save_samples(
+        matrix,
+        DATA_DIR / "coverage_vs_p",
+        seed=456,
+        meta={"n": n, "n_trials": n_trials, "p_grid": p_grid.tolist(), "methods": method_names},
+    )
+
+    fig, ax = plt.subplots(figsize=(9, 4.2))
+    cmap = plt.get_cmap("viridis")
+    for j, name in enumerate(method_names):
+        ax.plot(p_grid, curves[name], label=name, color=cmap(j / max(1, len(method_names) - 1)), linewidth=1.6)
+    ax.axhline(0.95, color=PALETTE["muted"], linestyle="--", linewidth=1, label="nominal 95%")
+    ax.set_xlabel("true p")
+    ax.set_ylabel(f"empirical coverage at N = {n}")
+    ax.set_ylim(0.55, 1.02)
+    ax.set_xlim(0, 1)
+    ax.set_title(f"Loop D: coverage as a function of p (N = {n}, seed = 456, {n_trials} trials per p)")
+    ax.legend(loc="lower center", fontsize=8, ncol=2)
+    fig.tight_layout()
+    out = IMG_DIR / "coverage_vs_p.png"
     fig.savefig(out)
     plt.close(fig)
     return out
@@ -192,12 +261,16 @@ def main():
         render_boundary_failures(),
         render_three_priors(),
         render_coverage_simulation(manifest),
+        render_coverage_vs_p(manifest),
     ]
     for p in paths:
         add_artifact(manifest, path=p, kind="image", seed="derived", sha256=_sha256_file(p), description=f"Chapter 5 figure: {p.name}")
     samples_path = DATA_DIR / "coverage_rates.npy"
     if samples_path.exists():
-        add_artifact(manifest, path=samples_path, kind="samples", seed=123, sha256=_sha256_file(samples_path), description="Loop D: empirical coverage rates")
+        add_artifact(manifest, path=samples_path, kind="samples", seed=123, sha256=_sha256_file(samples_path), description="Loop D: empirical coverage rates across N")
+    samples_path_p = DATA_DIR / "coverage_vs_p.npy"
+    if samples_path_p.exists():
+        add_artifact(manifest, path=samples_path_p, kind="samples", seed=456, sha256=_sha256_file(samples_path_p), description="Loop D: empirical coverage as a function of p at fixed N")
     save_manifest(manifest)
     print(f"Chapter 5: wrote {len(paths)} figures")
 

@@ -154,6 +154,27 @@ def render_edge_cases():
     return out
 
 
+def fisher_reference_sweep(k: int = 60, n: int = 100, multipliers=(1, 10, 100, 10000)) -> list[tuple[int, float]]:
+    """Show that Fisher (one-sample-misuse framing) converges to the exact binomial p-value
+    as the idealized 50/50 reference grows. With reference size n it is conservative
+    relative to exact; as the reference goes to infinity (50/50 treated as known) it
+    matches the exact binomial test.
+    """
+    results = []
+    exact_p = binom_test_exact(k, n).p_value
+    for m in multipliers:
+        rn = n * m
+        rh = rn // 2
+        rt = rn - rh
+        table = np.array([[k, n - k], [rh, rt]])
+        p = fisher_exact_2x2(table).p_value
+        results.append((rn, p))
+    print(f"Fisher convergence at {k}/{n} (exact binomial p = {exact_p:.4f}):")
+    for rn, p in results:
+        print(f"  reference size {rn}: Fisher p = {p:.4f}")
+    return results
+
+
 def render_bayes_alongside_frequentist():
     """For each scenario in Loop A, also show the Beta-binomial conjugate posterior summary."""
     apply_style()
@@ -190,6 +211,7 @@ def main():
         render_edge_cases(),
         render_bayes_alongside_frequentist(),
     ]
+    fisher_reference_sweep()
     for p in paths:
         add_artifact(manifest, path=p, kind="image", seed="derived", sha256=_sha256_file(p), description=f"Chapter 4 figure: {p.name}")
     save_manifest(manifest)

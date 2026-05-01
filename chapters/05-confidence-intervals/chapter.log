@@ -2,6 +2,10 @@
     - Carried from Chapter 4
         - Tests answer "can I rule out this single value of p?". Intervals invert the question: "what set of values can I NOT rule out?"
 - Loop A: five intervals on the same data
+    - What does "95%" mean? Frequentist vs Bayesian
+        - A frequentist 95% confidence interval is a statement about the *procedure*, not the parameter. If we repeated the experiment many times and built a fresh CI each time, 95% of those intervals would contain the true p. The interval [0.30, 0.90] does NOT mean "p is in [0.30, 0.90] with probability 0.95". The parameter p is fixed (unknown but not random), and the interval is the random object that wraps around it 95% of the time.
+        - A Bayesian 95% credible interval IS a probability statement about p. Given the prior and the data, we say p falls in [0.32, 0.81] with posterior probability 0.95. The data are fixed, the parameter is uncertain, and the interval just slices off the middle 95% of the posterior.
+        - These two intervals can numerically agree to three decimal places and still mean different things. Keep that in mind as we line them up below.
     - Try
         - For 6/10, 60/100, 600/1000 compute five 95% intervals: Wald, Wilson, Clopper-Pearson, percentile bootstrap, Bayesian credible (Beta(1,1) prior).
     - Observe
@@ -34,13 +38,25 @@
         - Priors are a feature, not a bug. They make assumptions explicit. The frequentist's *implicit* prior (in this setting, "no prior, p is whatever value the test is asking about") is not less of an assumption -- it's just less visible.
 - Loop D: do these intervals actually cover the truth?
     - Try
-        - Simulate 5,000 fair-coin experiments at N = 20. For each one, compute Wald, Wilson, Clopper-Pearson, and Bayesian 95% intervals. Count how often each contains the true p = 0.5.
+        - Simulate 5,000 fair-coin experiments at each of N in {5, 10, 20, 50, 100}. For each one, compute Wald, Wilson, Clopper-Pearson, and Bayesian 95% intervals. Count how often each contains the true p = 0.5.
     - Observe
-        - At N = 20 with the binomial counts mostly clustering between 5 and 15, all four methods land near 0.96 coverage. The differences are small here because Wald's failure modes (counts of 0 or 20) are rare.
-        - Drop to N = 10 or N = 5 and Wald's coverage falls visibly below the nominal 95%. The smaller the N, the louder the lie.
-        - ![Coverage simulation](images/coverage_simulation.png)
+        - At N = 5 Wald's coverage drops well below the nominal 0.95 line, while Wilson, Clopper-Pearson, and Bayesian stay near or above it.
+        - At N = 10 the gap narrows but Wald is still visibly low; the others remain near 0.95.
+        - At N = 20, 50, 100 all four methods cluster around 0.95 to 0.96. The differences are small here because Wald's failure modes (counts at the boundary 0 or N) become rare.
+        - ![Coverage simulation across N](images/coverage_simulation.png)
     - Hunch
-        - "95%" only means what you think it means if the construction is honest about the model. Wald isn't, at very small N. Wilson stays near 95% across a wide N range. Clopper-Pearson is conservative on purpose.
+        - "95%" only means what you think it means if the construction is honest about the model. Wald isn't, at small N. Wilson stays near 95% across the N grid. Clopper-Pearson is conservative on purpose.
+- Loop D': where exactly does Wald lie?
+    - Try
+        - Hold N fixed at 30. Sweep the true p across a grid from 0.02 to 0.98. At each p, simulate 3,000 binomial experiments and record empirical 95%-CI coverage for Wald, Wilson, Clopper-Pearson, and Bayesian.
+    - Observe
+        - Wald's coverage curve oscillates in p. It dips well below 0.95 at small p and at large p, with sharp non-monotone wiggles in between, even at this moderate N. Coverage at p = 0.5 alone hides the failure.
+        - Wilson stays close to 0.95 across the whole range, with mild wiggles but no systematic dip.
+        - Clopper-Pearson sits at or above 0.95 everywhere, the price of its guaranteed conservatism.
+        - Bayesian (flat prior) tracks Clopper-Pearson in shape, slightly tighter.
+        - ![Coverage vs true p](images/coverage_vs_p.png)
+    - Hunch
+        - Single-point coverage checks (like "at p = 0.5") are the wrong test. The right question is whether coverage holds across the parameter space. Wald fails this test at any moderate N, which is why textbooks built around Wald give the wrong intuition for confidence in small-sample binomial work.
 - The big question that opens Chapter 6
     - We've used "posterior" half a dozen times. Time to make it formal: a prior, a likelihood, a posterior, a credible interval, a Bayes factor. Up to now we've used the closed-form Beta-binomial conjugate result. From here on we use PyMC because most real models don't have a closed form.
     - Big question: what does the Bayesian framework actually look like, taken seriously and end-to-end?

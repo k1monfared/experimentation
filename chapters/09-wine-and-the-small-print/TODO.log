@@ -4,15 +4,15 @@
         - Chapter is conceptual and the four loops (external validity, outcome choice, side effects, tradeoff weights) land cleanly. Issues are concentrated in three places: segment effects in Loop A are plausible but uncoordinated narrative numbers, Loop B confidence intervals are hardcoded in generate.py rather than produced from a simulated sample, and Loop D applies a linear utility to point estimates while labeling the y-axis "expected utility". Two narrative slips: text quotes true lifts while the image shows noisy estimates, and the harm rhetoric in Loop A is stated as "harms teens" while the data shown is a segment mean.
     - Items
         - Loop A, segment effects coherence
+            - [APPLIED] Reconcile chapter text vs image: added a one-sentence note that those numbers are simulator-injected ground truth and the figure shows finite-sample estimates that won't match exactly
             - Add a one-line caveat that the per-segment effects are illustrative, not derived from a biological model
-            - Reconcile chapter text vs image: text states the true lifts, image plots simulated estimates. Either show both with a "true vs estimated" caption, or quote the estimated values to match the figure
             - One clause noting that each bar is an average treatment effect within the segment, not a per-individual effect
         - Loop B, hardcoded CIs
-            - Derive the three CIs from a small simulated sample inside generate.py instead of writing the tuples by hand. Same look, but traceable. Keeps the chapter consistent with Loop A and Loop C, which already simulate
+            - [APPLIED] Reframed Loop B as "to illustrate the gap, suppose effects look like..." with a one-line note that the intervals are illustrative rather than rederiving them from a fresh simulation
         - Loop D, utility framing
-            - Either rename the y-axis from "expected utility" to "utility (point estimate)", or compute utility from a posterior of target_effect and harm_effect and plot the posterior mean of utility plus a band. One sentence in the Hunch acknowledging that proper decision-making takes E[U] over the posterior, not U(point estimate)
+            - [APPLIED] Added one sentence in the Hunch acknowledging E[U(theta)] over the joint posterior is the proper formulation, not U(point estimate); deferring axis rename / posterior plot to a later decision-theory chapter
         - Generalization framing
-            - One-sentence name-drop of transportability or the reference-class problem at the end of Loop A so the curious reader has a search term. Do not expand into a textbook section
+            - [APPLIED] Added a one-sentence name-drop of transportability / reference-class at the end of Loop A so the curious reader has a search term
     - Out of scope
         - Building a full transportability or reference-class section
         - Replacing Loop D with a full decision-theoretic treatment over joint posteriors. That belongs in a later chapter on decision theory and ties to the Bayesian throughline established in Chapter 6

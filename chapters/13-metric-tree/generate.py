@@ -8,12 +8,13 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 import yaml
+from scipy.stats import spearmanr
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 
 from expkit.io.samples import _sha256_file, save_samples  # noqa: E402
-from expkit.metrics.quality import predictivity, relative_noise  # noqa: E402
+from expkit.metrics.quality import predictivity, signal_to_noise  # noqa: E402
 from expkit.plot.style import PALETTE, apply_style  # noqa: E402
 
 CHAPTER = "13-metric-tree"
@@ -80,12 +81,22 @@ def render_noise_vs_speed():
     for x, y, l in zip(measurement_speed, relative_noise_per_layer, layers):
         ax.annotate(l, (x, y), xytext=(8, 6), textcoords="offset points")
     ax.set_xlabel("days needed for a reliable read (log)")
-    ax.set_ylabel("relative noise (CV) per measurement")
+    ax.set_ylabel("relative noise (CV) per measurement -- illustrative")
     ax.set_xscale("log")
-    ax.set_title("Loop B: lower-level metrics are fast and clean. Top-level is slow and noisy.")
+    ax.set_title("Schematic: lower-level metrics tend to be faster and cleaner")
+    # Caption: numbers are illustrative, not measured. Real values vary by product.
+    fig.text(
+        0.5,
+        -0.02,
+        "Numbers are illustrative, not measured. Real values vary by product.",
+        ha="center",
+        va="top",
+        fontsize=9,
+        style="italic",
+    )
     fig.tight_layout()
     out = IMG_DIR / "noise_vs_speed.png"
-    fig.savefig(out)
+    fig.savefig(out, bbox_inches="tight")
     plt.close(fig)
     return out
 
@@ -102,19 +113,36 @@ def render_predictivity_simulation(manifest):
     long_term = truths * 0.9 + rng.normal(0, 0.01, size=n)
     save_samples(np.column_stack([short_term, long_term]), DATA_DIR / "predictivity_pairs", seed=0, meta={"n": n})
 
-    pred = predictivity(short_term, long_term)
+    # Pearson r with bootstrap 95% CI, plus Spearman rho.
+    pred = predictivity(short_term, long_term, n_boot=1000, seed=0)
+    rho, _ = spearmanr(short_term, long_term)
+
+    # Save bootstrap distribution of r so the CI is reproducible.
+    rng_b = np.random.default_rng(0)
+    rs = np.empty(1000, dtype=float)
+    for i in range(1000):
+        idx = rng_b.integers(0, n, size=n)
+        c = np.cov(short_term[idx], long_term[idx], ddof=1)
+        rs[i] = c[0, 1] / np.sqrt(c[0, 0] * c[1, 1])
+    save_samples(rs, DATA_DIR / "predictivity_bootstrap_r", seed=0, meta={"n_boot": 1000, "stat": "pearson_r"})
+
     fig, ax = plt.subplots()
     ax.scatter(short_term, long_term, alpha=0.5, color=PALETTE["frequentist"])
     # Linear fit
     coef = np.polyfit(short_term, long_term, 1)
     xs = np.array([short_term.min(), short_term.max()])
-    ax.plot(xs, np.polyval(coef, xs), color=PALETTE["bayesian"], label=f"fit: r = {pred['pearson_r']:.2f}, R^2 = {pred['r_squared']:.2f}")
+    label = (
+        f"fit: Pearson r = {pred['pearson_r']:.2f} "
+        f"[{pred['ci_95_low']:.2f}, {pred['ci_95_high']:.2f}], "
+        f"Spearman rho = {rho:.2f}, R^2 = {pred['r_squared']:.2f}"
+    )
+    ax.plot(xs, np.polyval(coef, xs), color=PALETTE["bayesian"], label=label)
     ax.axhline(0, color=PALETTE["muted"], linestyle="--", linewidth=1)
     ax.axvline(0, color=PALETTE["muted"], linestyle="--", linewidth=1)
     ax.set_xlabel("short-term metric (CTR) effect per experiment")
     ax.set_ylabel("long-term metric (retention) effect per experiment")
     ax.set_title("Loop C: predictivity -- when does short-term anticipate long-term?")
-    ax.legend()
+    ax.legend(fontsize=8, loc="best")
     fig.tight_layout()
     out = IMG_DIR / "predictivity.png"
     fig.savefig(out)
@@ -123,7 +151,12 @@ def render_predictivity_simulation(manifest):
 
 
 def render_proxy_lies():
-    """Three different proxies. Two correlate with outcome; one is anticorrelated."""
+    """Three different proxies. Two correlate with outcome; one is anticorrelated.
+
+    Real-world anchor for the lying proxy: clicks vs revenue can anti-correlate
+    when bounce rate dominates. A clickbait variant pulls clicks but burns
+    brand and reduces revenue. Chapter 16 examines the mechanism.
+    """
     apply_style()
     rng = np.random.default_rng(1)
     n = 150
@@ -140,9 +173,19 @@ def render_proxy_lies():
         ax.axhline(0, color=PALETTE["muted"], linestyle="--", linewidth=1)
     axes[0].set_ylabel("true effect")
     fig.suptitle("Loop D: three candidate proxies. Two predict the truth, one is anti-correlated.")
+    fig.text(
+        0.5,
+        -0.02,
+        "Real anchor: clicks vs revenue can anti-correlate when bounce-rate dominates "
+        "(clickbait pulls clicks but burns brand). Chapter 16 examines the mechanism.",
+        ha="center",
+        va="top",
+        fontsize=9,
+        style="italic",
+    )
     fig.tight_layout()
     out = IMG_DIR / "proxy_lies.png"
-    fig.savefig(out)
+    fig.savefig(out, bbox_inches="tight")
     plt.close(fig)
     return out
 
@@ -161,6 +204,9 @@ def main():
     samples = DATA_DIR / "predictivity_pairs.npy"
     if samples.exists():
         add_artifact(manifest, path=samples, kind="samples", seed=0, sha256=_sha256_file(samples), description="Loop C: short-term vs long-term effect pairs across 200 simulated experiments")
+    boot = DATA_DIR / "predictivity_bootstrap_r.npy"
+    if boot.exists():
+        add_artifact(manifest, path=boot, kind="samples", seed=0, sha256=_sha256_file(boot), description="Loop C: bootstrap distribution of Pearson r (1000 resamples)")
     save_manifest(manifest)
     print(f"Chapter 13: wrote {len(paths)} figures")
 

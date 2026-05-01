@@ -4,18 +4,19 @@
 - Loop A: when experiments don't work
     - Long horizons. We can't randomize over 5 years without losing too many users to contamination, attrition, or environment changes. Yet some questions only make sense at 5-year horizons (career outcomes, public-health interventions).
     - Ethics. We can't randomly deny vaccinations, education, or basic income to a control arm.
-    - Network effects. Treating user A changes user A's friends' behaviour. The "independence" assumption built into our z-tests, t-tests, and Bayesian models is violated. We need cluster randomization, partial-interference designs, or graph-based methods.
+    - Network effects. Treating user A changes user A's friends' behaviour. This breaks SUTVA (the Stable Unit Treatment Value Assumption), which says treating one unit doesn't change the potential outcomes of others. Without SUTVA the no-spillover assumptions our methods rely on don't hold, and we need cluster randomization, partial-interference designs, or graph-based methods.
     - Observational data. We have years of historical logs. The people in those logs were not randomly assigned. There is no clean control arm.
     - One-time events. A regime change, a competitor pivot, a global pandemic. There is no untreated counterfactual.
     - ![When experiments fail](images/when_experiments_fail.png)
 - Loop B: the trap of naive observational comparison
     - Try
-        - Simulate 5,000 users with a latent "propensity" attribute. Treatment is more likely when propensity is high (sigmoid in propensity). True treatment effect = +0.30. Outcome = propensity + 0.30 * treated + noise.
+        - Simulate 5,000 users with a latent "propensity" attribute. Propensity is a confounder here, a common cause of both treatment assignment and outcome. Treatment is more likely when propensity is high (sigmoid in propensity). True treatment effect = +0.30. Outcome = propensity + 0.30 * treated + noise.
     - Observe
         - Naive comparison (treated mean minus untreated mean): about +1.0. Way bigger than the true effect of 0.30.
         - Why: treated users had higher propensity; they would have had higher outcomes anyway. The naive comparison conflates the treatment effect with the selection effect.
         - ![Selection bias](images/selection_bias.png)
     - Hunch
+        - Rubin's decomposition writes the simple difference in outcomes (SDO) as: SDO = ATE + selection bias + HTE bias. In this simulation the treatment effect is constant at +0.30 (no heterogeneity), so the HTE bias term vanishes and the entire ~0.70 gap between the naive +1.0 and the true +0.30 is pure selection bias.
         - This is the central problem causal inference solves. Even when randomization is impossible, we have tools (potential outcomes, instrumental variables, regression discontinuity, difference-in-differences, propensity scoring, synthetic controls) for unbiased effect estimation under explicit assumptions.
 - Loop C: a brief vocabulary
     - Potential outcomes (Rubin causal model). Each unit has Y(0) and Y(1). We see one or the other, never both.

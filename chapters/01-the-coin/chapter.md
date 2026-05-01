@@ -26,10 +26,10 @@
 - Question
   - We are not sure yet. Both lenses agree we should not be sure yet. So toss it more.
 - Try more
-  - Seven more tosses: H, H, T, T, H, T, H, H. (Recorded with seed 2 in the data.) Total: 6 heads in 10.
+  - Seven more tosses: T, T, H, T, H, H, T. (Recorded with seed 2 in the data.) Total: 6 heads in 10.
 - Compare
   - Frequentist: under a fair coin, 6 or more heads in 10 tosses happens with probability about 0.38. The two-sided exact binomial p-value is 0.754. We are not even mildly surprised.
-  - Bayesian: posterior moves to Beta(7, 5). The mean is now 0.58. The probability that p > 0.5 has dropped to 0.73. The answer to "is this rigged?" went from 94% sure-it-is to 73% lean-toward-it. Three extra tosses pulled belief back hard.
+  - Bayesian: posterior moves to Beta(7, 5). The mean is now 0.58. The probability that p > 0.5 has dropped to 0.73. The answer to "is the coin biased toward heads?" went from 94% sure-it-is to 73% lean-toward-it (we are still using a coarse "p > 0.5" notion of bias, chapter 2 will sharpen this with a region of practical equivalence). Three extra tosses pulled belief back hard.
 - Hunch
   - Small samples lie. Both lenses say so, in their own dialects. Do not trust 3 tosses, or even 10.
 - ![Loop A: three tosses, then ten](images/loop_a_three_then_ten.png)
@@ -39,14 +39,14 @@
 - Try more
   - We toss a fair coin 100 times. We record the running fraction of heads after every toss. Then we redo the whole experiment from a fresh starting point. Six independent runs in total, six different seeds.
 - Observe
-  - Every run wobbles wildly at the start. Some of them sit above 0.6 for the first 30 tosses. Others dip below 0.4 for a stretch. By around toss 50 they have all tightened up, and by 100 most of them are within a hair of 0.5, but not on it. One run lands at 0.46, another at 0.55. None of the six is "exactly fair" in 100 tosses.
+  - Every run wobbles wildly at the start. Some of them sit above 0.6 for the first 30 tosses. Others dip below 0.4 for a stretch. By around toss 50 they have all tightened up, and by 100 most of them are within a hair of 0.5, but not on it. One run lands at 0.46, another at 0.53. None of the six is "exactly fair" in 100 tosses.
   - ![Loop B: six runs of 100 tosses](images/loop_b_six_runs_n100.png)
 - Question
-  - If a perfectly fair coin can give 0.46 or 0.55 in 100 tosses, what counts as "close to fair"? Where do we draw the line?
+  - If a perfectly fair coin can give 0.46 or 0.53 in 100 tosses, what counts as "close to fair"? Where do we draw the line?
 - Frequentist take
-  - "Close to fair" is exactly the question that turns into a *confidence interval* in the next chapters. For now, just a Wilson interval at N = 100 with 50 heads is roughly [0.40, 0.60]. Anywhere in there is consistent with fair.
+  - "Close to fair" is exactly the question that turns into a *confidence interval* in the next chapters. For instance, a Wilson interval at N = 100 with 50 heads is roughly [0.40, 0.60], the closest run in the figure (53/100) gives [0.43, 0.62]. Anywhere in there is consistent with fair.
 - Bayesian take
-  - The same data, with a Beta(1, 1) prior, gives a posterior centered on 0.50 with a 95% credible interval of [0.40, 0.60]. Same numbers. (At larger N, with a flat prior, frequentist and Bayesian intervals converge. We will see them diverge in interesting cases later.)
+  - The same data, with a Beta(1, 1) prior, gives a posterior centered on 0.50 with a 95% credible interval of [0.40, 0.60]. Same numbers. (At larger N, for any reasonable prior with support across (0, 1), the data dominate and the two intervals converge. We will see them diverge in interesting cases later, especially when the prior is informative or N is small.)
 - Hunch
   - Both lenses tell us the same thing in different words: 100 tosses is enough to get inside about a 10-percentage-point envelope around the truth, but not closer.
 
@@ -64,7 +64,7 @@
   - The Bayesian posterior on p, computed with PyMC and a Beta(1, 1) prior, tightens in lockstep with the Wilson interval. We can plot the four posteriors on the same axes. The wide one is N = 10. The almost-pointy one is N = 10,000.
   - ![Posterior tightening across N](images/posterior_tightening.png)
 - Probe an edge case
-  - "But what if my long run had a long stretch of heads in the middle? Could I be fooled?" Yes, and that is the next subtlety. Look back at Loop B. Several of those runs spend dozens of tosses noticeably above 0.5. If we had stopped at toss 30 instead of toss 100, we would have called the coin biased. The lesson is not "more tosses": it is that *the moment we choose to stop* matters too. This is a topic we will come back to in chapter 3 (power and sample size) and with more force in chapter 18 (would we ship differently in a frequentist vs Bayesian world?).
+  - "But what if my long run had a long stretch of heads in the middle? Could I be fooled?" Yes, and that is the next subtlety. Look back at Loop B. Several of those runs spend dozens of tosses noticeably above 0.5. If we had stopped at toss 30 instead of toss 100, we would have called the coin biased. The lesson is not "more tosses", it is that *the moment we choose to stop* matters too. This is the optional-stopping problem, chapter 3 quantifies it under power, chapter 18 under decision rules. This is a topic we will come back to in chapter 3 (power and sample size) and with more force in chapter 18 (would we ship differently in a frequentist vs Bayesian world?).
 - Hunch
   - With enough tosses, both lenses converge on the same tight answer. With few tosses, they can both fool you. The number of tosses, and where you stop, do most of the work.
 
@@ -77,11 +77,11 @@
   - But here is the unsettling part. If we look at distributions of heads in 10-toss batches drawn from each coin, the histograms overlap heavily. A 6-out-of-10 is more likely under p = 0.55, but it is also extremely common under p = 0.50.
   - ![Loop D: fair vs biased running fractions and 10-toss overlap](images/loop_d_fair_vs_biased.png)
 - Frequentist take
-  - At N = 10, no test is going to reliably distinguish a 0.50 coin from a 0.55 coin. The tests just are not powerful enough. We will quantify this in chapter 3 as *statistical power*.
+  - At N = 10, no reasonable test has appreciable power to distinguish a 0.50 coin from a 0.55 coin. The tests just are not powerful enough. We will quantify this in chapter 3 as *statistical power*.
 - Bayesian take
   - At N = 10 our posteriors on p for the two coins are huge overlapping blobs. The data is mostly the prior. We have not learned much.
 - Two-lens endcap
-  - For the fair coin, frequentist Wilson intervals and Bayesian credible intervals at N = 10, 100, 1000, 10000 line up almost on top of each other. They tell the same story: at small N, "is it fair?" is unanswerable. At large N, both lenses agree it is fair.
+  - For the long fair-coin sequence (the same one used in Loop C), frequentist Wilson intervals and Bayesian credible intervals at N = 10, 100, 1000, 10000 line up almost on top of each other. They tell the same story: at small N, "is it fair?" is unanswerable. At large N, both lenses agree it is fair.
   - ![Wilson CI vs Bayesian credible interval at four sample sizes](images/two_lens_endcap.png)
 - Hunch
   - To detect a small bias we need *a lot* of tosses. To call a coin fair "for sure", we need a lot of tosses too. Either way, the number of tosses we need is not a feeling. It is a calculation.
@@ -89,7 +89,7 @@
 # The big question that opens Chapter 2
 
 - We started with HHH and were not sure. We got to 6/10 and were less sure. We got to 5017/10000 and were very sure indeed.
-- But suppose someone hands us 6 heads in 10 tosses and says "is this rigged?". We answered with hand-waving in this chapter. The frequentist said "p-value is 0.75, not rare". The Bayesian said "posterior probability of bias is 0.73". These are different *answers* to almost the same *question*.
+- But suppose someone hands us 6 heads in 10 tosses and says "is this rigged?". We answered with hand-waving in this chapter. The frequentist said "p-value is 0.75, not rare". The Bayesian said "posterior probability that p > 0.5 is 0.73". These are different *answers* to almost the same *question*.
 - In Chapter 2 we make those answers precise. We meet the null hypothesis. We meet the p-value. We meet type I and type II errors. We meet the posterior probability that p > 0.5 and the Bayes factor. And we figure out exactly what each lens means when it claims "I am 95% sure".
 - Big question: how sure can I really be?
 

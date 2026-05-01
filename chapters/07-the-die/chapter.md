@@ -14,14 +14,17 @@
   - ![Face counts wobble](images/count_wobble.png)
 - Hunch
   - The same regression-to-mean we saw with the coin, only across six categories. Variance per face is approximately N * (1/6) * (5/6).
+  - One subtlety: the face counts are not independent. They sum to N, so if one face lands above its expected value, some other face must land below. Formally, cov(c_i, c_j) = -N * p_i * p_j for i != j. We will see this negative covariance show up in Loop D.
 
 # Loop B: chi-square goodness-of-fit
 
 - Try
   - We need a test that asks "is the whole vector of face frequencies consistent with uniform 1/6?". That's chi-square goodness-of-fit. Apply it to a fair die and to a loaded die (face 6 has p = 1/3, the others share 2/3) at increasing N.
+- Assumption check
+  - The chi-square approximation to the multinomial is a large-sample result. The standard rule of thumb is expected counts of roughly 5 or more per cell. With six faces and uniform expected, that means N >= 30 sits right at the boundary, and from about N = 60 onward (expected = 10 per face) we are comfortably clear of it. For very small N or rare cells, an exact multinomial test or a simulation-based p-value is the safer call.
 - Observe
   - For the fair die, p-values bounce around above 0.05. They do dip below 0.05 occasionally -- that's our 5% type-I rate doing its job.
-  - For the loaded die, p-values start above 0.05 (small N can't see it) but drop steadily as N grows. By N ~ 200 the test reliably rejects.
+  - For the loaded die, p-values start above 0.05 (small N can't see it) but drop steadily as N grows. In the saved single-shot run (seed = 72, the chi2_pvalues_grid data), the loaded p-value first stays below 0.05 from N = 138 onward. Across the higher-N rows the loaded p-value collapses by many orders of magnitude, so by a few hundred rolls a single experiment essentially always rejects.
   - ![Chi-square p-values](images/chi2_pvalues.png)
 
 # Loop C: Dirichlet-multinomial, the Bayesian counterpart
@@ -45,9 +48,10 @@
   - Bonferroni-corrected (each test at 0.05/6 = 0.0083): about 4% of the time, right around the nominal 5% bound.
   - ![Multiple comparisons](images/multiple_comparisons.png)
 - Bayesian counterpart
-  - The Dirichlet posterior is a single joint object. Asking "is face 6 unusually high?" is reading a marginal of that joint. The marginal credible intervals already account for the others. There's no separate multiple-comparisons knob to turn -- the prior + likelihood machinery handles the joint correctly by construction.
+  - The Dirichlet posterior is a single joint object over (p_1, ..., p_6). Asking "is face 6 unusually high?" reads a marginal of that joint, and reading more marginals does not inflate any test threshold the way independent frequentist tests do, because there is no test threshold to inflate: the joint posterior is one consistent object.
+  - But that is not the same as "Bayesian has no multiplicity issue." Dirichlet(1, 1, 1, 1, 1, 1) is symmetric (exchangeable across faces), not hierarchical. If a reader scans many marginal credible intervals across many faces and reports the most extreme one, they are doing selection on the posterior, and the multiplicity discipline reappears in the decision rule. The proper Bayesian remedy is hierarchical pooling: a learned concentration parameter, or partial pooling toward a common mean, that shrinks extreme marginals back. We pick that up in the hierarchical chapter.
 - Probe an edge case
-  - Bonferroni is conservative. At 100 tests, alpha/100 = 0.0005 per test, which kills power. Real-world multiple-testing strategies (Holm, Benjamini-Hochberg) trade some of this conservatism for power. The Bayesian view sidesteps it differently.
+  - Bonferroni is conservative. At 100 tests, alpha/100 = 0.0005 per test, which kills power. There are smarter frequentist strategies (Holm's step-down procedure, the Benjamini-Hochberg FDR procedure) that trade some of this conservatism for power. We have not implemented or run them on the simulated data here; they are forward references for the multiple-testing chapter, where the comparison count multiplies naturally.
 
 # The big question that opens Chapter 8
 
