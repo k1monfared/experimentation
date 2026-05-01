@@ -49,6 +49,27 @@
 - Bayesian: a hierarchical model where each segment has its own treatment effect drawn from a population-level distribution. Partial pooling. Segments with little data borrow strength from the global mean.
 - The two views often agree directionally; the Bayesian view is more honest about uncertainty in tiny segments.
 
+# Loop D: hierarchical Bayesian model with PyMC
+
+- Try
+  - We fit a hierarchical model: each segment has a logit baseline and a treatment effect drawn from a population-level Normal(mu, tau). Non-centered parameterization keeps the sampler healthy near the funnel at tau = 0.
+  - The model in shorthand:
+    - ```
+    - baseline[s] ~ Normal(0, 2)
+    - mu ~ Normal(0, 1)
+    - tau ~ HalfNormal(1)
+    - effect[s] = mu + tau * z[s] where z[s] ~ Normal(0, 1)
+    - p_control[s] = invlogit(baseline[s])
+    - p_treatment[s] = invlogit(baseline[s] + effect[s])
+    - ```
+  - We feed in the same per-segment success counts the independent test would use.
+- Observe
+  - The hierarchical posterior on each per-segment effect tracks its true value (+10pp for active_contributor, +4pp for active_consumer, -3pp for silent_intentional, ~0 for passive_consumer).
+  - Compared to the independent point estimates, the hierarchical estimates pull *slightly* toward the population mean. The pull is small here because each segment has thousands of users; with smaller segments the regularization would matter much more.
+  - ![Hierarchical effects](images/hierarchical_effects.png)
+- Hunch
+  - Hierarchical pooling is the Bayesian alternative to multiple-comparisons correction. Instead of paying a Bonferroni-style power tax, you let the model regularize toward the population. Small segments borrow strength; large segments dominate their own posterior. No knob to tune by hand.
+
 # The big question that opens Chapter 12
 
 - In the demographic-vs-behavioural figure, the *pooled* lift is positive while *some* segments are negative. Could the aggregate ever be negative when every segment is positive? Yes. That's Simpson's paradox.

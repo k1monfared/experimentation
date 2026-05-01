@@ -1,0 +1,22 @@
+{
+  "meta": {
+    "channels": [
+      "search",
+      "social",
+      "email",
+      "display",
+      "direct"
+    ],
+    "model": "logistic regression: P(convert) = sigmoid(intercept + sum_c coef[c] * count[c])",
+    "n_users": 20000,
+    "true_coef": {
+      "direct": 0.2,
+      "display": 0.02,
+      "email": 0.05,
+      "search": 0.1,
+      "social": 0.04
+    }
+  },
+  "seed": 1717,
+  "sha256": "0ed28b03f666e3e1a199a8dfb7196d156dee1944ce5da03127f49cc8a17b4b7b"
+}

@@ -12,7 +12,8 @@ import yaml
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 
-from expkit.io.samples import _sha256_file, save_samples  # noqa: E402
+from expkit.inference.bayes import hierarchical_segmented_posterior  # noqa: E402
+from expkit.io.samples import _sha256_file, save_idata, save_samples  # noqa: E402
 from expkit.plot.style import PALETTE, apply_style  # noqa: E402
 from expkit.sim.user_segments import SegmentSpec, imbalanced_assignment  # noqa: E402
 
@@ -198,6 +199,84 @@ def render_berkeley_style():
     return out
 
 
+def render_hierarchical_recovery(manifest):
+    """Hierarchical Bayesian model on the paradox-construction data.
+
+    The model knows the segment label, so partial pooling on the per-segment
+    effect recovers +0.05 in each segment even when the imbalanced aggregate
+    looks negative.
+    """
+    apply_style()
+    specs = [
+        SegmentSpec("segment_A", 0.20, 0.80, 0.05),
+        SegmentSpec("segment_B", 0.80, 0.20, 0.05),
+    ]
+    treatment_share = {"segment_A": 0.20, "segment_B": 0.80}
+    pop = imbalanced_assignment(20000, specs, treatment_share, seed=1200)
+
+    successes_by_segment = {s.name: {"control": int(pop[s.name]["control"].sum()), "treatment": int(pop[s.name]["treatment"].sum())} for s in specs}
+    n_by_segment = {s.name: {"control": len(pop[s.name]["control"]), "treatment": len(pop[s.name]["treatment"])} for s in specs}
+
+    # With only two segments the population variance is barely identified, so we
+    # bump tuning and target_accept to keep the sampler from diverging.
+    idata = hierarchical_segmented_posterior(
+        successes_by_segment, n_by_segment,
+        seed=1212, draws=2000, chains=2, tune=3000, progressbar=False,
+        target_accept=0.99,
+    )
+    res = save_idata(idata, DATA_DIR / "hierarchical_paradox", seed=1212, meta={
+        "successes_by_segment": successes_by_segment,
+        "n_by_segment": n_by_segment,
+        "true_within_segment_effect": 0.05,
+        "model": "hierarchical Bayesian (partial pooling) on imbalanced segmented data",
+    })
+    add_artifact(manifest, path=res.path, kind="idata", seed=1212, sha256=res.sha256, description="Hierarchical Bayesian model on the Simpson's-paradox data")
+
+    p_t = idata.posterior["p_treatment"].values
+    p_c = idata.posterior["p_control"].values
+    diff = p_t - p_c
+
+    # Aggregate (no segment) -- the misleading naive view
+    c_total = np.concatenate([pop[s.name]["control"] for s in specs])
+    t_total = np.concatenate([pop[s.name]["treatment"] for s in specs])
+    naive_diff = t_total.mean() - c_total.mean()
+
+    fig, ax = plt.subplots(figsize=(9, 4.0))
+    cmap = plt.get_cmap("viridis")
+    segments = list(idata.posterior.coords["segment"].values)
+    xs = np.arange(len(segments) + 2)
+    labels = list(segments) + ["aggregate (naive)", "population (Bayesian mu)"]
+
+    for i, seg in enumerate(segments):
+        d = diff[:, :, i].ravel()
+        lo, hi = float(np.quantile(d, 0.025)), float(np.quantile(d, 0.975))
+        ax.errorbar(i, float(d.mean()), yerr=[[d.mean() - lo], [hi - d.mean()]], fmt="o", color=cmap(i / max(1, len(segments) - 1)), capsize=4, markersize=8)
+
+    ax.scatter(len(segments), naive_diff, color=PALETTE["frequentist"], marker="s", s=80, zorder=5, label="naive aggregate")
+
+    mu_samples = idata.posterior["mu"].values.ravel()  # population effect on logit scale
+    # Convert mu to a probability-scale "average effect" by applying it around an
+    # average baseline. We use the average baseline across the two segments.
+    baseline = idata.posterior["baseline"].values  # (chain, draw, segment)
+    avg_baseline = baseline.mean(axis=2).ravel()
+    mu_diff_p = (1 / (1 + np.exp(-(avg_baseline + mu_samples)))) - (1 / (1 + np.exp(-avg_baseline)))
+    lo, hi = float(np.quantile(mu_diff_p, 0.025)), float(np.quantile(mu_diff_p, 0.975))
+    ax.errorbar(len(segments) + 1, float(mu_diff_p.mean()), yerr=[[mu_diff_p.mean() - lo], [hi - mu_diff_p.mean()]], fmt="o", color=PALETTE["bayesian"], capsize=4, markersize=8, label="population mu (Bayesian)")
+
+    ax.axhline(0, color=PALETTE["muted"], linestyle="--", linewidth=1)
+    ax.axhline(0.05, color=PALETTE["highlight"], linestyle=":", linewidth=1, label="true within-segment effect = +0.05")
+    ax.set_xticks(xs)
+    ax.set_xticklabels(labels, rotation=15, fontsize=8)
+    ax.set_ylabel("treatment - control")
+    ax.set_title("Loop F: hierarchical model recovers the within-segment +0.05 even when the naive aggregate goes negative")
+    ax.legend(fontsize=8)
+    fig.tight_layout()
+    out = IMG_DIR / "hierarchical_recovery.png"
+    fig.savefig(out)
+    plt.close(fig)
+    return out
+
+
 def main():
     ensure_dirs()
     manifest = load_manifest()
@@ -206,6 +285,7 @@ def main():
         render_when_does_it_flip(manifest),
         render_when_impossible(),
         render_berkeley_style(),
+        render_hierarchical_recovery(manifest),
     ]
     for p in paths:
         add_artifact(manifest, path=p, kind="image", seed="derived", sha256=_sha256_file(p), description=f"Chapter 12 figure: {p.name}")
@@ -213,7 +293,7 @@ def main():
     if samples.exists():
         add_artifact(manifest, path=samples, kind="samples", seed=0, sha256=_sha256_file(samples), description="Loop B: paradox sweep over assignment imbalance")
     save_manifest(manifest)
-    print(f"Chapter 12: wrote {len(paths)} figures")
+    print(f"Chapter 12: wrote {len(paths)} figures + 1 PyMC trace")
 
 
 if __name__ == "__main__":

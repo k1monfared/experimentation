@@ -46,6 +46,15 @@
         - ![Decision rule](images/decision_rule.png)
     - Hunch
         - The frequentist test does not know what "matters". It just asks "is it different from zero?". The Bayesian rule, with an MMU, asks "is it meaningfully positive?". Different question, different decisions, especially in the cracks between zero and the meaningful threshold.
+- Loop F: the PyMC version of the same A/B
+    - Try
+        - Take Loop A's "easy to detect" case (5% control, 6% treatment, N = 10,000 per arm) and fit it explicitly with PyMC. Two independent Beta(1, 1) priors, two binomial likelihoods, a deterministic ``diff = p_treatment - p_control``. Sample with NUTS.
+    - Observe
+        - The PyMC posterior on each arm sits exactly at its true probability. The posterior on the difference is centred near 0.01 (the truth), with most mass above zero.
+        - Cross-check: the closed-form Beta posterior on each arm, sampled directly, lines up with the PyMC posterior. We expect that for this conjugate model -- it's a sanity check.
+        - ![PyMC two-arm A/B posterior](images/pymc_two_arm.png)
+    - Why bother with PyMC if conjugate works?
+        - Because the next chapter (9) introduces real-world complications -- heterogeneous segments, side effects, ratio metrics -- where there is no conjugate. The same PyMC pattern (write the model, sample, inspect the posterior) extends straight through. The closed-form simplification was a special case; the general path is what we'll need.
 - The big question that opens Chapter 9
     - We have the mechanics. But "is treatment B different from control A?" is an empty question without context. Real-world studies (and real product launches) have to wrestle with: who got studied, what does "good" mean, what got measured, and what got ignored.
     - Big question: how do scientists and product teams actually decide what to ship -- and where do they go wrong?

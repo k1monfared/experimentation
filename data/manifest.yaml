@@ -299,54 +299,6 @@ artifacts:
   seed: derived
   sha256: afab660cb25cda950ba634d324a345f799e7070db2c156bde5c3a62e6fb6b9fb
   description: 'Chapter 9 figure: tradeoff.png'
-- path: chapters/11-segmentation/images/demographic_vs_behavioral.png
-  chapter: 11-segmentation
-  kind: image
-  seed: derived
-  sha256: e279d1e1520c611ad1cd64fb0144e9424f04328cc8f405fb41bd8459eb01a15f
-  description: 'Chapter 11 figure: demographic_vs_behavioral.png'
-- path: chapters/11-segmentation/images/segment_signature.png
-  chapter: 11-segmentation
-  kind: image
-  seed: derived
-  sha256: ab2a29cb90ccb10e5f61a7493cac566649e5937a518bc67d3378cc66fbec0248
-  description: 'Chapter 11 figure: segment_signature.png'
-- path: chapters/11-segmentation/images/segmentation_choices.png
-  chapter: 11-segmentation
-  kind: image
-  seed: derived
-  sha256: 25769001f25cfbf1150cbe71254a3ec1f7056e1d859b15122d9df8bb06c3791f
-  description: 'Chapter 11 figure: segmentation_choices.png'
-- path: chapters/12-simpsons-paradox/images/paradox_construction.png
-  chapter: 12-simpsons-paradox
-  kind: image
-  seed: derived
-  sha256: 019f28b10c84645cb97fe06a92f9f04386c4bb62b9e00bc02c43f0a68c4c409f
-  description: 'Chapter 12 figure: paradox_construction.png'
-- path: chapters/12-simpsons-paradox/images/paradox_sweep.png
-  chapter: 12-simpsons-paradox
-  kind: image
-  seed: derived
-  sha256: ca4640aec52fc5ceca756d9f363cd8552bbf977f925f6f096211758602da63a7
-  description: 'Chapter 12 figure: paradox_sweep.png'
-- path: chapters/12-simpsons-paradox/images/paradox_impossible.png
-  chapter: 12-simpsons-paradox
-  kind: image
-  seed: derived
-  sha256: 5e312094a63ff685c667f3db87cb1fd7ada96b2aa461c4d58ed59534c2bf5602
-  description: 'Chapter 12 figure: paradox_impossible.png'
-- path: chapters/12-simpsons-paradox/images/berkeley_style.png
-  chapter: 12-simpsons-paradox
-  kind: image
-  seed: derived
-  sha256: 4fdcf9feb0fa3bac8bf5325c66106805bd2305c4e43ab531bcd426b96f1dd7b0
-  description: 'Chapter 12 figure: berkeley_style.png'
-- path: chapters/12-simpsons-paradox/data/paradox_sweep.npy
-  chapter: 12-simpsons-paradox
-  kind: samples
-  seed: 0
-  sha256: 7ba3938cc540c02d5abc9708f5ac6219ef9ab828960084db2a8e08e3f40a30f5
-  description: 'Loop B: paradox sweep over assignment imbalance'
 - path: chapters/13-metric-tree/images/metric_tree.png
   chapter: 13-metric-tree
   kind: image
@@ -438,18 +390,6 @@ artifacts:
   seed: derived
   sha256: 62e83a57343c972330b65c370d9fa6b677f7b4ffc57a6bd5851aca2df521c89a
   description: 'Chapter 16 figure: predictivity_grid.png'
-- path: chapters/17-attribution/images/scheme_comparison.png
-  chapter: 17-attribution
-  kind: image
-  seed: derived
-  sha256: 6fb763219853e0ce01b00a4c170d7505bd58c5d2a33bd9fee3e959fe42e41be8
-  description: 'Chapter 17 figure: scheme_comparison.png'
-- path: chapters/17-attribution/images/treatment_misallocation.png
-  chapter: 17-attribution
-  kind: image
-  seed: derived
-  sha256: 2a08f6320c79393da94f2b1dfbe74acbce4be1fd04796252a8b475a52b7c24ad
-  description: 'Chapter 17 figure: treatment_misallocation.png'
 - path: chapters/18-frequentist-vs-bayesian-shipping/data/ship_decisions.csv
   chapter: 18-frequentist-vs-bayesian-shipping
   kind: samples
@@ -492,6 +432,12 @@ artifacts:
   seed: derived
   sha256: eacf5687c8e88034d2847490b490c0bbfc796bf31819da5ec301e1de9dd6349c
   description: 'Chapter 19 figure: when_experiments_fail.png'
+- path: chapters/08-from-dice-to-ab/data/two_arm_posterior.nc
+  chapter: 08-from-dice-to-ab
+  kind: idata
+  seed: 808
+  sha256: 655182d94b2e7b8a0e6bb1f711cd32fa11454be9697df53f2092f8341d3fe4be
+  description: Two-arm Beta-Bernoulli PyMC posterior at N=10000
 - path: chapters/08-from-dice-to-ab/images/two_arm_binary.png
   chapter: 08-from-dice-to-ab
   kind: image
@@ -516,3 +462,105 @@ artifacts:
   seed: derived
   sha256: 938411779a766f3cc14af937b7218e19ed4284d9a7f01fd6004f6d7dba831d08
   description: 'Chapter 8 figure: decision_rule.png'
+- path: chapters/08-from-dice-to-ab/images/pymc_two_arm.png
+  chapter: 08-from-dice-to-ab
+  kind: image
+  seed: derived
+  sha256: fe7de098d0865158ec4f2a05796fb5200ff1cbceb29da6f28d75505cb642438d
+  description: 'Chapter 8 figure: pymc_two_arm.png'
+- path: chapters/11-segmentation/data/hierarchical_posterior.nc
+  chapter: 11-segmentation
+  kind: idata
+  seed: 1115
+  sha256: fcdbc42291761dc6b5fb0ba58dbd65228146ddbd77d7337e68aa91ad87b241ae
+  description: Hierarchical Bayesian model on segmented A/B data
+- path: chapters/11-segmentation/images/demographic_vs_behavioral.png
+  chapter: 11-segmentation
+  kind: image
+  seed: derived
+  sha256: e279d1e1520c611ad1cd64fb0144e9424f04328cc8f405fb41bd8459eb01a15f
+  description: 'Chapter 11 figure: demographic_vs_behavioral.png'
+- path: chapters/11-segmentation/images/segment_signature.png
+  chapter: 11-segmentation
+  kind: image
+  seed: derived
+  sha256: ab2a29cb90ccb10e5f61a7493cac566649e5937a518bc67d3378cc66fbec0248
+  description: 'Chapter 11 figure: segment_signature.png'
+- path: chapters/11-segmentation/images/segmentation_choices.png
+  chapter: 11-segmentation
+  kind: image
+  seed: derived
+  sha256: 25769001f25cfbf1150cbe71254a3ec1f7056e1d859b15122d9df8bb06c3791f
+  description: 'Chapter 11 figure: segmentation_choices.png'
+- path: chapters/11-segmentation/images/hierarchical_effects.png
+  chapter: 11-segmentation
+  kind: image
+  seed: derived
+  sha256: 1ecf363fc441662ccef1c2bd28e2630c5b1554cdbd6a60efbb7c5f747bb4aed7
+  description: 'Chapter 11 figure: hierarchical_effects.png'
+- path: chapters/12-simpsons-paradox/data/hierarchical_paradox.nc
+  chapter: 12-simpsons-paradox
+  kind: idata
+  seed: 1212
+  sha256: b789e47fcc0386fcadaa042f52c023c72d6ff090d1675ad04bfd64933b7a3171
+  description: Hierarchical Bayesian model on the Simpson's-paradox data
+- path: chapters/12-simpsons-paradox/images/paradox_construction.png
+  chapter: 12-simpsons-paradox
+  kind: image
+  seed: derived
+  sha256: 019f28b10c84645cb97fe06a92f9f04386c4bb62b9e00bc02c43f0a68c4c409f
+  description: 'Chapter 12 figure: paradox_construction.png'
+- path: chapters/12-simpsons-paradox/images/paradox_sweep.png
+  chapter: 12-simpsons-paradox
+  kind: image
+  seed: derived
+  sha256: ca4640aec52fc5ceca756d9f363cd8552bbf977f925f6f096211758602da63a7
+  description: 'Chapter 12 figure: paradox_sweep.png'
+- path: chapters/12-simpsons-paradox/images/paradox_impossible.png
+  chapter: 12-simpsons-paradox
+  kind: image
+  seed: derived
+  sha256: 5e312094a63ff685c667f3db87cb1fd7ada96b2aa461c4d58ed59534c2bf5602
+  description: 'Chapter 12 figure: paradox_impossible.png'
+- path: chapters/12-simpsons-paradox/images/berkeley_style.png
+  chapter: 12-simpsons-paradox
+  kind: image
+  seed: derived
+  sha256: 4fdcf9feb0fa3bac8bf5325c66106805bd2305c4e43ab531bcd426b96f1dd7b0
+  description: 'Chapter 12 figure: berkeley_style.png'
+- path: chapters/12-simpsons-paradox/images/hierarchical_recovery.png
+  chapter: 12-simpsons-paradox
+  kind: image
+  seed: derived
+  sha256: dc666f43bf5b75f04a284e37f2cb60aeb51904c5ed36bd2a17274437bf0e95e9
+  description: 'Chapter 12 figure: hierarchical_recovery.png'
+- path: chapters/12-simpsons-paradox/data/paradox_sweep.npy
+  chapter: 12-simpsons-paradox
+  kind: samples
+  seed: 0
+  sha256: 7ba3938cc540c02d5abc9708f5ac6219ef9ab828960084db2a8e08e3f40a30f5
+  description: 'Loop B: paradox sweep over assignment imbalance'
+- path: chapters/17-attribution/data/bayesian_attribution.nc
+  chapter: 17-attribution
+  kind: idata
+  seed: 1717
+  sha256: 0ed28b03f666e3e1a199a8dfb7196d156dee1944ce5da03127f49cc8a17b4b7b
+  description: Bayesian multi-touch attribution model posterior
+- path: chapters/17-attribution/images/scheme_comparison.png
+  chapter: 17-attribution
+  kind: image
+  seed: derived
+  sha256: 6fb763219853e0ce01b00a4c170d7505bd58c5d2a33bd9fee3e959fe42e41be8
+  description: 'Chapter 17 figure: scheme_comparison.png'
+- path: chapters/17-attribution/images/treatment_misallocation.png
+  chapter: 17-attribution
+  kind: image
+  seed: derived
+  sha256: 2a08f6320c79393da94f2b1dfbe74acbce4be1fd04796252a8b475a52b7c24ad
+  description: 'Chapter 17 figure: treatment_misallocation.png'
+- path: chapters/17-attribution/images/bayesian_attribution.png
+  chapter: 17-attribution
+  kind: image
+  seed: derived
+  sha256: af9662a3ffe35c7787f4bbc36b5befd82e7d62bf08ccb83af8a1455c897856aa
+  description: 'Chapter 17 figure: bayesian_attribution.png'

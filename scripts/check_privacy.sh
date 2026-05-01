@@ -28,10 +28,13 @@ if [ -n "$filtered" ]; then
     exit 1
 fi
 
-# Also scan the most recent commit message and its body for AI attribution.
+# Scan the most recent commit message for AI attribution trailers/footers.
+# We match specific trailer/footer patterns rather than bare mentions, so a
+# commit whose message describes the policy itself does not trigger.
 last_msg=$(git log -1 --format='%B' 2>/dev/null || true)
-if echo "$last_msg" | grep -iE 'claude|anthropic|co-authored-by' >/dev/null; then
-    echo "check_privacy.sh: latest commit message contains AI attribution" >&2
+trailer_re='(^|\n)\s*(Co-Authored-By|Co-authored-by|Generated[ -]with|Authored[ -]by[ -]+(Claude|Anthropic))[: ]'
+if printf '%s\n' "$last_msg" | grep -iE "$trailer_re" >/dev/null; then
+    echo "check_privacy.sh: latest commit message contains an AI attribution trailer" >&2
     exit 1
 fi
 

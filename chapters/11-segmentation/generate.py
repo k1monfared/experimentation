@@ -13,7 +13,8 @@ import yaml
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 
-from expkit.io.samples import _sha256_file  # noqa: E402
+from expkit.inference.bayes import hierarchical_segmented_posterior  # noqa: E402
+from expkit.io.samples import _sha256_file, save_idata  # noqa: E402
 from expkit.plot.style import PALETTE, apply_style  # noqa: E402
 from expkit.segments.behavioral import simulate_population, BEHAVIORAL_LABELS  # noqa: E402
 
@@ -159,6 +160,86 @@ def render_segmentation_choices():
     return out
 
 
+def render_hierarchical_pymc(manifest):
+    """Hierarchical Bayesian model on segmented A/B data.
+
+    Per-segment treatment effect drawn from a population-level distribution.
+    The model partial-pools small segments toward the population mean.
+    """
+    apply_style()
+    rng = np.random.default_rng(115)
+    n_total = 4000
+    df = simulate_population(n_total, seed=115)
+    df["arm"] = rng.choice(["control", "treatment"], size=n_total)
+    treat_lift = {"active_contributor": 0.10, "active_consumer": 0.04, "silent_intentional": -0.03, "passive_consumer": 0.0}
+    df["outcome"] = 0
+    base = 0.30
+    for seg, lift in treat_lift.items():
+        for arm_name in ["control", "treatment"]:
+            m = (df["segment"] == seg) & (df["arm"] == arm_name)
+            p = base + (lift if arm_name == "treatment" else 0.0)
+            df.loc[m, "outcome"] = rng.binomial(1, max(0, min(1, p)), size=int(m.sum()))
+
+    successes_by_segment = {}
+    n_by_segment = {}
+    for seg in sorted(df["segment"].unique()):
+        sub = df[df["segment"] == seg]
+        successes_by_segment[seg] = {
+            "control": int(sub[sub["arm"] == "control"]["outcome"].sum()),
+            "treatment": int(sub[sub["arm"] == "treatment"]["outcome"].sum()),
+        }
+        n_by_segment[seg] = {
+            "control": int((sub["arm"] == "control").sum()),
+            "treatment": int((sub["arm"] == "treatment").sum()),
+        }
+
+    idata = hierarchical_segmented_posterior(
+        successes_by_segment, n_by_segment,
+        seed=1115, draws=1500, chains=2, tune=1500, progressbar=False,
+    )
+    res = save_idata(idata, DATA_DIR / "hierarchical_posterior", seed=1115, meta={
+        "n_total": n_total,
+        "treat_lift": treat_lift,
+        "model": "logit baseline + Normal effect per segment, with population-level Normal(mu, tau)",
+    })
+    add_artifact(manifest, path=res.path, kind="idata", seed=1115, sha256=res.sha256, description="Hierarchical Bayesian model on segmented A/B data")
+
+    # Per-segment effect posteriors on the probability scale
+    p_t = idata.posterior["p_treatment"].values  # (chain, draw, segment)
+    p_c = idata.posterior["p_control"].values
+    diff = p_t - p_c
+    segments = list(idata.posterior.coords["segment"].values)
+
+    # Independent (no-pooling) per-segment estimates for comparison
+    independent_diffs = {}
+    for seg in segments:
+        s = successes_by_segment[seg]; n_ = n_by_segment[seg]
+        independent_diffs[seg] = (s["treatment"] / n_["treatment"]) - (s["control"] / n_["control"])
+
+    fig, ax = plt.subplots(figsize=(10, 4.5))
+    cmap = plt.get_cmap("viridis")
+    xs = np.arange(len(segments))
+    for i, seg in enumerate(segments):
+        d = diff[:, :, i].ravel()
+        lo, hi = float(np.quantile(d, 0.025)), float(np.quantile(d, 0.975))
+        mean = float(np.mean(d))
+        ax.errorbar(i - 0.15, mean, yerr=[[mean - lo], [hi - mean]], fmt="o", color=cmap(i / max(1, len(segments) - 1)), capsize=4, markersize=8, label=f"{seg} (Bayesian)" if i == 0 else None)
+        ax.scatter(i + 0.15, independent_diffs[seg], color=PALETTE["highlight"], marker="s", s=60, zorder=5, label="independent (no pool)" if i == 0 else None)
+        ax.axhline(treat_lift[seg], xmin=(i - 0.4) / len(segments) + 0.03, xmax=(i + 0.4) / len(segments) - 0.03,
+                   color=PALETTE["muted"], linestyle=":", linewidth=1)
+    ax.axhline(0, color=PALETTE["muted"], linestyle="--", linewidth=1)
+    ax.set_xticks(xs)
+    ax.set_xticklabels(segments, rotation=15, fontsize=8)
+    ax.set_ylabel("treatment - control")
+    ax.set_title("Loop D: hierarchical Bayesian per-segment effects vs independent estimates (true effect = dotted)")
+    ax.legend(fontsize=8, loc="best")
+    fig.tight_layout()
+    out = IMG_DIR / "hierarchical_effects.png"
+    fig.savefig(out)
+    plt.close(fig)
+    return out
+
+
 def main():
     ensure_dirs()
     manifest = load_manifest()
@@ -166,11 +247,12 @@ def main():
         render_demographic_vs_behavioral(manifest),
         render_segment_signature(),
         render_segmentation_choices(),
+        render_hierarchical_pymc(manifest),
     ]
     for p in paths:
         add_artifact(manifest, path=p, kind="image", seed="derived", sha256=_sha256_file(p), description=f"Chapter 11 figure: {p.name}")
     save_manifest(manifest)
-    print(f"Chapter 11: wrote {len(paths)} figures")
+    print(f"Chapter 11: wrote {len(paths)} figures + 1 PyMC trace")
 
 
 if __name__ == "__main__":

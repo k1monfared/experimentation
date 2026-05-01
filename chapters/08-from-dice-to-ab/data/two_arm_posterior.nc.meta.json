@@ -1,0 +1,10 @@
+{
+  "meta": {
+    "model": "Beta(1,1) priors per arm",
+    "n_per_arm": 10000,
+    "s_c": 458,
+    "s_t": 650
+  },
+  "seed": 808,
+  "sha256": "655182d94b2e7b8a0e6bb1f711cd32fa11454be9697df53f2092f8341d3fe4be"
+}

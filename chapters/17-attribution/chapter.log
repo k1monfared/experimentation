@@ -27,6 +27,18 @@
 - Two-lens commentary
     - Frequentist: attribution is a deterministic accounting choice. There is no statistical answer. The only test is "does my model recover the true coefficients on simulated data?".
     - Bayesian: model the conversion likelihood explicitly with channel coefficients, fit posterior over coefficients, and inspect. PyMC handles this directly. The posterior over coefficients is the right object to budget against.
+- Loop C and D: the Bayesian model
+    - Try
+        - Logistic regression in PyMC: P(convert) = sigmoid(intercept + sum_c coef[c] * count[c]) where count[c] is the number of times user touched channel c. Weakly informative priors on the coefficients (Normal(0, 0.5) on the logit scale). Sample with NUTS over the 20,000 simulated journeys.
+    - Observe (left panel)
+        - The posterior 95% credible intervals on the channel coefficients bracket the true values for every channel. direct's coefficient sits highest (true 0.20), search second (0.10), email (0.05), social (0.04), display (0.02). The model recovers the underlying causal structure.
+    - Observe (right panel)
+        - Take the posterior coefficient means, clip to non-negative, normalize, and treat as "share of true value". Compare to first-touch / last-touch / linear / time-decay shares.
+        - The Bayesian shares match the *true* shares closely. The four heuristics each diverge: first-touch overweights first-channel-of-journey distributions (search and social), last-touch overweights direct (the closer), linear blurs everything toward equal, time-decay sits between linear and last-touch.
+        - ![Bayesian attribution](images/bayesian_attribution.png)
+    - Hunch
+        - When you have data and a willingness to write down a likelihood, the Bayesian model gives you the *causal* attribution. The heuristics give you accounting choices. Different objects.
+        - Caveat: the Bayesian model is only as good as its specification. We assumed channels combine linearly on the logit scale and that touch counts are the right covariate. If the true mechanism is "the SEQUENCE matters" or "channels interact", the linear model is wrong. The same critique applies to all attribution; the Bayesian version just makes the assumptions explicit.
 - The big question that opens Chapter 18
     - We've spent 17 chapters teaching both lenses. We've never asked: at the end of all this, would we ship things differently under one lens vs the other? On average, on which kinds of decisions, by how much?
     - Big question: would a frequentist team and a Bayesian team disagree about what to ship -- and where, and when?

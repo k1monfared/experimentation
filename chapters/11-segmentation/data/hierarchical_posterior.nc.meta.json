@@ -1,0 +1,14 @@
+{
+  "meta": {
+    "model": "logit baseline + Normal effect per segment, with population-level Normal(mu, tau)",
+    "n_total": 4000,
+    "treat_lift": {
+      "active_consumer": 0.04,
+      "active_contributor": 0.1,
+      "passive_consumer": 0.0,
+      "silent_intentional": -0.03
+    }
+  },
+  "seed": 1115,
+  "sha256": "fcdbc42291761dc6b5fb0ba58dbd65228146ddbd77d7337e68aa91ad87b241ae"
+}

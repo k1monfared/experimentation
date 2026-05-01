@@ -13,9 +13,10 @@ from scipy.stats import beta as beta_dist
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 
+from expkit.inference.bayes import two_arm_posterior  # noqa: E402
 from expkit.inference.bootstrap import bootstrap_diff_ci  # noqa: E402
 from expkit.inference.normal import two_proportion_z, two_sample_t  # noqa: E402
-from expkit.io.samples import _sha256_file, save_samples  # noqa: E402
+from expkit.io.samples import _sha256_file, save_idata, save_samples  # noqa: E402
 from expkit.plot.style import PALETTE, apply_style  # noqa: E402
 from expkit.sim.abtest import (  # noqa: E402
     stratified_binary,
@@ -29,7 +30,7 @@ DATA_DIR = CHAPTER_DIR / "data"
 IMG_DIR = CHAPTER_DIR / "images"
 MANIFEST_PATH = REPO_ROOT / "data" / "manifest.yaml"
 
-SEEDS = {"binary_small": 80, "binary_large": 81, "continuous": 82, "stratified": 83}
+SEEDS = {"binary_small": 80, "binary_large": 81, "continuous": 82, "stratified": 83, "pymc": 808}
 
 
 def ensure_dirs():
@@ -199,6 +200,52 @@ def render_decision_rule():
     return out
 
 
+def render_pymc_posterior(manifest):
+    """Same data as Loop A's N=10000 case, fit with PyMC. Closed-form Beta is also computed for comparison."""
+    apply_style()
+    n = 10000
+    exp = two_arm_binary(n, p_control=0.05, p_treatment=0.06, seed=SEEDS["binary_large"])
+    s_c = int(exp.control.sum())
+    s_t = int(exp.treatment.sum())
+    idata = two_arm_posterior(s_c, n, s_t, n, seed=SEEDS["pymc"], draws=2000, chains=2, tune=1000, progressbar=False)
+    res = save_idata(idata, DATA_DIR / "two_arm_posterior", seed=SEEDS["pymc"], meta={"n_per_arm": n, "s_c": s_c, "s_t": s_t, "model": "Beta(1,1) priors per arm"})
+    add_artifact(manifest, path=res.path, kind="idata", seed=SEEDS["pymc"], sha256=res.sha256, description="Two-arm Beta-Bernoulli PyMC posterior at N=10000")
+
+    diff = idata.posterior["diff"].values.ravel()
+    p_c_samples = idata.posterior["p_control"].values.ravel()
+    p_t_samples = idata.posterior["p_treatment"].values.ravel()
+
+    # Closed-form for cross-validation
+    cf_c = np.random.default_rng(0).beta(1 + s_c, 1 + n - s_c, len(p_c_samples))
+    cf_t = np.random.default_rng(1).beta(1 + s_t, 1 + n - s_t, len(p_t_samples))
+    cf_diff = cf_t - cf_c
+
+    fig, axes = plt.subplots(1, 2, figsize=(11, 4.0))
+    axes[0].hist(p_c_samples, bins=50, alpha=0.55, color=PALETTE["frequentist"], label="p_control")
+    axes[0].hist(p_t_samples, bins=50, alpha=0.55, color=PALETTE["bayesian"], label="p_treatment")
+    axes[0].axvline(0.05, color=PALETTE["muted"], linestyle="--", linewidth=1, label="true p_c = 0.05")
+    axes[0].axvline(0.06, color=PALETTE["muted"], linestyle=":", linewidth=1, label="true p_t = 0.06")
+    axes[0].set_xlabel("p")
+    axes[0].set_ylabel("samples")
+    axes[0].set_title("PyMC per-arm posteriors")
+    axes[0].legend(fontsize=8)
+
+    axes[1].hist(diff, bins=50, density=True, alpha=0.7, color=PALETTE["bayesian"], label=f"PyMC posterior on diff (mean = {diff.mean():.4f})")
+    axes[1].hist(cf_diff, bins=50, density=True, alpha=0.4, color=PALETTE["highlight"], histtype="step", linewidth=2, label="closed-form Beta diff (cross-check)")
+    axes[1].axvline(0, color=PALETTE["muted"], linestyle="--", linewidth=1)
+    axes[1].axvline(0.01, color=PALETTE["muted"], linestyle=":", linewidth=1, label="true diff = 0.01")
+    axes[1].set_xlabel("treatment - control")
+    axes[1].set_title(f"posterior on diff: P(diff > 0) = {(diff > 0).mean():.3f}")
+    axes[1].legend(fontsize=8)
+
+    fig.suptitle("Loop F: Bayesian two-arm A/B (PyMC) recovers the closed-form answer")
+    fig.tight_layout()
+    out = IMG_DIR / "pymc_two_arm.png"
+    fig.savefig(out)
+    plt.close(fig)
+    return out
+
+
 def main():
     ensure_dirs()
     manifest = load_manifest()
@@ -207,11 +254,12 @@ def main():
         render_continuous_outcome(),
         render_stratified_vs_pooled(manifest),
         render_decision_rule(),
+        render_pymc_posterior(manifest),
     ]
     for p in paths:
         add_artifact(manifest, path=p, kind="image", seed="derived", sha256=_sha256_file(p), description=f"Chapter 8 figure: {p.name}")
     save_manifest(manifest)
-    print(f"Chapter 8: wrote {len(paths)} figures")
+    print(f"Chapter 8: wrote {len(paths)} figures + 1 PyMC trace")
 
 
 if __name__ == "__main__":

@@ -123,6 +123,99 @@ def bayes_factor_point_vs_uniform(seq: np.ndarray, point: float = 0.5) -> float:
     return float(np.exp(log_lik_h1 - log_lik_h0))
 
 
+def two_arm_posterior(
+    successes_control: int,
+    n_control: int,
+    successes_treatment: int,
+    n_treatment: int,
+    prior_alpha: float = 1.0,
+    prior_beta: float = 1.0,
+    seed: int | None = None,
+    draws: int = 1000,
+    chains: int = 2,
+    tune: int = 1000,
+    progressbar: bool = False,
+):
+    """Two-arm Beta-Bernoulli posterior via PyMC.
+
+    Each arm has its own ``p`` with a Beta(prior_alpha, prior_beta) prior.
+    Returns an arviz ``InferenceData`` with variables ``p_control``,
+    ``p_treatment``, and the deterministic ``diff = p_treatment - p_control``.
+    """
+    with pm.Model():
+        p_c = pm.Beta("p_control", alpha=prior_alpha, beta=prior_beta)
+        p_t = pm.Beta("p_treatment", alpha=prior_alpha, beta=prior_beta)
+        pm.Binomial("y_control", n=n_control, p=p_c, observed=successes_control)
+        pm.Binomial("y_treatment", n=n_treatment, p=p_t, observed=successes_treatment)
+        pm.Deterministic("diff", p_t - p_c)
+        idata = pm.sample(
+            draws=draws,
+            chains=chains,
+            tune=tune,
+            random_seed=seed,
+            progressbar=progressbar,
+            return_inferencedata=True,
+        )
+    idata.attrs["seed"] = seed if seed is not None else "unset"
+    idata.attrs["successes_control"] = successes_control
+    idata.attrs["n_control"] = n_control
+    idata.attrs["successes_treatment"] = successes_treatment
+    idata.attrs["n_treatment"] = n_treatment
+    return idata
+
+
+def hierarchical_segmented_posterior(
+    successes_by_segment: dict[str, dict[str, int]],
+    n_by_segment: dict[str, dict[str, int]],
+    seed: int | None = None,
+    draws: int = 1000,
+    chains: int = 2,
+    tune: int = 1000,
+    progressbar: bool = False,
+    target_accept: float = 0.95,
+):
+    """Hierarchical Bayesian model for per-segment treatment effects.
+
+    Each segment has a treatment effect ``effect[s]`` drawn from a
+    population-level Normal(mu, tau). Per-arm logit-baseline + effect gives
+    the conversion probability. Returns an arviz ``InferenceData`` with
+    the population mu, tau, and per-segment effect.
+
+    ``successes_by_segment`` and ``n_by_segment`` are dicts:
+        {segment_name: {"control": int, "treatment": int}}
+    """
+    segments = sorted(successes_by_segment.keys())
+    s_c = np.array([successes_by_segment[s]["control"] for s in segments])
+    s_t = np.array([successes_by_segment[s]["treatment"] for s in segments])
+    n_c = np.array([n_by_segment[s]["control"] for s in segments])
+    n_t = np.array([n_by_segment[s]["treatment"] for s in segments])
+    n_seg = len(segments)
+    coords = {"segment": segments}
+    with pm.Model(coords=coords):
+        baseline = pm.Normal("baseline", mu=0.0, sigma=2.0, dims="segment")
+        mu = pm.Normal("mu", mu=0.0, sigma=1.0)
+        tau = pm.HalfNormal("tau", sigma=1.0)
+        # Non-centered parameterization for the per-segment effect: avoids divergences
+        # at the funnel near tau == 0.
+        effect_z = pm.Normal("effect_z", mu=0.0, sigma=1.0, dims="segment")
+        effect = pm.Deterministic("effect", mu + tau * effect_z, dims="segment")
+        p_c = pm.Deterministic("p_control", pm.math.invlogit(baseline), dims="segment")
+        p_t = pm.Deterministic("p_treatment", pm.math.invlogit(baseline + effect), dims="segment")
+        pm.Binomial("y_control", n=n_c, p=p_c, observed=s_c, dims="segment")
+        pm.Binomial("y_treatment", n=n_t, p=p_t, observed=s_t, dims="segment")
+        idata = pm.sample(
+            draws=draws,
+            chains=chains,
+            tune=tune,
+            random_seed=seed,
+            progressbar=progressbar,
+            return_inferencedata=True,
+            target_accept=target_accept,
+        )
+    idata.attrs["segments"] = ",".join(segments)
+    return idata
+
+
 def conjugate_posterior_predictive(
     seq: np.ndarray,
     new_n: int,

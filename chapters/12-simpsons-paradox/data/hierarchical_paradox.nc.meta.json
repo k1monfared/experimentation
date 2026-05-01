@@ -1,0 +1,28 @@
+{
+  "meta": {
+    "model": "hierarchical Bayesian (partial pooling) on imbalanced segmented data",
+    "n_by_segment": {
+      "segment_A": {
+        "control": 3200,
+        "treatment": 800
+      },
+      "segment_B": {
+        "control": 3200,
+        "treatment": 12800
+      }
+    },
+    "successes_by_segment": {
+      "segment_A": {
+        "control": 2542,
+        "treatment": 681
+      },
+      "segment_B": {
+        "control": 634,
+        "treatment": 3186
+      }
+    },
+    "true_within_segment_effect": 0.05
+  },
+  "seed": 1212,
+  "sha256": "b789e47fcc0386fcadaa042f52c023c72d6ff090d1675ad04bfd64933b7a3171"
+}

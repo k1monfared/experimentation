@@ -44,6 +44,16 @@
         - ![Berkeley](images/berkeley_style.png)
     - Hunch
         - The aggregate looks like discrimination against women. The per-department view looks like (slight) preference for women. The "right" answer depends on which causal question you're asking.
+- Loop F: the hierarchical model recovers the within-segment effect
+    - Try
+        - Take Loop A's data (two segments, +5pp lift each, but treatment overrepresented in segment B). Fit the same hierarchical Bayesian model from Chapter 11 (per-segment effect drawn from a population-level Normal). The model gets the segment label as part of its inputs.
+    - Observe
+        - The per-segment posterior on (treatment - control) for each segment is centred near +5pp, exactly the truth.
+        - The naive aggregate (no segment context) gives -16pp. Misleading.
+        - The Bayesian population-level mu (translated to a probability-scale "average effect" around the average baseline) is also near +5pp.
+        - ![Hierarchical recovery](images/hierarchical_recovery.png)
+    - Hunch
+        - The hierarchical model dissolves Simpson's paradox by construction. As long as the segment label is fed in, the model partitions variance correctly. The paradox lives in the *aggregation* you choose to report -- and by writing down a per-segment model, you've already made that choice consciously.
 - The big question that opens Chapter 13
     - We've spent five chapters arguing about which segment, which metric, which lens. We have not asked the deeper question: which metric *should* we be measuring in the first place?
     - Big question: how do company-level outcomes connect to the experiment-level metrics we read in week one?
