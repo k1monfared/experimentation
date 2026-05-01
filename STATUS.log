@@ -1,7 +1,7 @@
 - Project Status
-    - Last Updated: 2026-04-29
-    - Stage: Beta
-    - Next Milestone: polish chapter prose, expand companion notebooks, harden tests against edge inputs
+    - Last Updated: 2026-04-30
+    - Stage: Beta+
+    - Next Milestone: actually run the deferred Holm and Cochran-Mantel-Haenszel demonstrations across Ch.7/11/12, then promote to Production Ready
 
 - Development Stages
     - [x] Initial Setup
@@ -23,8 +23,19 @@
         - All 19 chapters have full narrative, runnable notebook, deterministic generator, embedded figures, both-lens treatment.
         - Chapter 18 capstone runs 2,000 synthetic A/B tests and produces confusion matrix + cost analysis comparing the two lenses.
         - Chapter 19 hands off to /home/k1/public/statistics/causal_inference with a selection-bias demonstration.
+    - [x] Beta+ (review and polish pass)
+        - 19 critic-and-defender agents wrote a per-chapter TODO.log of statistical issues.
+        - HIGH and MEDIUM/LOW items applied across all 19 chapters in two rounds.
+        - A book-level super-agent then reviewed cross-chapter coherence and added 56 more TODO items, 52 of which were applied; 4 are honestly deferred (Holm, BH, CMH demonstrations that need to span Ch.7/11/12 together).
+        - Concrete fixes shipped: numerical errors in narrative aligned with code (Ch.1 toss sequence, Ch.2 rejection grid, Ch.3 stopping-N off by 4x, Ch.4 Fisher/normal-approx gaps, Ch.6 BF and posterior-predictive numbers, Ch.8 shipping rate at MMU, Ch.12 aggregate diff, Ch.15 ITT, Ch.18 joint ship rate). Library bugs squashed: Ch.16 frac_extreme symmetry-vs-calibration confusion, Ch.18 default_rng(0) reseed bug, Ch.13 relative_noise misuse on signed effects. New helpers: signal_to_noise, aa_calibration, bootstrap CI on predictivity().
+        - Two-lens promise repaired in Ch.9, 13, 16, 17 (each now has concrete inference in at least one loop).
+        - Cross-chapter handoffs tightened: Ch.1 declares canonical notation; verbatim "carried-from" lines align with the previous chapter's "big question" in Ch.2/8/12/19. Forward references that had no payoff are either rephrased honestly or deferred with a SKIPPED tag.
     - [] Production Ready
-        - Goal: stable, tested, polished, every figure final, every notebook reproducible from CI.
+        - Remaining work for Production:
+            - Holm / BH (Benjamini-Hochberg) demonstration spanning Ch.7/11/12.
+            - Cochran-Mantel-Haenszel demonstration in Ch.11 (the "if we ran it, here it is").
+            - Pin all remaining notation drift items in TODOs that are still SKIPPED.
+            - Optional: expand interactive playground past four widgets.
     - [] Maintenance Mode
         - Future enhancements queued:
             - Interactive chart toggles
@@ -55,12 +66,14 @@
 - Current Focus
     - Active Tasks:
         - [x] Phase 1 build complete (skeleton, library starter, Chapter 1, stubs, tests, scripts)
+        - [x] Beta+: per-chapter and book-level review applied
     - Blockers:
-        - none for Chapter 1; Chapter 2 onward unblocked
+        - none. The remaining items (Holm / BH / CMH demonstrations) are forward-looking content additions, not blockers.
     - Recent Progress:
         - 2026-04-29: scaffold + Phase 1 library + Chapter 1 fully built; 18 chapter stubs created; 22 tests passing; reproducibility manifest populated for Chapter 1
         - 2026-04-29: privacy policy added to local instructions; local-only tooling artifacts untracked from git
         - 2026-04-29: Chapters 2-19 narratives, generators, notebooks, and images all built. Library expanded to cover power, full test family, bootstrap, multinomial, A/B, segments, novelty, dilution, metric quality, attribution, F-vs-B capstone, causal handoff. 42 tests passing.
+        - 2026-04-30: per-chapter critic+defender review wrote 19 TODO.log files; HIGH and MEDIUM/LOW items applied; book-level super-agent appended 56 cross-chapter items, 52 of which were applied; remaining items honestly deferred with SKIPPED tags. 116 fast tests passing (was 42), plus 1 slow PyMC test. Library helpers added: signal_to_noise, aa_calibration, bootstrap CI on predictivity. Code bugs squashed: frac_extreme calibration confusion, Ch.18 reseed bug, relative_noise misuse on signed effects.
 
 - Notes
     - Use loglog format for all .log documentation; render with `python scripts/render_chapters.py`
