@@ -70,7 +70,7 @@
             - installs the package via pip install -e ".[dev]"
             - runs pytest -m "not slow"
             - optionally runs python scripts/regenerate_all.py and asserts manifest checksums match (this is slower; could be a separate workflow)
-        - Add .github/workflows/privacy.yml or a pre-commit hook that runs the existing grep guards (claude / anthropic / co-authored-by) on staged content, fails the commit if any match in tracked files.
+        - Add .github/workflows/privacy.yml or a pre-commit hook that runs the existing grep guards (the privacy-policy strings listed in the local instructions) on staged content, fails the commit if any match in tracked files.
         - Add a Makefile or simple shell helpers for the common tasks: make test, make regen, make render, make notebooks.
     - Effort
         - M total

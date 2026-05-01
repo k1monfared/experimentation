@@ -1,0 +1,65 @@
+- Contributing to experimentation
+    - This guide walks a new contributor through cloning, setting up a venv, registering a Jupyter kernel, regenerating chapter artifacts, and rendering the loglog narratives. Read the README.md for the conceptual layout first.
+- Local setup
+    - Python 3.11 or 3.12. Other versions probably work but are not tested in CI.
+    - Clone and bootstrap a project-local virtualenv:
+        - ```
+        - git clone <repo>
+        - cd experimentation
+        - python -m venv .venv
+        - source .venv/bin/activate
+        - pip install --upgrade pip
+        - pip install -e ".[dev]"
+        - ```
+    - The package installs in editable mode, so your changes to expkit/ are reflected immediately without re-installing.
+- Jupyter kernel for the notebooks
+    - Each chapter has a notebook.ipynb that imports from expkit. The notebooks specify a kernel named "expkit" so the venv-installed package is found. Register it once:
+        - ```
+        - .venv/bin/python -m ipykernel install --user --name expkit --display-name "Python (expkit)"
+        - ```
+    - You can re-register safely; subsequent installs replace the existing kernel spec.
+    - To execute a notebook end-to-end without opening Jupyter:
+        - ```
+        - python -c "import nbformat; from nbclient import NotebookClient; nb = nbformat.read('chapters/01-the-coin/notebook.ipynb', as_version=4); NotebookClient(nb, kernel_name='expkit', timeout=600).execute(); nbformat.write(nb, 'chapters/01-the-coin/notebook.ipynb')"
+        - ```
+    - Or, for all notebooks at once: ``make notebooks``.
+- Loglog rendering
+    - The narrative source for every chapter and the README is a .log file in loglog format. The rendered .md is committed alongside it so GitHub displays the story directly.
+    - To render every .log file in the repo: ``make render`` (which calls ``python scripts/render_chapters.py``).
+    - To render only one chapter: ``python scripts/render_chapters.py --chapter 01-the-coin``.
+    - The renderer expects the loglog CLI from the sibling repo at /home/k1/public/loglog/loglog_cli.py. If you have your own loglog installation on PATH, the script auto-detects it.
+- Regenerating chapter artifacts
+    - Every chapter has a generate.py that writes datasets and PyMC traces to chapters/<NN-name>/data/, plots to chapters/<NN-name>/images/, and updates the cross-cutting data/manifest.yaml.
+    - To regenerate everything: ``make regen``.
+    - To regenerate one chapter: ``python scripts/regenerate_all.py --chapter 01-the-coin``.
+    - The manifest records every artifact with its seed and sha256. CI can be used to assert these checksums match by re-running regenerate_all and diffing the manifest.
+- Tests
+    - Fast tests run in seconds: ``make test``.
+    - Including PyMC sampling: ``make test-all``. Adds ~10 seconds for the conjugate-vs-MCMC convergence test.
+    - When adding a new expkit module, add a tests/test_<module>.py with at least:
+        - happy-path numeric checks (cross-check against scipy or statsmodels where possible)
+        - shape and dtype invariants
+        - determinism with a fixed seed
+        - one or two boundary cases
+- Privacy policy
+    - This repo has a strict privacy policy: no traces of any specific AI tooling in committed files or commit messages. The pre-commit guard is ``make privacy`` (which calls ``scripts/check_privacy.sh``) and the same check runs in CI.
+    - The .gitignore is the only allowed exception, because it must literally name the paths it ignores.
+    - The full policy lives in the local-only instructions file (gitignored). The short form: do not introduce strings that name AI tooling vendors or models, and do not add Co-Authored-By lines to commit messages.
+- Project structure (quick map)
+    - chapters/<NN-name>/ -- one folder per chapter; chapter.log + chapter.md + notebook.ipynb + generate.py + data/ + images/
+    - expkit/ -- the Python package: sim/, inference/, power/, metrics/, segments/, novelty/, attribution/, plot/, io/
+    - tests/ -- pytest unit tests for expkit modules
+    - scripts/ -- regenerate_all.py, render_chapters.py, check_privacy.sh
+    - data/manifest.yaml -- cross-cutting reproducibility manifest
+    - .github/workflows/ -- CI configuration
+    - Makefile -- convenience targets for the common workflows
+- A typical contribution flow
+    - Open an issue or PR describing the change.
+    - Edit the relevant chapter.log, then ``make render`` to update the corresponding chapter.md.
+    - If you changed library code: add or update the test file, ``make test``.
+    - If you changed a generator: ``make regen`` so the manifest and figures stay consistent.
+    - If you changed a notebook: ``make notebooks`` (or just the one notebook) so its outputs are up to date.
+    - ``make privacy`` before committing.
+    - Commit with a plain message in the user's voice. No AI tool trailers.
+- Questions and feedback
+    - Please open an issue for anything that's confusing, broken, or missing in the narrative or the library. The chapters are still polishing toward "Production"; the more concrete the question, the better the polish.
