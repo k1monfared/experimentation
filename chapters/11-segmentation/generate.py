@@ -14,7 +14,10 @@ REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 
 from expkit.inference.bayes import hierarchical_segmented_posterior  # noqa: E402
-from expkit.io.samples import _sha256_file, save_idata  # noqa: E402
+from expkit.inference.cmh import cochran_mantel_haenszel  # noqa: E402
+from expkit.inference.multitest import benjamini_hochberg, bonferroni, holm  # noqa: E402
+from expkit.inference.normal import two_proportion_z  # noqa: E402
+from expkit.io.samples import _sha256_file, save_idata, save_samples  # noqa: E402
 from expkit.plot.style import PALETTE, apply_style  # noqa: E402
 from expkit.segments.behavioral import simulate_population, BEHAVIORAL_LABELS  # noqa: E402
 
@@ -160,6 +163,102 @@ def render_segmentation_choices():
     return out
 
 
+def render_multiplicity(manifest):
+    """Loop C.5: per-segment z-tests with Bonferroni / Holm / BH adjustment, plus CMH.
+
+    Reuses the seed-110, n=5000 design from Loop A so the numbers in the
+    chapter prose are reproducible. Saves a CSV-style sidecar of (segment,
+    raw_p, bonferroni, holm, bh) plus the CMH summary so downstream prose can
+    cite specific values from data/multiplicity.npy.
+    """
+    apply_style()
+    rng = np.random.default_rng(110)
+    n = 5000
+    df = simulate_population(n, seed=110)
+    treat_lift = {"active_contributor": 0.10, "active_consumer": 0.04, "silent_intentional": -0.03, "passive_consumer": 0.0}
+    df["arm"] = rng.choice(["control", "treatment"], size=n)
+    base_p = 0.30
+    df["outcome"] = 0
+    for seg, lift in treat_lift.items():
+        for arm_name in ["control", "treatment"]:
+            mask = (df["segment"] == seg) & (df["arm"] == arm_name)
+            p = base_p + (lift if arm_name == "treatment" else 0.0)
+            df.loc[mask, "outcome"] = rng.binomial(1, max(0, min(1, p)), size=int(mask.sum()))
+
+    segments = sorted(df["segment"].unique())
+    raw_p = []
+    tables = []  # for CMH: each stratum is [[a=t_succ, b=t_fail], [c=c_succ, d=c_fail]]
+    rows = []
+    for seg in segments:
+        sub = df[df["segment"] == seg]
+        c = sub[sub["arm"] == "control"]
+        t = sub[sub["arm"] == "treatment"]
+        s_c, n_c = int(c["outcome"].sum()), len(c)
+        s_t, n_t = int(t["outcome"].sum()), len(t)
+        res = two_proportion_z(s_t, n_t, s_c, n_c, alternative="two-sided")
+        raw_p.append(res.p_value)
+        rows.append({"segment": seg, "n_c": n_c, "s_c": s_c, "n_t": n_t, "s_t": s_t, "raw_p": res.p_value})
+        tables.append([[s_t, n_t - s_t], [s_c, n_c - s_c]])
+    raw_p = np.array(raw_p)
+
+    bonf = bonferroni(raw_p)
+    h = holm(raw_p)
+    bh = benjamini_hochberg(raw_p)
+    cmh = cochran_mantel_haenszel(np.array(tables, dtype=float))
+
+    # Save sidecar of numbers so chapter prose / notebook can cite exact values.
+    arr = np.column_stack([raw_p, bonf.adjusted_p, h.adjusted_p, bh.adjusted_p])
+    res = save_samples(
+        arr,
+        DATA_DIR / "multiplicity",
+        seed=110,
+        meta={
+            "columns": ["raw_p", "bonferroni", "holm", "bh"],
+            "segments": list(segments),
+            "n_per_segment": {seg: {"control": rows[i]["n_c"], "treatment": rows[i]["n_t"]} for i, seg in enumerate(segments)},
+            "successes_per_segment": {seg: {"control": rows[i]["s_c"], "treatment": rows[i]["s_t"]} for i, seg in enumerate(segments)},
+            "cmh": {
+                "statistic": cmh.statistic,
+                "p_value": cmh.p_value,
+                "common_odds_ratio": cmh.common_odds_ratio,
+                "log_or": cmh.log_or,
+                "log_or_se": cmh.log_or_se,
+                "n_strata": cmh.n_strata,
+            },
+            "alpha": 0.05,
+            "true_lifts": treat_lift,
+        },
+    )
+    add_artifact(
+        manifest, path=res.path, kind="samples", seed=110, sha256=res.sha256,
+        description="Loop C.5: per-segment raw p plus Bonferroni / Holm / BH and CMH on the same 4-stratum table",
+    )
+
+    # Plot raw vs three corrections side by side, with alpha=0.05 line.
+    fig, ax = plt.subplots(figsize=(10, 4.5))
+    x = np.arange(len(segments))
+    width = 0.2
+    ax.bar(x - 1.5 * width, raw_p, width, label="raw p", color=PALETTE["frequentist"])
+    ax.bar(x - 0.5 * width, bonf.adjusted_p, width, label="Bonferroni", color=PALETTE["highlight"])
+    ax.bar(x + 0.5 * width, h.adjusted_p, width, label="Holm", color=PALETTE["bayesian"])
+    ax.bar(x + 1.5 * width, bh.adjusted_p, width, label="BH (FDR)", color=PALETTE["muted"])
+    ax.axhline(0.05, color="black", linestyle="--", linewidth=1, label="alpha = 0.05")
+    ax.set_yscale("log")
+    ax.set_xticks(x)
+    ax.set_xticklabels(segments, rotation=15, fontsize=8)
+    ax.set_ylabel("p-value (log scale)")
+    ax.set_title(
+        f"Loop C.5: per-segment p-values vs Bonferroni / Holm / BH. "
+        f"CMH chi2={cmh.statistic:.1f}, p={cmh.p_value:.2e}, OR_MH={cmh.common_odds_ratio:.2f}"
+    )
+    ax.legend(loc="best", fontsize=8)
+    fig.tight_layout()
+    out = IMG_DIR / "multiplicity.png"
+    fig.savefig(out)
+    plt.close(fig)
+    return out
+
+
 def render_hierarchical_pymc(manifest):
     """Hierarchical Bayesian model on segmented A/B data.
 
@@ -247,6 +346,7 @@ def main():
         render_demographic_vs_behavioral(manifest),
         render_segment_signature(),
         render_segmentation_choices(),
+        render_multiplicity(manifest),
         render_hierarchical_pymc(manifest),
     ]
     for p in paths:

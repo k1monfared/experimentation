@@ -47,7 +47,7 @@
             - Where: chapter.log Loop A discusses five tests but does not mention bootstrap as a sixth route; Chapter 5 introduces percentile bootstrap as one of five intervals.
             - Why: a reader leaving Chapter 4 expects the "five tests" tally to map cleanly onto Chapter 5's "five intervals", but the inventories do not align (Chapter 4 has Fisher and t which have no Chapter 5 interval analog; Chapter 5 has Wald and bootstrap with no Chapter 4 test row).
             - Edit: at the close of Loop D add a one-line forward pointer: "Each of these tests has a confidence-interval dual; Chapter 5 turns the same five families inside-out into intervals (with bootstrap added as a non-parametric default)."
-        - [SKIPPED: requires cross-chapter coordination] Notation: "hat-p" introduced here but Chapter 5 switches to "p_hat"
+        - [APPLIED 2026-04-29 in cross-chapter cleanup] Notation: standardized on "p_hat" across Ch.4 and Ch.5. Single occurrence in Ch.4 (Loop A intro) flipped from "hat-p" to "p_hat".
             - Where: chapter.log line 9 ("the sample variance is hat-p (1 minus hat-p)")
             - Why: the same quantity is rendered "hat-p" in this chapter and "p_hat" in Chapter 5 Loop B. Pick one.
             - Edit: standardize on "hat-p" (matching Chapter 4) or "p_hat" (matching Chapter 5) and propagate everywhere. Coordinate with Chapter 1, 2, 5, 7 TODOs.

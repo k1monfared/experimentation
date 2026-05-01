@@ -1,15 +1,16 @@
-.PHONY: help install test test-all regen render notebooks privacy clean
+.PHONY: help install test test-all regen render notebooks privacy install-hooks clean
 
 help:
 	@echo "Common targets:"
-	@echo "  make install    Install the package + dev deps into the current Python env"
-	@echo "  make test       Run fast pytest tests (skip slow PyMC ones)"
-	@echo "  make test-all   Run all pytest tests (including slow PyMC)"
-	@echo "  make regen      Regenerate every chapter's data + figures from seeds"
-	@echo "  make render     Render every chapter.log to chapter.md via loglog"
-	@echo "  make notebooks  Execute every chapter notebook end-to-end (in place)"
-	@echo "  make privacy    Run the privacy-policy grep guard on tracked files"
-	@echo "  make clean      Remove pycache, pytest cache, and ipynb checkpoints"
+	@echo "  make install        Install the package + dev deps into the current Python env"
+	@echo "  make install-hooks  Wire .git/hooks/pre-commit to the privacy guard (one-time per clone)"
+	@echo "  make test           Run fast pytest tests (skip slow PyMC ones)"
+	@echo "  make test-all       Run all pytest tests (including slow PyMC)"
+	@echo "  make regen          Regenerate every chapter's data + figures from seeds"
+	@echo "  make render         Render every chapter.log to chapter.md via loglog"
+	@echo "  make notebooks      Execute every chapter notebook end-to-end (in place)"
+	@echo "  make privacy        Run the privacy-policy grep guard on tracked files"
+	@echo "  make clean          Remove pycache, pytest cache, and ipynb checkpoints"
 
 install:
 	pip install -e ".[dev]"
@@ -34,6 +35,9 @@ notebooks:
 
 privacy:
 	bash scripts/check_privacy.sh
+
+install-hooks:
+	bash scripts/install_pre_commit.sh
 
 clean:
 	find . -type d \( -name __pycache__ -o -name .pytest_cache -o -name .ipynb_checkpoints \) -prune -exec rm -rf {} +

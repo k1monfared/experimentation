@@ -34,7 +34,7 @@
   - Random assignment of the instrument (the arm label).
   - Monotonicity: no defiers. Nobody is pushed *away* from settings by being assigned to treatment.
   - Exclusion restriction: assignment affects outcomes only through actual treatment uptake. A banner shown to the treatment arm that nudges behavior even for users who never click through *violates* this and is a common pitfall in software experiments.
-  - SUTVA: no interference between users, one version of treatment.
+  - SUTVA (Stable Unit Treatment Value Assumption): no interference between users, one version of treatment per user. Chapter 19 picks this up under "network effects" and discusses what to do when it fails.
   - Non-zero first stage: visit_prob_treatment differs from visit_prob_control. With one-sided non-compliance, this is just visit_prob > 0.
   - Under those conditions, the Wald or instrumental-variables estimator (ITT effect divided by compliance rate) identifies the complier average causal effect.
 

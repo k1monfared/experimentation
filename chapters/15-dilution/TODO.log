@@ -35,10 +35,8 @@
         - Non-compliance with two-sided crossover, for example control users who somehow get the treatment. Settings-page example only has one-sided non-compliance, and that is enough for the inquiry. Generalize later if a chapter explicitly needs two-sided non-compliance.
         - Heterogeneous treatment effects across user segments beyond the compliance dimension. Belongs in the segmentation chapter.
     - Book-level review additions (added 2026-04-30)
-        - [SKIPPED 2026-04-29] SUTVA defined here for the first time without back-reference (and again in Chapter 19 with a different gloss)
-            - Where: chapter.log Loop B CACE conditions ("SUTVA: no interference between users, one version of treatment.")
-            - Why: Chapter 19 also names SUTVA as "the Stable Unit Treatment Value Assumption". Two glosses in two chapters; pick one definition and use it both places.
-            - Edit: change Chapter 15 to "SUTVA (Stable Unit Treatment Value Assumption): no interference between users, one version of treatment." Then make sure Chapter 19's definition matches verbatim. Coordinate via Chapter 19 TODO.
+        - [APPLIED 2026-04-29 in cross-chapter cleanup] SUTVA definition standardized
+            - Resolution: Ch.15 expanded to "SUTVA (Stable Unit Treatment Value Assumption): no interference between users, one version of treatment per user. Chapter 19 picks this up under 'network effects' and discusses what to do when it fails." Ch.19 keeps the same expansion. The two chapters now use compatible wording and cross-reference each other.
         - [APPLIED 2026-04-29] Bayesian PyMC counterpart promised by the project policy is missing
             - Where: chapter.log Two-lens commentary
             - Why: Chapter 6 set the expectation that PyMC is the canonical Bayesian engine where there is no closed form. ITT/CACE under endogenous compliance has no closed form. The Bayesian bullet currently waves at "posterior over the per-visitor effect" without a model.

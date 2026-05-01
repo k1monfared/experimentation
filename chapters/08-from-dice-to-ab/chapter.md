@@ -41,7 +41,7 @@
   - Pooled (N = 4000): the casual group dominates, so the pooled effect looks like the casual effect. The power-user group, where the absolute lift is the same but the relative lift is much smaller, gets washed out.
   - ![Stratified vs pooled](images/stratified_vs_pooled.png)
 - Hunch
-  - Pooling discards information. The canonical frequentist combiner that respects the strata is the Cochran-Mantel-Haenszel test; we do not run it in this book (Chapters 11 and 12 reach for hierarchical Bayes instead, and per-segment z-tests when the lens is frequentist).
+  - Pooling discards information. The canonical frequentist combiner that respects the strata is the Cochran-Mantel-Haenszel test (one chi-square plus a Mantel-Haenszel pooled odds ratio across K strata, no multiplicity tax). Chapter 11's Loop C.5 demonstrates CMH alongside per-segment z-tests with Bonferroni / Holm / Benjamini-Hochberg corrections, then Chapter 12 reaches for hierarchical Bayes as the partial-pooling alternative. The library exposes CMH as ``expkit.inference.cmh.cochran_mantel_haenszel`` and the FWER/FDR adjustments as ``expkit.inference.multitest.bonferroni / holm / benjamini_hochberg``.
 
 # Loop D: decision rule, both lenses
 

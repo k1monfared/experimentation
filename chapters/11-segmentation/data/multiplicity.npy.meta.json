@@ -1,0 +1,69 @@
+{
+  "meta": {
+    "alpha": 0.05,
+    "cmh": {
+      "common_odds_ratio": 1.263702189382484,
+      "log_or": 0.23404565829859159,
+      "log_or_se": 0.06083001936713809,
+      "n_strata": 4,
+      "p_value": 0.0001330907731657838,
+      "statistic": 14.597503081960221
+    },
+    "columns": [
+      "raw_p",
+      "bonferroni",
+      "holm",
+      "bh"
+    ],
+    "n_per_segment": {
+      "active_consumer": {
+        "control": 301,
+        "treatment": 324
+      },
+      "active_contributor": {
+        "control": 612,
+        "treatment": 616
+      },
+      "passive_consumer": {
+        "control": 969,
+        "treatment": 929
+      },
+      "silent_intentional": {
+        "control": 630,
+        "treatment": 619
+      }
+    },
+    "segments": [
+      "active_consumer",
+      "active_contributor",
+      "passive_consumer",
+      "silent_intentional"
+    ],
+    "successes_per_segment": {
+      "active_consumer": {
+        "control": 82,
+        "treatment": 118
+      },
+      "active_contributor": {
+        "control": 184,
+        "treatment": 248
+      },
+      "passive_consumer": {
+        "control": 287,
+        "treatment": 295
+      },
+      "silent_intentional": {
+        "control": 185,
+        "treatment": 197
+      }
+    },
+    "true_lifts": {
+      "active_consumer": 0.04,
+      "active_contributor": 0.1,
+      "passive_consumer": 0.0,
+      "silent_intentional": -0.03
+    }
+  },
+  "seed": 110,
+  "sha256": "c60cc7d47eeb5773da320b65c32d4bfe9d6da84f4fbb9de1c2e7e8ce6e41bfcd"
+}

@@ -46,8 +46,6 @@
             - Why: a reader who follows the inquiry breadcrumb expects the Bayes factor here. Either the promise in Chapter 1 is wrong, or Chapter 2 should at least name and defer it.
             - Edit: in Chapter 2's Bayesian-take or in the Loop B Compare step, add one sentence: "We will meet the Bayes factor in Chapter 6, when we formalize the Bayesian framework end-to-end." Coordinate with Chapter 1 TODO so its Loop D / big-question recap stops promising the Bayes factor here.
             - Note: Chapter 2 deferral sentence added in Loop B Compare. The Chapter 1 recap edit (removing the Bayes factor promise) is cross-chapter and was not applied here.
-        - [SKIPPED: requires cross-chapter coordination] Notation drift compared with later chapters
-            - Where: chapter.log uses "P(p > 0.5)" and "p_hat" implicitly; Chapter 4 uses "hat-p", Chapter 5 uses "p_hat"
-            - Why: the notation chosen in Chapter 1/2 should be the canonical form everywhere downstream.
-            - Edit: pick one form (suggest "hat-p" since most chapters use it) and use it consistently throughout Chapter 2's Loop A and Loop B prose; flag the same edit in Chapters 4 and 5.
+        - [APPLIED 2026-04-29 in cross-chapter cleanup] Notation drift compared with later chapters
+            - Resolution: standardized on "p_hat" across Chapters 4 and 5. Ch.2's prose uses verbal forms ("posterior probability that p > 0.5") rather than the hat notation directly, so no change in this file. Audit confirmed by grep: no "hat-p" occurrences remain in Ch.1-7 chapter.log files.
             - Note: Chapter 2 prose does not currently use either symbol, so there is nothing to standardize within Chapter 2 alone. The substantive edit lives in Chapters 4 and 5 (and the canonical choice is established in Chapter 1, which uses p_hat). Out of scope for a chapter-02-only pass.

@@ -1,0 +1,27 @@
+cff-version: 1.2.0
+title: "experimentation: a conversational journey from coin tosses to causal handoff"
+message: "If you use this work, please cite it as below."
+type: software
+authors:
+  - family-names: Monfared
+    given-names: Khazhak
+    alias: k1monfared
+abstract: >-
+  A nineteen-chapter inquiry-based walkthrough of statistical experimentation,
+  paired with the expkit Python library and a small interactive playground.
+  Frequentist and Bayesian (PyMC) lenses run side by side in every chapter,
+  from "is this coin fair" through power, the test family, confidence
+  intervals, multi-arm A/B tests, segmentation, Simpson's paradox, novelty
+  effects, dilution, metric quality, attribution, and a frequentist-vs-
+  Bayesian shipping capstone, ending with a handoff to a separate causal
+  inference repository.
+keywords:
+  - statistics
+  - experimentation
+  - A/B testing
+  - Bayesian inference
+  - PyMC
+  - causal inference
+  - hierarchical models
+license: MIT
+repository-code: "https://github.com/k1monfared/experimentation"

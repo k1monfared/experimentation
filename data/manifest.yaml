@@ -281,36 +281,6 @@ artifacts:
   seed: derived
   sha256: fe7de098d0865158ec4f2a05796fb5200ff1cbceb29da6f28d75505cb642438d
   description: 'Chapter 8 figure: pymc_two_arm.png'
-- path: chapters/11-segmentation/data/hierarchical_posterior.nc
-  chapter: 11-segmentation
-  kind: idata
-  seed: 1115
-  sha256: fcdbc42291761dc6b5fb0ba58dbd65228146ddbd77d7337e68aa91ad87b241ae
-  description: Hierarchical Bayesian model on segmented A/B data
-- path: chapters/11-segmentation/images/demographic_vs_behavioral.png
-  chapter: 11-segmentation
-  kind: image
-  seed: derived
-  sha256: e279d1e1520c611ad1cd64fb0144e9424f04328cc8f405fb41bd8459eb01a15f
-  description: 'Chapter 11 figure: demographic_vs_behavioral.png'
-- path: chapters/11-segmentation/images/segment_signature.png
-  chapter: 11-segmentation
-  kind: image
-  seed: derived
-  sha256: ab2a29cb90ccb10e5f61a7493cac566649e5937a518bc67d3378cc66fbec0248
-  description: 'Chapter 11 figure: segment_signature.png'
-- path: chapters/11-segmentation/images/segmentation_choices.png
-  chapter: 11-segmentation
-  kind: image
-  seed: derived
-  sha256: 25769001f25cfbf1150cbe71254a3ec1f7056e1d859b15122d9df8bb06c3791f
-  description: 'Chapter 11 figure: segmentation_choices.png'
-- path: chapters/11-segmentation/images/hierarchical_effects.png
-  chapter: 11-segmentation
-  kind: image
-  seed: derived
-  sha256: 1ecf363fc441662ccef1c2bd28e2630c5b1554cdbd6a60efbb7c5f747bb4aed7
-  description: 'Chapter 11 figure: hierarchical_effects.png'
 - path: chapters/12-simpsons-paradox/data/hierarchical_paradox.nc
   chapter: 12-simpsons-paradox
   kind: idata
@@ -594,3 +564,46 @@ artifacts:
   seed: derived
   sha256: 991d2d36e8183e1df9387e85424ca2b016f9cffeb5561e5263c927c580400705
   description: 'Chapter 6 figure: posterior_predictive.png'
+- path: chapters/11-segmentation/data/multiplicity.npy
+  chapter: 11-segmentation
+  kind: samples
+  seed: 110
+  sha256: c60cc7d47eeb5773da320b65c32d4bfe9d6da84f4fbb9de1c2e7e8ce6e41bfcd
+  description: 'Loop C.5: per-segment raw p plus Bonferroni / Holm / BH and CMH on
+    the same 4-stratum table'
+- path: chapters/11-segmentation/data/hierarchical_posterior.nc
+  chapter: 11-segmentation
+  kind: idata
+  seed: 1115
+  sha256: 0db7e21bbcd6b516b17a4e0acf9475afed71f841131c9cd8de8692c35ca69883
+  description: Hierarchical Bayesian model on segmented A/B data
+- path: chapters/11-segmentation/images/demographic_vs_behavioral.png
+  chapter: 11-segmentation
+  kind: image
+  seed: derived
+  sha256: e279d1e1520c611ad1cd64fb0144e9424f04328cc8f405fb41bd8459eb01a15f
+  description: 'Chapter 11 figure: demographic_vs_behavioral.png'
+- path: chapters/11-segmentation/images/segment_signature.png
+  chapter: 11-segmentation
+  kind: image
+  seed: derived
+  sha256: ab2a29cb90ccb10e5f61a7493cac566649e5937a518bc67d3378cc66fbec0248
+  description: 'Chapter 11 figure: segment_signature.png'
+- path: chapters/11-segmentation/images/segmentation_choices.png
+  chapter: 11-segmentation
+  kind: image
+  seed: derived
+  sha256: 25769001f25cfbf1150cbe71254a3ec1f7056e1d859b15122d9df8bb06c3791f
+  description: 'Chapter 11 figure: segmentation_choices.png'
+- path: chapters/11-segmentation/images/multiplicity.png
+  chapter: 11-segmentation
+  kind: image
+  seed: derived
+  sha256: e17aba95c5695c4399577d06a1ea2e6c53a974ed7660e8b354ccb77447c17047
+  description: 'Chapter 11 figure: multiplicity.png'
+- path: chapters/11-segmentation/images/hierarchical_effects.png
+  chapter: 11-segmentation
+  kind: image
+  seed: derived
+  sha256: 1ecf363fc441662ccef1c2bd28e2630c5b1554cdbd6a60efbb7c5f747bb4aed7
+  description: 'Chapter 11 figure: hierarchical_effects.png'

@@ -37,3 +37,32 @@ jobs:
           fetch-depth: 0
       - name: Run privacy check
         run: bash scripts/check_privacy.sh
+
+  notebooks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install package
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+      - name: Register expkit kernel
+        run: python -m ipykernel install --user --name expkit --display-name "Python (expkit)"
+      - name: Execute every chapter notebook
+        run: |
+          for nb in chapters/*/notebook.ipynb; do
+            echo "::group::executing $nb"
+            python -c "
+          import nbformat, sys
+          from nbclient import NotebookClient
+          nb = nbformat.read(sys.argv[1], as_version=4)
+          NotebookClient(nb, kernel_name='expkit', timeout=900).execute()
+          " "$nb"
+            echo "::endgroup::"
+          done
+

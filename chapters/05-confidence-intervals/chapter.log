@@ -27,7 +27,7 @@
         - Bayesian at 0/10 with Beta(1, 1) prior: posterior is Beta(1, 11), 95% credible [0.002, 0.265]. Honest about uncertainty.
         - ![Boundary failures](images/boundary_failures.png)
     - Rule of thumb
-        - Don't use Wald near boundaries. Don't use Wald at small N. A sharper version of "small": Wald is unreliable when N * hat-p < 5 or N * (1 - hat-p) < 5, and is degenerate (collapses to a single point) when hat-p is exactly 0 or 1.
+        - Don't use Wald near boundaries. Don't use Wald at small N. A sharper version of "small": Wald is unreliable when N * p_hat < 5 or N * (1 - p_hat) < 5, and is degenerate (collapses to a single point) when p_hat is exactly 0 or 1.
         - Wilson is a good default. Clopper-Pearson is safe but conservative. Bayesian with a flat Beta(1, 1) prior is shape-similar to Clopper-Pearson but a bit narrower; the Jeffreys prior Beta(0.5, 0.5) matches Clopper-Pearson more tightly (Chapter 6 introduces Jeffreys priors formally; here we just need the comparison). Bootstrap (percentile) is fine when you don't have a closed-form analytic option, with the caveat above for skewed or boundary cases.
 - Loop C: priors that argue
     - Try

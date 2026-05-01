@@ -47,11 +47,8 @@
             - Where: chapter.log Loop B Rule of thumb mentions "the Jeffreys prior Beta(0.5, 0.5) matches Clopper-Pearson more tightly"
             - Why: Chapter 6 Loop A formally introduces the Jeffreys prior. A reader hitting it here without seeing Chapter 6 will not know what the term means.
             - Edit: append "(Chapter 6 introduces Jeffreys priors formally; here we just need the comparison.)" to the same sentence.
-        - [APPLIED 2026-04-29] Notation: switches between "p_hat" and the implicit "p with hat" used in Chapter 4
-            - Where: chapter.log Loop B Rule of thumb ("when N * p_hat < 5 or N * (1 - p_hat) < 5"). Chapter 4 chapter.log uses "hat-p".
-            - Why: same quantity, two spellings across two consecutive chapters; readers notice.
-            - Edit: pick one spelling consistent with whatever Chapters 1-4 settle on, propagate the change.
-            - Resolution: switched Chapter 5 to "hat-p" to match Chapter 4.
+        - [APPLIED 2026-04-29 in cross-chapter cleanup] Notation: switches between "p_hat" and the implicit "p with hat" used in Chapter 4
+            - Resolution (final): standardized on "p_hat" (plain ASCII) across the book. Ch.4 and Ch.5 both flipped to "p_hat" in the cross-chapter cleanup pass. No "hat-p" occurrences remain in Ch.1-7 chapter.log files.
         - [PARTIAL APPLIED 2026-04-29; back-references SKIPPED: requires cross-chapter coordination] Bootstrap is the *introduction* point for the rest of the book but lacks a forward-pointer that Chapters 8, 13, 16 will lean on it
             - Where: chapter.log Loop A "A note on the percentile bootstrap" para, lines 18-19
             - Why: Chapter 8 Loop B uses bootstrap of mean differences, Chapter 13 uses bootstrap CI on r, Chapter 16 uses predictivity bootstrap. None back-references this paragraph; a reader who wants to revisit "what is the bootstrap?" loses the trail.
