@@ -709,3 +709,404 @@ artifacts:
   seed: derived
   sha256: 26dc2e1af5937b9556b89e253df7f200d6d9a563755b231479c3697b0da73579
   description: 'Appendix A2 figure: prior_on_tau.png'
+- path: chapters/01-the-coin/images/story/first_three_tosses.png
+  chapter: 01-the-coin
+  kind: image
+  seed: 1
+  sha256: 675245adbd71af0d3b8236c5c07e41a5b38e4700cba76a15a30509b5e9570272
+  description: 'Story Ch.1: HHH first three tosses (illustrative)'
+- path: chapters/01-the-coin/images/story/ten_tosses.png
+  chapter: 01-the-coin
+  kind: image
+  seed: 1
+  sha256: 76f307a00acc4594b64dabbe7a378a9d8825503da47e702b70ee4d99f3a26733
+  description: 'Story Ch.1: ten tosses, the specific run (HHH then mixed)'
+- path: chapters/01-the-coin/images/story/running_fraction_settles.png
+  chapter: 01-the-coin
+  kind: image
+  seed: 1
+  sha256: be54c6b9d011abd5517bb4ae1c20d7d9f30fd09977693531120004a9d5c123a7
+  description: 'Story Ch.1: running fraction at N=10/100/1000/10000 (seed 1)'
+- path: chapters/01-the-coin/images/story/many_seeds_wobble.png
+  chapter: 01-the-coin
+  kind: image
+  seed: 0
+  sha256: f664144cfebb18e4db40c58675e5a6020349f9a45309c0bb6a22b683f5061ef0
+  description: 'Story Ch.1: six 100-toss fair-coin runs; final fractions [''0.43'',
+    ''0.51'', ''0.58'', ''0.44'', ''0.46'', ''0.44'']'
+- path: chapters/01-the-coin/images/story/cherry_picked_window.png
+  chapter: 01-the-coin
+  kind: image
+  seed: 42
+  sha256: f103c29a109775f63d21f44a2dfed78c9d1968ee1839ca4e0290f450b1ad1882
+  description: 'Story Ch.1: cherry-picked 12-toss window with 10H 2T starting at toss
+    292, drawn from a fair 2000-run'
+- path: chapters/01-the-coin/images/story/two_coins_compared.png
+  chapter: 01-the-coin
+  kind: image
+  seed: 7
+  sha256: 14b58441513307d22459e7b637f6fbb87c3a2e17a1662a56d8b86e6fecbcbe2d
+  description: 'Story Ch.1: fair vs 0.55 coin, 10000 tosses each, final fractions
+    0.5017 vs 0.5476'
+- path: chapters/02-how-sure/images/story/ten_thousand_people.png
+  chapter: 02-how-sure
+  kind: image
+  seed: derived
+  sha256: 69fd4e8d668c55441dcd8cce4cf4be4c57baa851e16f236c554ed6ad83af419d
+  description: 'Story Ch.2: 10000-people raw-count histogram, annotated highlights
+    at 35/50/60/65 heads (9/796/108/9)'
+- path: chapters/02-how-sure/images/story/what_would_I_see_if_fair.png
+  chapter: 02-how-sure
+  kind: image
+  seed: derived
+  sha256: 41f9497189748479b9f14598770e44437187fd27a8b300432aa07c66f9f6d2b4
+  description: 'Story Ch.2: same shape with vertical axis as percentages'
+- path: chapters/02-how-sure/images/story/surprise_tails.png
+  chapter: 02-how-sure
+  kind: image
+  seed: derived
+  sha256: dba5d433d4ea32df6f0c6e535b02845baad314c50e0dfdb5ee5e74897fa4a17c
+  description: 'Story Ch.2: same histogram with two-sided 5% tails (cutoffs 39 and
+    61, tail mass 0.0352)'
+- path: chapters/02-how-sure/images/story/my_observations_on_the_chart.png
+  chapter: 02-how-sure
+  kind: image
+  seed: derived
+  sha256: 3ed8990cae37021d7d126faa1633aa476476441b78d217b634540ded4135d58a
+  description: 'Story Ch.2: histogram with observation pointers at 50, 55, 60, 65,
+    70'
+- path: chapters/02-how-sure/images/story/threshold_knob.png
+  chapter: 02-how-sure
+  kind: image
+  seed: derived
+  sha256: 47c6875174cc1ce5e1f1c2786ace6b5878f037fcba0c41e3081cdeedd7a14949
+  description: 'Story Ch.2: same histogram across 10%/5%/1% surprise thresholds'
+- path: chapters/02-how-sure/images/story/belief_after_60.png
+  chapter: 02-how-sure
+  kind: image
+  seed: derived
+  sha256: aeca05e53316a497b7b063ad1464a1497bb81e8f65671a53efa4be8cf350aa93
+  description: 'Story Ch.2: posterior on p after 60/100, Beta(61,41), 95% CI [0.502,
+    0.691]'
+- path: chapters/02-how-sure/images/story/fair_vs_biased_overlap.png
+  chapter: 02-how-sure
+  kind: image
+  seed: 202
+  sha256: a9a514ff8856675462b6435287653b11b2635d7de29da8e5edcee44314b22fc8
+  description: 'Story Ch.2: fair vs biased(0.55) coin distributions overlaid, 10000
+    runs each'
+- path: chapters/02-how-sure/images/story/hump_narrows_with_n.png
+  chapter: 02-how-sure
+  kind: image
+  seed: derived
+  sha256: 720c5447f6a2302e8da6bf651e25cbf3d61f20f4f1cae3caf7fe83a394dd8560
+  description: 'Story Ch.2: binomial(N, 0.5) hump narrows with N (50, 100, 500, 5000)
+    on fraction axis'
+- path: chapters/02-how-sure/images/story/how_often_I_get_fooled.png
+  chapter: 02-how-sure
+  kind: image
+  seed: 303
+  sha256: 77fc9e73a4d8fe7d3e280b58642a39c0ff9eb77d8d7c27db1882f7236e78b7b0
+  description: 'Story Ch.2: empirical rejection rate, truths [0.5, 0.52, 0.55, 0.6]
+    x sizes [50, 200, 1000], rates [[0.023, 0.035, 0.052], [0.04, 0.077, 0.216], [0.076,
+    0.278, 0.875], [0.232, 0.8, 1.0]]'
+- path: chapters/03-power/images/story/detection_grows_with_n.png
+  chapter: 03-power
+  kind: image
+  seed: derived
+  sha256: 504edbe5a126c190c46042490d1cbb3383152c4b1054be358923fdf4f7a51b10
+  description: 'Story Ch.3: power vs N for bias 0.55 (50% detection at N=383, 80%
+    at N=793, 95% at N=1290)'
+- path: chapters/03-power/images/story/required_n_vs_effect.png
+  chapter: 03-power
+  kind: image
+  seed: derived
+  sha256: 3cbac2a6b116ee4fd915f26366f83cf296388cfc44fbe78936ebbee5bfaa09f1
+  description: 'Story Ch.3: required N vs bias size at 80% detection ({0.51: 19620,
+    0.52: 4904, 0.55: 783, 0.6: 194, 0.7: 47})'
+- path: chapters/03-power/images/story/mde_curve.png
+  chapter: 03-power
+  kind: image
+  seed: derived
+  sha256: d747866feaf2472965748e0a5d827aab2a3a071147597f2cf67269c758e17af5
+  description: 'Story Ch.3: minimum detectable effect vs sample size at 80% detection'
+- path: chapters/03-power/images/story/detection_grows_linear.png
+  chapter: 03-power
+  kind: image
+  seed: derived
+  sha256: 6f8ae2e53f2403d0129b1aa3a23cfc504db1a49a81250120fe613737757035e4
+  description: 'Story Ch.3: detection rate vs N, linear x-axis (motivates log)'
+- path: chapters/03-power/images/story/detection_grows_log.png
+  chapter: 03-power
+  kind: image
+  seed: derived
+  sha256: 2c6bb9f0bec21caf5c3c09989b01bf01f3bb40b4eafc6150671cc51951fdacfb
+  description: 'Story Ch.3: detection rate vs N, log x-axis with annotated landmarks'
+- path: chapters/03-power/images/story/detection_at_different_biases.png
+  chapter: 03-power
+  kind: image
+  seed: derived
+  sha256: cbd467c40f3c86bd094780771855f4ab75f8cec3dbc088c61a28c90ceb4a15e0
+  description: 'Story Ch.3: power vs N for several biases, color-fixed (0.7 in focus,
+    0.51 in muted)'
+- path: chapters/03-power/images/story/required_n_linear.png
+  chapter: 03-power
+  kind: image
+  seed: derived
+  sha256: 2acf130926251a5e6add4aadc877bc3f03b55f393218ecf574562a8467cf17c3
+  description: 'Story Ch.3: required N vs effect, linear y (motivates log)'
+- path: chapters/03-power/images/story/required_n_log.png
+  chapter: 03-power
+  kind: image
+  seed: derived
+  sha256: fc1f4dec36a70190d8c04e9cce9a6697e811e7ba68082fdf1a1cb9440aca029e
+  description: 'Story Ch.3: required N vs effect, log y, annotated landmarks ({0.51:
+    19620, 0.52: 4904, 0.55: 783, 0.6: 194, 0.7: 47})'
+- path: chapters/03-power/images/story/mde_progression.png
+  chapter: 03-power
+  kind: image
+  seed: derived
+  sha256: 5bd45b2087c69b1eed190af2138e99a907e92ed210e928acf11a37516b1996f7
+  description: 'Story Ch.3: MDE in three panels (linear, x-log, both-log)'
+- path: chapters/03-power/images/story/three_knobs.png
+  chapter: 03-power
+  kind: image
+  seed: derived
+  sha256: 2c06b2250633bb4927d21b7699c0b73a6905b051ebc4528f0485f4d79c7c24c2
+  description: 'Story Ch.3: three-knobs triptych, per-panel y-axis, annotated 80%
+    intersections'
+- path: chapters/03-power/images/story/replication_distribution.png
+  chapter: 03-power
+  kind: image
+  seed: 424
+  sha256: 656aa86d8879c868e4fd32eb58fb87c28c14a5ddec0dbbc9f9e38d3e9638a527
+  description: 'Story Ch.3: replication distribution at bias=0.55, n=780, 10 reps
+    x 1000 groups, counts [0, 0, 0, 3, 8, 30, 92, 220, 294, 246, 107]'
+- path: chapters/03-power/images/story/freq_vs_bayes_decisions.png
+  chapter: 03-power
+  kind: image
+  seed: 7
+  sha256: 44db4d4c41b6a9f724488c4ca94bcb86ffacd1966781fc20235069004ae389fe
+  description: 'Story Ch.3: freq-vs-Bayes decision agreement, biases [0.50,0.52,0.55,0.60]
+    x sizes [50,200,1000]'
+- path: chapters/04-test-family/images/story/same_data_three_views.png
+  chapter: 04-test-family
+  kind: image
+  seed: derived
+  sha256: 5a8511a84c1602eb6ef7c2b794ee5fc7c02fc074b8fed7d25cf88ffad6e3b259
+  description: 'Story Ch.4: same observation through three procedures (6/10, 60/100,
+    600/1000): [(6, 10, np.float64(0.7539), 0.5271, 1.0), (60, 100, np.float64(0.0569),
+    0.0455, 0.2007), (600, 1000, np.float64(0.0), 0.0, 0.0)]'
+- path: chapters/04-test-family/images/story/bell_vs_honest_gap.png
+  chapter: 04-test-family
+  kind: image
+  seed: derived
+  sha256: 294200975ddf9c8391d351edcc124fa5f111f0f939eeda74920fd0a2b1f05321
+  description: 'Story Ch.4: gap between honest count and bell-curve approx as N grows'
+- path: chapters/04-test-family/images/story/boundary_breakdown.png
+  chapter: 04-test-family
+  kind: image
+  seed: derived
+  sha256: bd7a1d8cad16d647f1b737e17fe71e685347cd340a6c1b842c506ee69ebc5c6c
+  description: 'Story Ch.4: what each procedure does at boundary observations (0/10,
+    10/10, 1/1, etc.)'
+- path: chapters/04-test-family/images/story/belief_alongside.png
+  chapter: 04-test-family
+  kind: image
+  seed: derived
+  sha256: d76b025ad9aabd55ad5ad158a8d1144779d8e6da09be8eadfba46f9a8e1ba4d7
+  description: 'Story Ch.4: Bayesian view alongside, three observations of the same
+    fraction at different N'
+- path: chapters/05-confidence-intervals/images/story/intervals_at_observations.png
+  chapter: 05-confidence-intervals
+  kind: image
+  seed: derived
+  sha256: 791e6d8d819e9f86e7d3e5fcf5b9f8e2ae6fb80179cb294c5fbbb7369d95066a
+  description: 'Story Ch.5: four 95% interval procedures applied to 6/10, 60/100,
+    600/1000'
+- path: chapters/05-confidence-intervals/images/story/boundary_failures.png
+  chapter: 05-confidence-intervals
+  kind: image
+  seed: derived
+  sha256: af5f842abc2e69dbc6a78bf98d2b788392878b7d25f73419c85758b5a4e660f3
+  description: 'Story Ch.5: 0/10, 10/10, 1/100, 99/100 - where Wald collapses'
+- path: chapters/05-confidence-intervals/images/story/coverage_at_p_50.png
+  chapter: 05-confidence-intervals
+  kind: image
+  seed: 123
+  sha256: d8474c1deee630f5fad5fbbd76b458ac8e50369857a3ff02afe2ac258087733e
+  description: 'Story Ch.5: coverage at p=0.5 across N (5/10/20/50/100), 5000 trials
+    each'
+- path: chapters/05-confidence-intervals/images/story/coverage_vs_p.png
+  chapter: 05-confidence-intervals
+  kind: image
+  seed: 456
+  sha256: d61a38a8950b18151647185b3f96106071b6d25c62b806698c201cf99baa94c4
+  description: 'Story Ch.5: coverage vs true p at N=30, 3000 trials each, showing
+    Wald wiggle'
+- path: chapters/05-confidence-intervals/images/story/priors_argue.png
+  chapter: 05-confidence-intervals
+  kind: image
+  seed: derived
+  sha256: 46a7e683804edac7a5c3da59dbef8326d5ea84e3c4bed8c0fe6f1293d14f8e2a
+  description: 'Story Ch.5: priors argue, posteriors after 60/100'
+- path: chapters/06-bayesian/images/story/recipe_one_breath.png
+  chapter: 06-bayesian
+  kind: image
+  seed: derived
+  sha256: 93d1bccfc4316d4def95be23ccf2b400f3a813265f74d54259bb6e5ac7d2560a
+  description: 'Story Ch.6: prior * likelihood = posterior, three panels'
+- path: chapters/06-bayesian/images/story/priors_argue.png
+  chapter: 06-bayesian
+  kind: image
+  seed: derived
+  sha256: d8089259154bf30f67422f6908b01c76bc9e2d3ffcf3a574c60c507f0c425530
+  description: 'Story Ch.6: four priors, three observations, twelve posteriors'
+- path: chapters/06-bayesian/images/story/pymc_vs_closed_form.png
+  chapter: 06-bayesian
+  kind: image
+  seed: 606
+  sha256: 81e92a42823338894f22b9cb3fb94c0cf8a0585068053ffb2ca9f08a4c497b7c
+  description: 'Story Ch.6: computer-simulated samples vs closed-form Beta'
+- path: chapters/06-bayesian/images/story/posterior_predictive.png
+  chapter: 06-bayesian
+  kind: image
+  seed: 11
+  sha256: 7c4a6333378d699b5c646b4a08690d4033624440cda4944c0bd047deb6609674
+  description: 'Story Ch.6: posterior predictive after observing 33 heads in 50 tosses,
+    plus plug-in for comparison'
+- path: chapters/06-bayesian/images/story/belief_evolves_with_data.png
+  chapter: 06-bayesian
+  kind: image
+  seed: 7
+  sha256: 3efd03578bfa0bca48981aac33e46ff2bc725bb22b2227bed1fab6e1fcbf4074
+  description: 'Story Ch.6: belief curve narrowing across N=10/100/1000/10000 from
+    a 0.55 coin'
+- path: chapters/07-the-die/images/story/face_counts_wobble.png
+  chapter: 07-the-die
+  kind: image
+  seed: 72
+  sha256: 85e0370ddd2887d0b050b24461bb501f91e2af2cf917597b699b95e22345c577
+  description: 'Story Ch.7: face counts at N=60, 600, 6000 rolls of fair die'
+- path: chapters/07-the-die/images/story/multiple_comparisons_trap.png
+  chapter: 07-the-die
+  kind: image
+  seed: 72
+  sha256: 746d897f24c185608a699241f9cb5b9a4e3f071b4fe82e920516f5c29fb0daa0
+  description: 'Story Ch.7: multiple-comparisons trap, naive 0.264 vs Bonferroni 0.055'
+- path: chapters/07-the-die/images/story/dirichlet_posterior.png
+  chapter: 07-the-die
+  kind: image
+  seed: 72
+  sha256: f43a1c333ca286b1309bd34aef6fbbae7d927054754696152360dcb2d51a6122
+  description: 'Story Ch.7: Dirichlet posterior marginals after 600 rolls of loaded
+    die, counts [83, 70, 89, 92, 68, 198]'
+- path: chapters/07-the-die/images/story/chi_square_pvalues.png
+  chapter: 07-the-die
+  kind: image
+  seed: 72
+  sha256: 9b657e71773cad5968286de7b2bca60c5253c33a6288561e22e760b59eab986e
+  description: 'Story Ch.7: chi-square p-values vs N for fair and loaded die'
+- path: chapters/08-from-dice-to-ab/images/story/two_arm_at_two_sizes.png
+  chapter: 08-from-dice-to-ab
+  kind: image
+  seed: 8
+  sha256: 9bb18595f5f589b56d1e9b070989c77d47be5f599cca8a2ce64da8477e49014d
+  description: 'Story Ch.8: same effect at two sample sizes, frequentist + belief
+    curve'
+- path: chapters/08-from-dice-to-ab/images/story/continuous_outcome.png
+  chapter: 08-from-dice-to-ab
+  kind: image
+  seed: 80
+  sha256: c4af5bcb59e333686f6cd5625d24b26ff12b2c38ede40cb5efbf989d8d6fc22c
+  description: 'Story Ch.8: continuous outcome (revenue per user) two-arm test'
+- path: chapters/08-from-dice-to-ab/images/story/decision_rules.png
+  chapter: 08-from-dice-to-ab
+  kind: image
+  seed: 8
+  sha256: 796a6963d688c1666231dfbfb605f53d3089e6a3a18eb91c92bfd4234359a761
+  description: 'Story Ch.8: shipping decision rates, freq vs Bayes with MMU'
+- path: chapters/09-wine-and-the-small-print/images/story/external_validity.png
+  chapter: 09-wine-and-the-small-print
+  kind: image
+  seed: derived
+  sha256: 67f02db788ac7b3ccb1f1e80c697ab4749c8a23ac326eaf19b504b8d2c8c6c31
+  description: 'Story Ch.9: per-segment effects vs studied cohort'
+- path: chapters/09-wine-and-the-small-print/images/story/outcome_choice.png
+  chapter: 09-wine-and-the-small-print
+  kind: image
+  seed: derived
+  sha256: 94c4bdf6c2617b1517cd4af035e21d9612f529060216c7adaf94ef38e95b23a8
+  description: 'Story Ch.9: three outcomes, three verdicts'
+- path: chapters/09-wine-and-the-small-print/images/story/side_effects_tradeoff.png
+  chapter: 09-wine-and-the-small-print
+  kind: image
+  seed: derived
+  sha256: 103159fd729cbe563b3202c7dcc51815972c9da534df73b9071fbf2b677b0d56
+  description: 'Story Ch.9: target vs harm + utility weighting'
+- path: chapters/10-industry-experimentation/images/story/clickbait_curves.png
+  chapter: 10-industry-experimentation
+  kind: image
+  seed: derived
+  sha256: 990d9b02baf81ce3bd4cf83ef320b66be768b4f1f13012e85d2b02d7ffbea023
+  description: 'Story Ch.10: clickbait click lift vs retention loss curves'
+- path: chapters/10-industry-experimentation/images/story/aggregate_hides_cohorts.png
+  chapter: 10-industry-experimentation
+  kind: image
+  seed: derived
+  sha256: 09a062d59a2030fa5ca89d368bc9010c1ae35df8281d23a964fe4e35dd5cdd2f
+  description: 'Story Ch.10: aggregate hides cohort-level pattern'
+- path: chapters/10-industry-experimentation/images/story/guardrail_multiplicity.png
+  chapter: 10-industry-experimentation
+  kind: image
+  seed: 0
+  sha256: 8ee0a2fcae164d2713523f8d58d27e3c31eb4c33a32f0590db627674d302332c
+  description: 'Story Ch.10: guardrail false-alarm rate as metric count grows'
+- path: chapters/11-segmentation/images/story/demographic_vs_behavioral.png
+  chapter: 11-segmentation
+  kind: image
+  seed: derived
+  sha256: bba9188721cec4cc8b77a1914724beb9f7905f51a17d04d1aaafb903e27b0347
+  description: 'Story Ch.11: demographic (country) vs behavioural segments'
+- path: chapters/11-segmentation/images/story/segment_signatures.png
+  chapter: 11-segmentation
+  kind: image
+  seed: 0
+  sha256: 10c8686378a2e7b83396d84209e1a24f0a91583ab37fdbf4bace81ed4f8944d5
+  description: 'Story Ch.11: behavioral segment signatures across three axes'
+- path: chapters/11-segmentation/images/story/segmentation_choices.png
+  chapter: 11-segmentation
+  kind: image
+  seed: derived
+  sha256: 817d5dba19ce4e6e3d174eee5020fc2a3040a85e2aa5245b4f99347c8b1e41ee
+  description: 'Story Ch.11: three segmentation schemes, three stories'
+- path: chapters/12-simpsons-paradox/images/story/paradox_construction.png
+  chapter: 12-simpsons-paradox
+  kind: image
+  seed: derived
+  sha256: d4faa34363efc2346fa17924a13e6a5f908da788c703993209721e6d952b444f
+  description: 'Story Ch.12: paradox construction, segment vs aggregate views'
+- path: chapters/12-simpsons-paradox/images/story/paradox_sweep.png
+  chapter: 12-simpsons-paradox
+  kind: image
+  seed: derived
+  sha256: 88a9d15a5bdce44e9840b7ccc4d29b37cec9ac3dd94fda94d0daa776d79673a7
+  description: 'Story Ch.12: aggregate effect as a function of assignment imbalance'
+- path: chapters/12-simpsons-paradox/images/story/berkeley_style.png
+  chapter: 12-simpsons-paradox
+  kind: image
+  seed: derived
+  sha256: 696dab266688dca539fc7c1dd78988c9dc791c6bbd5d50d15971a4cb61d5facf
+  description: 'Story Ch.12: Berkeley-style admissions example'
+- path: chapters/13-metric-tree/images/story/predictivity.png
+  chapter: 13-metric-tree
+  kind: image
+  seed: 0
+  sha256: c1a8ed163df6558a24b3d2bcfdf21a842a530f2bc56e06f9c9449df938c5bdec
+  description: 'Story Ch.13: short-term vs long-term metric scatter'
+- path: chapters/13-metric-tree/images/story/proxy_quality.png
+  chapter: 13-metric-tree
+  kind: image
+  seed: 1
+  sha256: 8a73f815e0a457fab5a9b54d418db50eca845430c117d348689b26fe5ca71a9b
+  description: 'Story Ch.13: clean vs noisy vs lying proxy'
