@@ -5,13 +5,23 @@
 
 # How to use this repo
 
-- Read the chapters in order under [chapters/](chapters/). Each chapter has:
+This repo has two parallel tracks:
+
+**Technical track** -- the full inquiry-based narrative with code, notebooks, tests, and PyMC models. Each chapter has:
   - `chapter.log` -- the conversational narrative in loglog format
   - `chapter.md` -- rendered markdown (what GitHub displays)
   - `notebook.ipynb` -- runnable companion (uses the `expkit` library)
-  - `data/` -- generated samples and PyMC traces, all seeded
-  - `images/` -- pre-rendered figures embedded in `chapter.md`
   - `generate.py` -- deterministic regeneration script
+
+**Story track** -- a parallel first-person narrative for every chapter, aimed at any curious reader, no statistics background required. Each chapter has:
+  - `story.md` -- flowing prose, "I" voice, real-world anchors
+  - `story_generate.py` -- deterministic regeneration script for story figures
+  - `images/story/` -- story-styled figures (modern warm palette, friend-of-the-reader tone)
+  - `play/` -- standalone Python simulators, one per key concept, with configurable parameters at the top (designed to become interactive sidebars)
+
+The story track reference files live in `chapters/`:
+  - `STORY_LEARNINGS.md` -- calibration notes and voice rules (12 extracted intents from iterative user feedback)
+  - `STORY_EXAMPLES.md` -- bank of 30 real-world examples with concept-to-example index
 - Run the library locally:
   - ```
   - python -m venv .venv

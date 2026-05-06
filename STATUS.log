@@ -35,9 +35,16 @@
         - Cat 2 polish shipped: four new playground widgets (Ch.2 p-value visualizer, Ch.3 power slider, Ch.5 CI sweeper, Ch.14 novelty triple-view) bringing the live count to 8. Companion exercises.log + exercises.md per chapter (5-7 inquiry-shaped exercises each, two-lens, citing specific expkit functions). New library modules: power.continuous, power.ratio, inference.multitest (bonferroni / holm / benjamini_hochberg), inference.cmh. Two new appendices: A1 (MCMC diagnostics: healthy chains, the funnel, R-hat/ESS curves) and A2 (hierarchical Bayesian deep-dive: no-pooling vs complete-pooling vs partial-pooling, tau is learned, prior on tau).
         - Cat 3 infrastructure shipped: LICENSE (MIT), CITATION.cff, scripts/install_pre_commit.sh + Makefile + CONTRIBUTING wiring, .github/workflows/ci.yml notebooks job that registers the expkit ipykernel and executes every chapters/*/notebook.ipynb end-to-end, .github/workflows/nightly.yml with full pytest + manifest-reproducibility check.
         - 153 fast pytest tests passing (was 116) plus 1 slow PyMC test. Privacy guard remains clean across all commits.
+    - [x] Story track (first-draft complete)
+        - All 21 story.md files drafted (Ch.1-19, A1, A2). "I" voice, real-world stage-setting, first-person inquiry, explicit real-stakes connections per chapter.
+        - story_generate.py + images/story/ for all 21 chapters. Modern friendly chart style (expkit.plot.story).
+        - play/ simulators for all 21 chapters. Standalone Python scripts with configurable parameters, designed to become interactive sidebars.
+        - STORY_LEARNINGS.md: calibration doc with 12 extracted intents and mechanical rules. STORY_EXAMPLES.md: bank of 30 real-world examples with concept-to-example index.
+        - Ch.1-3 calibrated through multiple user-feedback rounds. Ch.4-21 are solid first drafts applying all STORY_LEARNINGS rules.
     - [] Production Ready
         - Remaining work for Production:
-            - Cat 4 reader-eye narrative pass (deliberately deferred until Cat 1-3 finished; user will direct when this kicks off).
+            - Cat 4 reader-eye narrative pass on technical chapters (deliberately deferred until Cat 1-3 finished; user will direct when this kicks off).
+            - Story track Ch.4-21 multi-round calibration (user iteration, similar to Ch.1-3 process).
     - [] Maintenance Mode
         - Future enhancements queued:
             - Interactive chart toggles

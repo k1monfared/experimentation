@@ -1110,3 +1110,77 @@ artifacts:
   seed: 1
   sha256: 8a73f815e0a457fab5a9b54d418db50eca845430c117d348689b26fe5ca71a9b
   description: 'Story Ch.13: clean vs noisy vs lying proxy'
+- path: chapters/14-novelty/images/story/novelty_lifecycle.png
+  chapter: 14-novelty
+  kind: image
+  seed: derived
+  sha256: e0c7b8f45360b3d4009a71d185adde1dc5095f2229237763fc3dd8d77f6942d2
+  description: 'Story Ch.14: novelty lifecycle curves'
+- path: chapters/14-novelty/images/story/three_measurement_schemes.png
+  chapter: 14-novelty
+  kind: image
+  seed: 14
+  sha256: 990c695456e95005edaf186cd6b6b48c7b51ccfb30848874437f405f60ff864a
+  description: 'Story Ch.14: three measurement schemes on same event log'
+- path: chapters/15-dilution/images/story/itt_vs_per_protocol.png
+  chapter: 15-dilution
+  kind: image
+  seed: 15
+  sha256: 91beea882aea9d2e62ee19196b0a3d78d043de00eeaccfefcf4013dab82075ac
+  description: 'Story Ch.15: ITT vs per-protocol, compliance 70%, values {''itt'':
+    0.084, ''pp'': 0.1457, ''true'': 0.1}'
+- path: chapters/15-dilution/images/story/compliance_sweep.png
+  chapter: 15-dilution
+  kind: image
+  seed: 15
+  sha256: d79398ed489656f261fd8d498f70e14bf3523b5bc666bee95c661471197328ac
+  description: 'Story Ch.15: ITT effect vs compliance rate'
+- path: chapters/16-metric-quality/images/story/cuped_variance_reduction.png
+  chapter: 16-metric-quality
+  kind: image
+  seed: 16
+  sha256: e741f875c60eba2261b62523c5f3322ae7b841127e5260ed9494f7e62acbb31f
+  description: 'Story Ch.16: CUPED variance reduction, theta=0.9416, se_raw=0.3542,
+    se_cuped=0.2601'
+- path: chapters/16-metric-quality/images/story/aa_test_distribution.png
+  chapter: 16-metric-quality
+  kind: image
+  seed: 16
+  sha256: cd63b33b3963b1ad9c30ae52c765ca2edf8d982a58ba780f43b3ae7ba100878f
+  description: 'Story Ch.16: A/A test null distribution'
+- path: chapters/17-attribution/images/story/attribution_comparison.png
+  chapter: 17-attribution
+  kind: image
+  seed: derived
+  sha256: e6c3057494e5653d9610a60323c0e59fb77186efa06519a38cd04ff44087f113
+  description: 'Story Ch.17: five attribution models on same path'
+- path: chapters/17-attribution/images/story/holdout_vs_attributed.png
+  chapter: 17-attribution
+  kind: image
+  seed: derived
+  sha256: 7fb6453aedae8216aec4577c595eba0891b9c1be4e8f8f391a9a71d6dab30385
+  description: 'Story Ch.17: last-touch vs holdout causal estimate'
+- path: chapters/18-frequentist-vs-bayesian-shipping/images/story/framework_agreement.png
+  chapter: 18-frequentist-vs-bayesian-shipping
+  kind: image
+  seed: 18
+  sha256: 297fc8a63fd1743b42ae6f1d70ca7d70de5c1ed3ca3aa1bf5bd50b8f45da532e
+  description: 'Story Ch.18: freq vs Bayes shipping rates and agreement'
+- path: chapters/19-causal-handoff/images/story/selection_bias.png
+  chapter: 19-causal-handoff
+  kind: image
+  seed: 19
+  sha256: f1cab9ead36c9e077f7acdcb92498f8bd879aefead0b1ebd4a8e0d3d9f795441
+  description: 'Story Ch.19: selection bias demo, naive=1.171, true=0.3'
+- path: chapters/A1-mcmc-diagnostics/images/story/good_vs_bad_trace.png
+  chapter: A1-mcmc-diagnostics
+  kind: image
+  seed: 606
+  sha256: 75f036880921f224e5023a293b481fe257a4b37f5e6b9c36203be122b380411f
+  description: 'Story A1: healthy vs unhealthy MCMC trace'
+- path: chapters/A2-hierarchical/images/story/shrinkage_illustration.png
+  chapter: A2-hierarchical
+  kind: image
+  seed: 42
+  sha256: f516f0ba5a1a8249a2ed813073eede58dd1170f51598c43a7b646d0cae0970cc
+  description: 'Story A2: hierarchical shrinkage by segment size'
