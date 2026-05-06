@@ -170,7 +170,6 @@ def render_decision_rules():
 
 def main():
     ensure_dirs()
-    manifest = load_manifest()
     paths = []
     paths.append((render_two_arm_at_two_sizes(), 8,
                   "Story Ch.8: same effect at two sample sizes, frequentist + belief curve"))
@@ -178,10 +177,6 @@ def main():
                   "Story Ch.8: continuous outcome (revenue per user) two-arm test"))
     paths.append((render_decision_rules(), 8,
                   "Story Ch.8: shipping decision rates, freq vs Bayes with MMU"))
-    for path, seed, desc in paths:
-        add_artifact(manifest, path=path, kind="image", seed=seed,
-                     sha256=_sha256_file(path), description=desc)
-    save_manifest(manifest)
     print(f"Story Ch.8: wrote {len(paths)} figures")
 
 

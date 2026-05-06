@@ -201,7 +201,6 @@ def render_two_coins_compared():
 
 def main():
     ensure_dirs()
-    manifest = load_manifest()
 
     paths = []
     paths.append((render_first_three_tosses(), 1, "Story Ch.1: HHH first three tosses (illustrative)"))
@@ -217,9 +216,6 @@ def main():
     p_two, ff, fh = render_two_coins_compared()
     paths.append((p_two, 7, f"Story Ch.1: fair vs 0.55 coin, 10000 tosses each, final fractions {ff:.4f} vs {fh:.4f}"))
 
-    for path, seed, desc in paths:
-        add_artifact(manifest, path=path, kind="image", seed=seed, sha256=_sha256_file(path), description=desc)
-    save_manifest(manifest)
     print(f"Story Ch.1: wrote {len(paths)} story figures")
 
 

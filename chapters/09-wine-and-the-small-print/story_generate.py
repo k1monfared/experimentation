@@ -138,7 +138,6 @@ def render_side_effects_tradeoff():
 
 def main():
     ensure_dirs()
-    manifest = load_manifest()
     paths = []
     paths.append((render_external_validity(), "derived",
                   "Story Ch.9: per-segment effects vs studied cohort"))
@@ -146,10 +145,6 @@ def main():
                   "Story Ch.9: three outcomes, three verdicts"))
     paths.append((render_side_effects_tradeoff(), "derived",
                   "Story Ch.9: target vs harm + utility weighting"))
-    for path, seed, desc in paths:
-        add_artifact(manifest, path=path, kind="image", seed=seed,
-                     sha256=_sha256_file(path), description=desc)
-    save_manifest(manifest)
     print(f"Story Ch.9: wrote {len(paths)} figures")
 
 

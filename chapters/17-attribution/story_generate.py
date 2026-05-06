@@ -79,12 +79,8 @@ def render_holdout_vs_attributed():
 
 def main():
     ensure_dirs()
-    manifest = load_manifest()
     paths = [(render_attribution_comparison(), "derived", "Story Ch.17: five attribution models on same path"),
              (render_holdout_vs_attributed(), "derived", "Story Ch.17: last-touch vs holdout causal estimate")]
-    for path, seed, desc in paths:
-        add_artifact(manifest, path=path, kind="image", seed=seed, sha256=_sha256_file(path), description=desc)
-    save_manifest(manifest)
     print(f"Story Ch.17: wrote {len(paths)} figures")
 
 

@@ -90,13 +90,9 @@ def render_compliance_sweep():
 
 def main():
     ensure_dirs()
-    manifest = load_manifest()
     p1, nums = render_itt_vs_per_protocol()
     paths = [(p1, 15, f"Story Ch.15: ITT vs per-protocol, compliance 70%, values {nums}"),
              (render_compliance_sweep(), 15, "Story Ch.15: ITT effect vs compliance rate")]
-    for path, seed, desc in paths:
-        add_artifact(manifest, path=path, kind="image", seed=seed, sha256=_sha256_file(path), description=desc)
-    save_manifest(manifest)
     print(f"Story Ch.15: wrote {len(paths)} figures")
 
 

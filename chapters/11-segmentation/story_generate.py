@@ -118,7 +118,6 @@ def render_segmentation_choices():
 
 def main():
     ensure_dirs()
-    manifest = load_manifest()
     paths = []
     paths.append((render_demographic_vs_behavioral(), "derived",
                   "Story Ch.11: demographic (country) vs behavioural segments"))
@@ -126,9 +125,6 @@ def main():
                   "Story Ch.11: behavioral segment signatures across three axes"))
     paths.append((render_segmentation_choices(), "derived",
                   "Story Ch.11: three segmentation schemes, three stories"))
-    for path, seed, desc in paths:
-        add_artifact(manifest, path=path, kind="image", seed=seed, sha256=_sha256_file(path), description=desc)
-    save_manifest(manifest)
     print(f"Story Ch.11: wrote {len(paths)} figures")
 
 

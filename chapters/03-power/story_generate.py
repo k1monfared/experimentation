@@ -425,7 +425,6 @@ def render_freq_vs_bayes_decisions():
 
 def main():
     ensure_dirs()
-    manifest = load_manifest()
     paths = []
     paths.append((render_detection_grows_linear(), "derived",
                   "Story Ch.3: detection rate vs N, linear x-axis (motivates log)"))
@@ -449,10 +448,6 @@ def main():
     paths.append((p_fb, 7,
                   f"Story Ch.3: freq-vs-Bayes decision agreement, biases [0.50,0.52,0.55,0.60] x sizes [50,200,1000]"))
 
-    for path, seed, desc in paths:
-        add_artifact(manifest, path=path, kind="image", seed=seed,
-                     sha256=_sha256_file(path), description=desc)
-    save_manifest(manifest)
     print(f"Story Ch.3: wrote {len(paths)} figures")
 
 

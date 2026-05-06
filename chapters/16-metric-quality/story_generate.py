@@ -92,13 +92,9 @@ def render_aa_test_distribution():
 
 def main():
     ensure_dirs()
-    manifest = load_manifest()
     p1, nums = render_cuped_variance_reduction()
     paths = [(p1, 16, f"Story Ch.16: CUPED variance reduction, theta={nums['theta']}, se_raw={nums['se_raw']}, se_cuped={nums['se_cuped']}"),
              (render_aa_test_distribution(), 16, "Story Ch.16: A/A test null distribution")]
-    for path, seed, desc in paths:
-        add_artifact(manifest, path=path, kind="image", seed=seed, sha256=_sha256_file(path), description=desc)
-    save_manifest(manifest)
     print(f"Story Ch.16: wrote {len(paths)} figures")
 
 

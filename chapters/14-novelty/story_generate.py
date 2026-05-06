@@ -94,12 +94,8 @@ def render_three_measurement_schemes():
 
 def main():
     ensure_dirs()
-    manifest = load_manifest()
     paths = [(render_novelty_lifecycle(), "derived", "Story Ch.14: novelty lifecycle curves"),
              (render_three_measurement_schemes(), 14, "Story Ch.14: three measurement schemes on same event log")]
-    for path, seed, desc in paths:
-        add_artifact(manifest, path=path, kind="image", seed=seed, sha256=_sha256_file(path), description=desc)
-    save_manifest(manifest)
     print(f"Story Ch.14: wrote {len(paths)} figures")
 
 

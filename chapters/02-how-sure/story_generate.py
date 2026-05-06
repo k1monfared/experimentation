@@ -345,7 +345,6 @@ def render_how_often_I_get_fooled():
 
 def main():
     ensure_dirs()
-    manifest = load_manifest()
     paths = []
     p_raw, raw_counts = render_ten_thousand_people_raw()
     paths.append((p_raw, "derived",
@@ -371,10 +370,6 @@ def main():
     paths.append((p_fooled, 303,
                   f"Story Ch.2: empirical rejection rate, truths {[0.50,0.52,0.55,0.60]} x sizes {[50,200,1000]}, rates {rates.round(3).tolist()}"))
 
-    for path, seed, desc in paths:
-        add_artifact(manifest, path=path, kind="image", seed=seed,
-                     sha256=_sha256_file(path), description=desc)
-    save_manifest(manifest)
     print(f"Story Ch.2: wrote {len(paths)} figures")
 
 

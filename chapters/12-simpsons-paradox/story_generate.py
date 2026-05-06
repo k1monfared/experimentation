@@ -148,7 +148,6 @@ def render_berkeley_style():
 
 def main():
     ensure_dirs()
-    manifest = load_manifest()
     paths = []
     paths.append((render_paradox_construction(), "derived",
                   "Story Ch.12: paradox construction, segment vs aggregate views"))
@@ -156,9 +155,6 @@ def main():
                   "Story Ch.12: aggregate effect as a function of assignment imbalance"))
     paths.append((render_berkeley_style(), "derived",
                   "Story Ch.12: Berkeley-style admissions example"))
-    for path, seed, desc in paths:
-        add_artifact(manifest, path=path, kind="image", seed=seed, sha256=_sha256_file(path), description=desc)
-    save_manifest(manifest)
     print(f"Story Ch.12: wrote {len(paths)} figures")
 
 

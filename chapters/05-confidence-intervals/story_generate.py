@@ -255,7 +255,6 @@ def render_priors_argue():
 
 def main():
     ensure_dirs()
-    manifest = load_manifest()
     paths = []
     paths.append((render_intervals_at_observations(), "derived",
                   "Story Ch.5: four 95% interval procedures applied to 6/10, 60/100, 600/1000"))
@@ -268,10 +267,6 @@ def main():
                   "Story Ch.5: coverage vs true p at N=30, 3000 trials each, showing Wald wiggle"))
     paths.append((render_priors_argue(), "derived",
                   "Story Ch.5: priors argue, posteriors after 60/100"))
-    for path, seed, desc in paths:
-        add_artifact(manifest, path=path, kind="image", seed=seed,
-                     sha256=_sha256_file(path), description=desc)
-    save_manifest(manifest)
     print(f"Story Ch.5: wrote {len(paths)} figures")
 
 

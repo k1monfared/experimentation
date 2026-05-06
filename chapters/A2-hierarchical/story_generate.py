@@ -65,11 +65,7 @@ def render_shrinkage_illustration():
 
 def main():
     ensure_dirs()
-    manifest = load_manifest()
     paths = [(render_shrinkage_illustration(), 42, "Story A2: hierarchical shrinkage by segment size")]
-    for path, seed, desc in paths:
-        add_artifact(manifest, path=path, kind="image", seed=seed, sha256=_sha256_file(path), description=desc)
-    save_manifest(manifest)
     print(f"Story A2: wrote {len(paths)} figures")
 
 

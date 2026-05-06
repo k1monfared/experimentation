@@ -66,11 +66,7 @@ def render_good_vs_bad_trace():
 
 def main():
     ensure_dirs()
-    manifest = load_manifest()
     paths = [(render_good_vs_bad_trace(), 606, "Story A1: healthy vs unhealthy MCMC trace")]
-    for path, seed, desc in paths:
-        add_artifact(manifest, path=path, kind="image", seed=seed, sha256=_sha256_file(path), description=desc)
-    save_manifest(manifest)
     print(f"Story A1: wrote {len(paths)} figures")
 
 

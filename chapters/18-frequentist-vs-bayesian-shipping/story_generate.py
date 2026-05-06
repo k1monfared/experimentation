@@ -74,11 +74,7 @@ def render_framework_agreement():
 
 def main():
     ensure_dirs()
-    manifest = load_manifest()
     paths = [(render_framework_agreement(), 18, "Story Ch.18: freq vs Bayes shipping rates and agreement")]
-    for path, seed, desc in paths:
-        add_artifact(manifest, path=path, kind="image", seed=seed, sha256=_sha256_file(path), description=desc)
-    save_manifest(manifest)
     print(f"Story Ch.18: wrote {len(paths)} figures")
 
 

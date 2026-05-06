@@ -214,7 +214,6 @@ def render_belief_evolves_with_data():
 
 def main():
     ensure_dirs()
-    manifest = load_manifest()
     paths = []
     paths.append((render_recipe_one_breath(), "derived",
                   "Story Ch.6: prior * likelihood = posterior, three panels"))
@@ -227,10 +226,6 @@ def main():
                   f"Story Ch.6: posterior predictive after observing {k} heads in 50 tosses, plus plug-in for comparison"))
     paths.append((render_belief_evolves_with_data(), 7,
                   "Story Ch.6: belief curve narrowing across N=10/100/1000/10000 from a 0.55 coin"))
-    for path, seed, desc in paths:
-        add_artifact(manifest, path=path, kind="image", seed=seed,
-                     sha256=_sha256_file(path), description=desc)
-    save_manifest(manifest)
     print(f"Story Ch.6: wrote {len(paths)} figures")
 
 

@@ -67,12 +67,8 @@ def render_selection_bias():
 
 def main():
     ensure_dirs()
-    manifest = load_manifest()
     p1, nums = render_selection_bias()
     paths = [(p1, 19, f"Story Ch.19: selection bias demo, naive={nums['naive']}, true={nums['true']}")]
-    for path, seed, desc in paths:
-        add_artifact(manifest, path=path, kind="image", seed=seed, sha256=_sha256_file(path), description=desc)
-    save_manifest(manifest)
     print(f"Story Ch.19: wrote {len(paths)} figures")
 
 

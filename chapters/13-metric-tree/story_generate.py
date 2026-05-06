@@ -76,13 +76,9 @@ def render_proxy_quality():
 
 def main():
     ensure_dirs()
-    manifest = load_manifest()
     paths = []
     paths.append((render_predictivity(), 0, "Story Ch.13: short-term vs long-term metric scatter"))
     paths.append((render_proxy_quality(), 1, "Story Ch.13: clean vs noisy vs lying proxy"))
-    for path, seed, desc in paths:
-        add_artifact(manifest, path=path, kind="image", seed=seed, sha256=_sha256_file(path), description=desc)
-    save_manifest(manifest)
     print(f"Story Ch.13: wrote {len(paths)} figures")
 
 

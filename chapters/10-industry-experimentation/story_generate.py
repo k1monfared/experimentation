@@ -108,7 +108,6 @@ def render_guardrail_multiplicity():
 
 def main():
     ensure_dirs()
-    manifest = load_manifest()
     paths = []
     paths.append((render_clickbait_curves(), "derived",
                   "Story Ch.10: clickbait click lift vs retention loss curves"))
@@ -116,9 +115,6 @@ def main():
                   "Story Ch.10: aggregate hides cohort-level pattern"))
     paths.append((render_guardrail_multiplicity(), 0,
                   "Story Ch.10: guardrail false-alarm rate as metric count grows"))
-    for path, seed, desc in paths:
-        add_artifact(manifest, path=path, kind="image", seed=seed, sha256=_sha256_file(path), description=desc)
-    save_manifest(manifest)
     print(f"Story Ch.10: wrote {len(paths)} figures")
 
 

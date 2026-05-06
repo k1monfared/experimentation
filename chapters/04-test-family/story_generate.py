@@ -209,7 +209,6 @@ def render_belief_alongside():
 
 def main():
     ensure_dirs()
-    manifest = load_manifest()
     paths = []
     p_three, vals = render_same_data_three_views()
     paths.append((p_three, "derived",
@@ -221,10 +220,6 @@ def main():
                   "Story Ch.4: what each procedure does at boundary observations (0/10, 10/10, 1/1, etc.)"))
     paths.append((render_belief_alongside(), "derived",
                   "Story Ch.4: Bayesian view alongside, three observations of the same fraction at different N"))
-    for path, seed, desc in paths:
-        add_artifact(manifest, path=path, kind="image", seed=seed,
-                     sha256=_sha256_file(path), description=desc)
-    save_manifest(manifest)
     print(f"Story Ch.4: wrote {len(paths)} figures")
 
 

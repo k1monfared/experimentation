@@ -186,7 +186,6 @@ def render_chi_square_pvalues():
 
 def main():
     ensure_dirs()
-    manifest = load_manifest()
     paths = []
     paths.append((render_face_counts_wobble(), 72,
                   "Story Ch.7: face counts at N=60, 600, 6000 rolls of fair die"))
@@ -198,10 +197,6 @@ def main():
                   f"Story Ch.7: Dirichlet posterior marginals after 600 rolls of loaded die, counts {dir_counts}"))
     paths.append((render_chi_square_pvalues(), 72,
                   "Story Ch.7: chi-square p-values vs N for fair and loaded die"))
-    for path, seed, desc in paths:
-        add_artifact(manifest, path=path, kind="image", seed=seed,
-                     sha256=_sha256_file(path), description=desc)
-    save_manifest(manifest)
     print(f"Story Ch.7: wrote {len(paths)} figures")
 
 
