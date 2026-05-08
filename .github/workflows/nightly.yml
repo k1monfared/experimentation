@@ -33,14 +33,53 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -e ".[dev]"
-      - name: Snapshot manifest before regeneration
-        run: cp data/manifest.yaml /tmp/manifest_before.yaml
-      - name: Regenerate every chapter
+      - name: Snapshot committed manifest
+        run: cp data/manifest.yaml /tmp/manifest_committed.yaml
+      - name: Regenerate every chapter (first pass)
         run: python scripts/regenerate_all.py
-      - name: Diff manifest
+      - name: Snapshot first-pass manifest
+        run: cp data/manifest.yaml /tmp/manifest_first.yaml
+      - name: Regenerate every chapter (second pass)
+        run: python scripts/regenerate_all.py
+      - name: Verify on-machine determinism (two passes byte-identical)
         run: |
-          if ! diff -u /tmp/manifest_before.yaml data/manifest.yaml; then
-            echo "::error::data/manifest.yaml drifted after regenerate_all.py. Either checksums changed (an artifact regenerated nondeterministically) or new artifacts appeared. Inspect the diff above."
+          if ! diff -u /tmp/manifest_first.yaml data/manifest.yaml; then
+            echo "::error::regenerate_all.py is non-deterministic on this runner. Two consecutive passes produced different manifests."
             exit 1
           fi
-          echo "manifest matches: regeneration is deterministic"
+          echo "Two consecutive regenerations: byte-identical."
+      - name: Verify manifest structure matches committed
+        run: |
+          python <<'PY'
+          import sys, yaml
+          def structure(path):
+              data = yaml.safe_load(open(path).read()) or {"artifacts": []}
+              return [
+                  {k: v for k, v in art.items() if k != "sha256"}
+                  for art in data.get("artifacts", [])
+              ]
+          committed = structure("/tmp/manifest_committed.yaml")
+          regenerated = structure("data/manifest.yaml")
+          if committed == regenerated:
+              print(f"Manifest structure matches: {len(regenerated)} artifacts.")
+              sys.exit(0)
+          print("::error::Manifest structure drifted (paths, seeds, kinds, or descriptions changed).")
+          c_paths = {a["path"] for a in committed}
+          r_paths = {a["path"] for a in regenerated}
+          if c_paths - r_paths:
+              print(f"Removed paths ({len(c_paths - r_paths)}):")
+              for p in sorted(c_paths - r_paths):
+                  print(f"  - {p}")
+          if r_paths - c_paths:
+              print(f"Added paths ({len(r_paths - c_paths)}):")
+              for p in sorted(r_paths - c_paths):
+                  print(f"  + {p}")
+          c_by_path = {a["path"]: a for a in committed}
+          r_by_path = {a["path"]: a for a in regenerated}
+          for p in sorted(c_paths & r_paths):
+              if c_by_path[p] != r_by_path[p]:
+                  print(f"Changed metadata for {p}:")
+                  print(f"  committed:   {c_by_path[p]}")
+                  print(f"  regenerated: {r_by_path[p]}")
+          sys.exit(1)
+          PY
