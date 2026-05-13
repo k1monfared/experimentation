@@ -34,6 +34,8 @@ My instinct, immediately, is that this coin is biased. Even though I just spent 
 
 The pushback on the instinct is the same as ever. Three heads in a row is one out of eight equally likely outcomes if the coin is fair. One in eight things happen all the time. The bus arrives the same minute I do. An old friend texts out of the blue. I check the time and it is exactly 3:33. So the data is consistent with this coin being fair. It is also consistent with this coin being slightly heavy on heads. With three tosses, those two stories cannot be told apart. The data is too thin.
 
+There is a slightly different question I could also ask. Not "would a fair coin do this?" but "given that this coin just did this, what should I now believe about it?" If I started out with no idea whether the coin was heavy on heads, heavy on tails, or anywhere in between, three heads is not enough to pin anything down, but it does tilt me. My best guess for the coin's long-run fraction of heads after HHH is somewhere around eighty percent, and most of my belief is piled up on the heads-heavy side. That sounds bolder than it really is. Three tosses leave a lot of room. If I had started out already skeptical, convinced the coin was probably fair, three heads would barely move me at all. Same data, different starting point, different conclusion. I will come back to this.
+
 So I do the only thing the data is asking for, which is keep flipping.
 
 Seven more tosses. T, T, H, T, H, T, T. Now I have ten tosses total, and five of them are heads.
@@ -41,6 +43,8 @@ Seven more tosses. T, T, H, T, H, T, T. Now I have ten tosses total, and five of
 ![](images/story/ten_tosses.png)
 
 There is the strip of ten. The first three are uniformly red, the rest are mixed. I feel a small, slightly silly relief. Whatever was going on at the start, the coin has steadied. Five heads in ten is closer to "what I expected." Whatever that means.
+
+Both of the questions I just set up soften at ten tosses in the same way. "Would a fair coin do something at least this lopsided?" Easily, most of the time actually. "Given ten tosses, what should I now believe about this coin?" Something between roughly-fair and leaning-toward-heads, with a lot of width around it. Neither view is willing to commit. They both shrug in almost the same tone of voice.
 
 But this is precisely where I get suspicious of myself. I am doing something to the data without being honest about it. Imagine for a moment I had not stopped to look after the first three tosses. I had just done the ten in one go and ended up with five heads, no opening streak to fixate on, just five and five mixed in whatever order. Would I have felt anything? Probably not. I would have shrugged and moved on. So really my reaction is: the coin is weird if it does something that surprises me along the way, and unweird if it does not. The data is the same. Only my pacing through it has changed. That is not a serious procedure for deciding anything.
 
@@ -77,6 +81,8 @@ In the third, one thousand tosses. The line has flattened further. I can almost 
 In the fourth, ten thousand tosses, the line is essentially indistinguishable from horizontal, and it is sitting at very close to one half. Forty-nine point nine percent at the last toss, more or less.
 
 So the friend's claim has a picture. The fraction is settling. Slowly, but settling. I did not have to assume anything about the coin to see it. I only had to be patient.
+
+The other way of looking at the same data tightens at the same pace. If I take my belief about the coin's long-run fraction and let each toss nudge it, the cloud of plausible values starts out wide at ten tosses, is already a narrow band at a hundred, turns into a tight bump at a thousand, and becomes almost a spike at ten thousand, centered within a whisker of one half. The two views are just different ways of showing the same shrinking uncertainty. The running fraction settling toward a line and the belief curve collapsing toward a spike are two pictures of the same thing.
 
 Now an unease creeps in. I have drawn one specific line. What if I had started over?
 

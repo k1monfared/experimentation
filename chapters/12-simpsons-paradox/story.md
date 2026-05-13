@@ -68,7 +68,13 @@ The fix in this case is to condition on the confounder: do the per-department an
 
 This is the bridge from statistics to causal inference. The arithmetic does not pick the right answer. The causal structure does. Same numbers, opposite right answers, depending on what the data-generating process is.
 
-The Bayesian alternative to the Frequentist "stratified analysis" is a hierarchical model that learns the per-segment effects and the population-level average effect simultaneously. The model is given the segment label as input. It does not get fooled by an aggregate that hides the per-segment structure. It reports both the per-segment posterior and the population-weighted posterior, and the user can read off whichever one matches their question.
+The frequentist response is "stratified analysis". I run a two-proportion comparison inside each segment, one at a time, and report the per-segment effects separately. Each segment-level test here would flag +5pp as real. The aggregate test would flag the wrong direction. The stratified view is the right one, and choosing it over the aggregate is a substantive judgment, not a statistical one.
+
+The Bayesian alternative is a hierarchical model that learns the per-segment effects and the population-level average effect simultaneously. The model is given the segment label as input. It does not get fooled by an aggregate that hides the per-segment structure. It reports both the per-segment posterior and the population-weighted posterior, and the user can read off whichever one matches their question.
+
+![](images/hierarchical_recovery.png)
+
+Running the hierarchical model on the same paradox data (two segments, +5pp lift each, 20 percent of segment A treated, 80 percent of segment B treated) brings back the truth. The per-segment posteriors both centre near +5pp. The population-level effect, translated onto the probability scale around the average baseline, also lands near +5pp. The naive aggregate, plotted in the same panel for contrast, still sits near minus 21pp. Same data, two ways of summarizing, opposite answers. One small caveat: with only two segments the partial-pooling variance is barely pinned down by the data, so the sampler needs careful tuning. More segments make this easier. I would not read too much into the population-level spread with only two clusters.
 
 Now look up from the simulator.
 

@@ -15,6 +15,8 @@
   - ![Demographic vs behavioural](images/demographic_vs_behavioral.png)
 - Hunch
   - Demographic features are descriptive but rarely *the cause* of differential treatment effects. Behaviour is closer to the cause.
+- Practical note: how to pick which behaviours to slice on
+  - Two inputs. First, domain knowledge: which user actions plausibly interact with the thing the treatment changes. A UI change to the posting flow should be sliced by contribution rate, not by timezone. Second, inspection: before unblinding, plot behavioural axes against baseline outcome to see which ones show variation worth splitting on. Pre-register the slices from step one. Treat the slices that come only out of step two as exploratory, and budget multiplicity for them as in Loop C.5.
 
 # Loop B: behavioural segments have distinctive signatures
 

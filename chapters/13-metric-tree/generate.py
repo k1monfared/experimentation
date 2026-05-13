@@ -190,6 +190,43 @@ def render_proxy_lies():
     return out
 
 
+def render_goodhart_flip():
+    """A proxy can be positively correlated cross-sectionally and negatively
+    correlated under optimization. Clicks vs revenue with a clickbait lever:
+    organic variation says r > 0, pushing the lever says r < 0. Same metric
+    pair, same team, opposite sign. Goodhart's law in numerical form.
+    """
+    apply_style()
+    rng = np.random.default_rng(2)
+    n = 200
+    # Cross-sectional: organic quality variation drives both up.
+    quality = rng.normal(0, 1, n)
+    clicks_cross = 0.05 * (1 + 0.20 * quality) + rng.normal(0, 0.002, n)
+    revenue_cross = 1.0 * clicks_cross * (1 + 0.10 * quality)
+    r_cross = float(np.corrcoef(clicks_cross, revenue_cross)[0, 1])
+    # Under optimization: clickbait lever raises clicks but burns revenue per click.
+    lever = rng.uniform(0, 1, n)
+    clicks_opt = 0.05 * (1 + 0.30 * lever) + rng.normal(0, 0.002, n)
+    revenue_opt = 1.0 * clicks_opt * (1 - 0.40 * lever)
+    r_opt = float(np.corrcoef(clicks_opt, revenue_opt)[0, 1])
+
+    fig, axes = plt.subplots(1, 2, figsize=(11, 4.2), sharey=False)
+    axes[0].scatter(clicks_cross, revenue_cross, alpha=0.5, color=PALETTE["frequentist"])
+    axes[0].set_title(f"Cross-sectional (organic): r = {r_cross:+.2f}")
+    axes[0].set_xlabel("clicks")
+    axes[0].set_ylabel("revenue")
+    axes[1].scatter(clicks_opt, revenue_opt, alpha=0.5, color=PALETTE["bayesian"])
+    axes[1].set_title(f"Under optimization (clickbait lever): r = {r_opt:+.2f}")
+    axes[1].set_xlabel("clicks")
+    axes[1].set_ylabel("revenue")
+    fig.suptitle("Same proxy, opposite sign under optimization. The Goodhart flip.")
+    fig.tight_layout()
+    out = IMG_DIR / "goodhart_flip.png"
+    fig.savefig(out)
+    plt.close(fig)
+    return out
+
+
 def main():
     ensure_dirs()
     manifest = load_manifest()
@@ -198,6 +235,7 @@ def main():
         render_noise_vs_speed(),
         render_predictivity_simulation(manifest),
         render_proxy_lies(),
+        render_goodhart_flip(),
     ]
     for p in paths:
         add_artifact(manifest, path=p, kind="image", seed="derived", sha256=_sha256_file(p), description=f"Chapter 13 figure: {p.name}")

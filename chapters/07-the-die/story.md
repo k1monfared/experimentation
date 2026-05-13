@@ -54,6 +54,8 @@ The tradeoff is that Bonferroni is conservative. By making each test more demand
 
 For the die specifically, there is a different approach that does not need any correction at all. Run a single test that asks "is the entire vector of face counts consistent with uniform one-sixth?". One test, one p-value, no multiple comparisons. The chi-square goodness-of-fit test is the standard implementation. It computes a single number that summarizes how surprised I should be by the entire vector of face counts together, and that number has a known reference distribution.
 
+One caveat before reading the picture. Chi-square is a large-sample approximation, and the usual rule of thumb is that every category should have an expected count of about five or more. For a fair six-sided die that means roughly thirty rolls at the boundary, and by sixty rolls (expected ten per face) I am comfortably clear. For very small N, or for cells that are genuinely rare, the approximation frays and the honest move is an exact multinomial test or a simulation-based p-value.
+
 ![](images/story/chi_square_pvalues.png)
 
 Two lines, both as functions of sample size. The blue line is the chi-square p-value when rolling a fair die. The orange line is the chi-square p-value when rolling a die loaded toward face 6 (probability 1/3 for face 6, 2/15 for each of the others). On a log-log scale because both p-values span many orders of magnitude.

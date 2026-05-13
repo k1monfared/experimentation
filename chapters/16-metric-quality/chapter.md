@@ -2,6 +2,10 @@
 
 - Carried from Chapter 15
   - Even good metrics wobble. We tame the wobble.
+  - Halving a detectable effect costs 4x sample at the naive scaling. Industry buys back some of that cost by subtracting needless variation.
+- Real-world anchor
+  - Microsoft's CUPED (2013) cut A/B variance 30 to 50 percent at scale with no extra users, by using each user's pre-experiment behavior as a covariate.
+  - Shot-difficulty-adjusted shooting percentage (basketball) and stratified randomization in Phase 3 trials are the same trick in different domains: subtract out known structure so the comparison is like-to-like.
 
 # Loop A: variance is a property of the metric, not the truth
 

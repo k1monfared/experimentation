@@ -24,7 +24,7 @@ Two curves, both versus days since launch. The orange-red line is click lift, pe
 
 The vertical dashed line is day 7, the typical horizon for an A/B test in industry. At that point, the click lift is still positive (around +3 percent) and the retention loss has barely registered (a few tenths of a percentage point). If I am running a one-week test and shipping based on the click metric, I ship. The retention damage is invisible at the moment of decision.
 
-The honest test would either run for thirty days (an expensive proposition because it ties up traffic) or pre-commit to a retention-based rule before the test starts. Most teams do neither, because the time cost is real and the click metric is what the experimentation platform is built around. The default is to optimize the easy-to-measure metric, and the easy-to-measure metric is rarely the one that matters for the long-term product.
+The honest test would either run for thirty days (an expensive proposition because it ties up traffic) or pre-commit to a retention-based rule before the test starts. Most teams do neither, because the time cost is real and the click metric is what the experimentation platform is built around. The default is to optimize the easy-to-measure metric, and the easy-to-measure metric is rarely the one that matters for the long-term product. ([Try different horizons yourself](play/clickbait_simulator.py).)
 
 The shape of this trap is not unique to clickbait. Anywhere there is a short-term proxy and a long-term outcome that diverge, the proxy is what the experimentation horizon catches and the outcome is what the business depends on. The trap recurs across many product domains: short-term engagement vs long-term subscription churn, short-term ad click vs long-term brand trust, short-term load time vs long-term frustration that builds across sessions.
 
@@ -38,7 +38,7 @@ Three cohorts. The most-engaged 10 percent of users had a -2 percent click chang
 
 This is a structural issue with averages. The average is over a heterogeneous population. The lift in the average can come from any subset of the population. Worse, the lift can be in the subset that I do not care most about, while the cohort I do care about is silently regressing.
 
-The fix is the same fix that came up in the wine chapter: do not just report the aggregate. Slice by cohorts that matter to the business (engagement level, tenure, revenue percentile, geography), and look at each slice. If the launch is bad for any of the cohorts that matter, do not ship just because the aggregate is good. The decision should depend on which cohorts I am willing to harm.
+The fix is the same fix that came up in the wine chapter: do not just report the aggregate. Slice by cohorts that matter to the business (engagement level, tenure, revenue percentile, geography), and look at each slice. If the launch is bad for any of the cohorts that matter, do not ship just because the aggregate is good. The decision should depend on which cohorts I am willing to harm. ([Reweight the cohorts yourself](play/aggregate_cohort_simulator.py).)
 
 Industry teams that have been bitten enough times build this into their experimentation platform. Booking.com, Microsoft, Netflix all have published machinery for cohort-aware analysis, including segment-level guardrails and minimum-effect requirements per cohort. The mature programs treat the aggregate as a summary statistic, not a decision input.
 

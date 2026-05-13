@@ -117,6 +117,62 @@ def render_guardrails_vs_decision():
     return out
 
 
+def render_hierarchical_shrinkage():
+    """Loop D compare panel: per-metric CIs vs hierarchical shrunk posteriors.
+
+    Simulate 20 guardrail metrics under H0 (all true lifts = 0). Compare
+    two readings of the same data: marginal per-metric 95% intervals
+    (flat prior, behaves like the naive frequentist check) and a
+    hierarchical empirical-Bayes shrinkage posterior that pulls each
+    metric toward the population mean using the DerSimonian-Laird
+    variance estimator. The shrunk intervals tuck back toward zero and
+    the family-wise alarm rate drops without any Bonferroni threshold.
+    """
+    apply_style()
+    rng = np.random.default_rng(0)
+    n_metrics = 20
+    sigma = 1.0  # per-metric standard error of the lift estimate
+    true_lift = np.zeros(n_metrics)
+    y = true_lift + sigma * rng.standard_normal(n_metrics)  # observed lift estimates
+
+    # Marginal (flat-prior) 95% CI per metric
+    marg_lo = y - 1.96 * sigma
+    marg_hi = y + 1.96 * sigma
+
+    # Empirical-Bayes / DerSimonian-Laird shrinkage toward a shared mean
+    # weights = 1 / sigma^2; weighted mean; Q statistic; tau^2 estimate
+    w = np.full(n_metrics, 1.0 / sigma ** 2)
+    mu_hat = np.sum(w * y) / np.sum(w)
+    Q = np.sum(w * (y - mu_hat) ** 2)
+    df = n_metrics - 1
+    c = np.sum(w) - np.sum(w ** 2) / np.sum(w)
+    tau2 = max(0.0, (Q - df) / c)
+    # Posterior mean and variance per metric under Normal-Normal pooling
+    shrink_var = 1.0 / (1.0 / sigma ** 2 + 1.0 / tau2) if tau2 > 0 else np.zeros(n_metrics) + 1e-12
+    post_mean = shrink_var * (y / sigma ** 2 + mu_hat / tau2) if tau2 > 0 else np.full(n_metrics, mu_hat)
+    post_sd = np.sqrt(shrink_var) if tau2 > 0 else np.zeros(n_metrics)
+    hier_lo = post_mean - 1.96 * post_sd
+    hier_hi = post_mean + 1.96 * post_sd
+
+    fig, ax = plt.subplots(figsize=(8, 5))
+    xs = np.arange(n_metrics)
+    ax.hlines(xs - 0.15, marg_lo, marg_hi, color=PALETTE["frequentist"], linewidth=2, label="marginal 95% CI (flat prior)")
+    ax.plot(y, xs - 0.15, "o", color=PALETTE["frequentist"])
+    ax.hlines(xs + 0.15, hier_lo, hier_hi, color=PALETTE["bayesian"], linewidth=2, label="hierarchical shrunk 95%")
+    ax.plot(post_mean, xs + 0.15, "s", color=PALETTE["bayesian"])
+    ax.axvline(0, color=PALETTE["muted"], linestyle="--", linewidth=1)
+    ax.set_yticks(xs)
+    ax.set_yticklabels([f"metric {i + 1}" for i in range(n_metrics)])
+    ax.set_xlabel("lift estimate and 95% interval")
+    ax.set_title("Loop D: hierarchical pooling pulls noisy guardrails back toward zero")
+    ax.legend(loc="lower right")
+    fig.tight_layout()
+    out = IMG_DIR / "hierarchical_shrinkage.png"
+    fig.savefig(out)
+    plt.close(fig)
+    return out
+
+
 def main():
     ensure_dirs()
     manifest = load_manifest()
@@ -124,6 +180,7 @@ def main():
         render_clickbait_curves(),
         render_aggregate_hides_structure(),
         render_guardrails_vs_decision(),
+        render_hierarchical_shrinkage(),
     ]
     for p in paths:
         add_artifact(manifest, path=p, kind="image", seed="derived", sha256=_sha256_file(p), description=f"Chapter 10 figure: {p.name}")

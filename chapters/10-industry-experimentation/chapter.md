@@ -49,6 +49,8 @@
   - Bayesian flavor, done right. A flat-prior Bayesian fit per metric does not protect you. A marginal credible interval that excludes zero behaves much like the naive frequentist test, and reading 20 such marginals reproduces the family-wise blow-up. "Bayesian" alone is not the answer.
   - The mechanism that actually helps is hierarchical Bayes with partial pooling. Treat the 20 metric lifts as draws from a population distribution with unknown mean and variance. Each individual lift posterior gets pulled toward the population mean ("shrinkage"), and the more candidate lifts you throw in, the more aggressively the model regularizes the noisy ones. False alarms shrink because the model has learned that most of the 20 metrics are flat.
   - In PyMC sketch form: tau_lift ~ HalfNormal(.), mu_lift ~ Normal(0, .), lift_i ~ Normal(mu_lift, tau_lift), observed metric_i ~ Normal(lift_i, sigma_i). The hyperprior on tau_lift is what does the work. The fix is decision-theoretic too: pick a loss function over the joint (e.g., expected number of false launches), and let the hierarchical posterior drive the decision rather than counting marginal CI exclusions.
+  - ![Hierarchical shrinkage](images/hierarchical_shrinkage.png)
+  - The figure shows 20 guardrails simulated under H0. The orange marginal CIs (flat prior per metric) are wide and a few exclude zero by chance. The teal hierarchical posteriors pull each estimate toward the shared population mean, and the intervals that were flirting with zero tuck back in. This is the mechanism that the Bonferroni threshold mimics by brute force.
 
 # The big question that opens Chapter 11
 

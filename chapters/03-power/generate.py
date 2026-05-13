@@ -164,6 +164,64 @@ def render_bayesian_stopping(manifest):
     return out
 
 
+def render_peeking_rejection():
+    """Loop D edge case: peeking without alpha-spending inflates rejection rate.
+
+    2,000 fair-coin runs of N = 1,000 tosses. After each toss (beyond a small
+    warm-up) we check the two-sided z-test p-value and stop on the first
+    p < 0.05. Plot the cumulative rejection rate as peeks accumulate and
+    compare to the nominal alpha = 0.05 flat line.
+    """
+    apply_style()
+    rng = np.random.default_rng(31337)
+    n_runs = 2000
+    n_tosses = 1000
+    peek_every = 10
+    alpha = 0.05
+
+    # Precompute per-run heads trajectories, then scan peeks.
+    seqs = rng.binomial(1, 0.5, size=(n_runs, n_tosses))
+    cum = np.cumsum(seqs, axis=1)
+    peek_ns = np.arange(peek_every, n_tosses + 1, peek_every)
+    # Stopping time per run (or infinity if never crosses).
+    stop_at = np.full(n_runs, np.inf)
+    for n in peek_ns:
+        heads = cum[:, n - 1]
+        # Two-sided z-test against p=0.5.
+        phat = heads / n
+        se = np.sqrt(0.25 / n)
+        z = np.abs(phat - 0.5) / se
+        from scipy.stats import norm
+        pvals = 2 * (1 - norm.cdf(z))
+        mask = (pvals < alpha) & np.isinf(stop_at)
+        stop_at[mask] = n
+    rejected = np.isfinite(stop_at)
+    # Cumulative rejection rate as a function of the peek horizon.
+    cum_rej_rate = np.array([
+        np.mean(stop_at <= n) for n in peek_ns
+    ])
+
+    fig, ax = plt.subplots()
+    ax.plot(peek_ns, cum_rej_rate, color=PALETTE["frequentist"], linewidth=2,
+            label=f"peek every {peek_every}, stop on first p < {alpha}")
+    ax.axhline(alpha, color=PALETTE["muted"], linestyle="--", linewidth=1,
+               label=f"nominal alpha = {alpha}")
+    final = float(cum_rej_rate[-1])
+    ax.annotate(f"after {n_tosses} tosses: {final:.2f}",
+                xy=(n_tosses, final), xytext=(-90, -14),
+                textcoords="offset points", fontsize=9)
+    ax.set_xlabel("peek horizon (number of tosses seen so far)")
+    ax.set_ylabel("cumulative rejection rate on fair coins")
+    ax.set_ylim(0, max(0.4, final * 1.1))
+    ax.set_title("Loop D edge case: peeking inflates the false-alarm rate")
+    ax.legend(loc="lower right")
+    fig.tight_layout()
+    out = IMG_DIR / "peeking_rejection.png"
+    fig.savefig(out)
+    plt.close(fig)
+    return out
+
+
 def main():
     ensure_dirs()
     manifest = load_manifest()
@@ -172,6 +230,7 @@ def main():
         render_required_n_table(),
         render_mde_curve(),
         render_bayesian_stopping(manifest),
+        render_peeking_rejection(),
     ]
     for p in paths:
         add_artifact(manifest, path=p, kind="image", seed="derived", sha256=_sha256_file(p), description=f"Chapter 3 figure: {p.name}")

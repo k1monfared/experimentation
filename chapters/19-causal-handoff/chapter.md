@@ -6,6 +6,7 @@
 
 # Loop A: when experiments don't work
 
+- Iconic cases where no experiment was ever run. Smoking and lung cancer (Doll and Hill, 1950 and 1956; Bradford Hill's nine criteria, 1965). Human-caused climate change (observational data plus counterfactual simulations, synthesized by the IPCC). "Does college cause higher earnings?" (people self-select into college on unobservables, so econometrics leans on instruments like proximity to a college or compulsory-schooling laws). None of these were decided by randomizing anyone to anything.
 - Long horizons. We can't randomize over 5 years without losing too many users to contamination, attrition, or environment changes. Yet some questions only make sense at 5-year horizons (career outcomes, public-health interventions).
 - Ethics. We can't randomly deny vaccinations, education, or basic income to a control arm.
 - Network effects. Treating user A changes user A's friends' behaviour. This breaks SUTVA (Stable Unit Treatment Value Assumption): no interference between units, and one version of treatment per unit (introduced in Chapter 15 in the CACE conditions). Without SUTVA the no-spillover assumptions our methods rely on don't hold, and we need cluster randomization, partial-interference designs, or graph-based methods.
@@ -23,7 +24,9 @@
   - ![Selection bias](images/selection_bias.png)
 - Hunch
   - Rubin's decomposition writes the simple difference in outcomes (SDO) as: SDO = ATE + selection bias + HTE bias. In this simulation the treatment effect is constant at +0.30 (no heterogeneity), so the HTE bias term vanishes and the entire ~0.70 gap between the naive +1.0 and the true +0.30 is pure selection bias.
-  - This is the central problem causal inference solves. Even when randomization is impossible, we have tools (potential outcomes, instrumental variables, regression discontinuity, difference-in-differences, propensity scoring, synthetic controls) for unbiased effect estimation under explicit assumptions.
+  - This is the central problem causal inference solves. Even when randomization is impossible, we have tools (potential outcomes, DAGs and adjustment rules, natural experiments, instrumental variables, matched studies, regression discontinuity, difference-in-differences, propensity scoring, synthetic controls) for unbiased effect estimation under explicit assumptions.
+  - DAGs (directed acyclic graphs) make the data-generating process explicit. Draw the arrows from causes to effects. The graph tells us which variables we must adjust for (confounders, common causes of treatment and outcome) and which we must not (mediators on the causal path, whose adjustment blocks the very effect we want to measure).
+  - Natural experiments are cases where the world assigned treatment in a way that is as-good-as-random for the comparison at hand. John Snow's 1854 cholera study used two water companies serving the same neighborhood, with assignment fixed by old contracts rather than by the residents' health. Draft lotteries, twin studies, same-sex-sibling comparisons, and school cutoff dates are the modern workhorses.
 
 # Loop C: a brief vocabulary
 

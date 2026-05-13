@@ -303,6 +303,40 @@ def render_hump_narrows_with_n():
     return out
 
 
+def render_prior_sensitivity():
+    """Three priors meeting the same data: flat, fair-leaning, heads-low.
+
+    Shown at two observation sizes (60/100 and 600/1000) so the reader
+    can see that priors matter when the data is thin and wash out when
+    the data is loud.
+    """
+    apply_story_style()
+    priors = [
+        ("flat (no information)", 1, 1),
+        ("expects fair", 50, 50),
+        ("expects heads-low", 2, 8),
+    ]
+    observations = [(60, 100), (600, 1000)]
+    ps = np.linspace(0.001, 0.999, 1000)
+    fig, axes = plt.subplots(1, 2, figsize=(13, 4.4), sharey=False)
+    colors = [PALETTE["focus"], PALETTE["contrast"], PALETTE["support"]]
+    for ax, (k, n) in zip(axes, observations):
+        for (label, a0, b0), color in zip(priors, colors):
+            a, b = a0 + k, b0 + (n - k)
+            posterior = stats.beta.pdf(ps, a, b)
+            ax.plot(ps, posterior, color=color, linewidth=2.0, alpha=0.9, label=label)
+        ax.axvline(0.5, color=PALETTE["muted"], linestyle="--", linewidth=1.0)
+        ax.set_xlim(0.2, 0.85)
+        ax.set_xlabel("possible fairness of the coin")
+        ax.set_title(f"after {k} heads in {n} tosses")
+    axes[0].set_ylabel("how strongly I now believe each value")
+    axes[0].legend(loc="upper right", fontsize=8, title="what I walked in believing")
+    out = IMG_DIR / "prior_sensitivity.png"
+    fig.savefig(out)
+    plt.close(fig)
+    return out
+
+
 def render_how_often_I_get_fooled():
     """Empirical rejection rates across truth and N."""
     apply_story_style()
@@ -366,6 +400,8 @@ def main():
                   "Story Ch.2: fair vs biased(0.55) coin distributions overlaid, 10000 runs each"))
     paths.append((render_hump_narrows_with_n(), "derived",
                   "Story Ch.2: binomial(N, 0.5) hump narrows with N (50, 100, 500, 5000) on fraction axis"))
+    paths.append((render_prior_sensitivity(), "derived",
+                  "Story Ch.2: prior sensitivity, flat vs fair-leaning vs heads-low priors meeting 60/100 and 600/1000"))
     p_fooled, rates = render_how_often_I_get_fooled()
     paths.append((p_fooled, 303,
                   f"Story Ch.2: empirical rejection rate, truths {[0.50,0.52,0.55,0.60]} x sizes {[50,200,1000]}, rates {rates.round(3).tolist()}"))

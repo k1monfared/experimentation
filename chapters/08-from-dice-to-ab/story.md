@@ -40,7 +40,7 @@ Let me run a continuous-outcome example. Suppose the treatment increases revenue
 
 The two histograms are heavily overlapping. The means are 50 cents apart, but the noise is much larger than that, so any single user's revenue is mostly driven by personal variation, not by the treatment. The means are different (the treatment line is to the right of the control line), but only just. Welch's t-test on this data gives p = 0.007, well below the 5-percent threshold. The effect is real, even though the histograms look almost the same.
 
-The lesson is that with enough data, even small mean differences can be detected against large per-user noise. The math is still one-over-effect-squared: bigger noise relative to the effect means more data needed. Continuous outcomes do not break the framework, they just reframe the noise.
+The lesson is that with enough data, even small mean differences can be detected against large per-user noise. The math is still one-over-effect-squared: bigger noise relative to the effect means more data needed. Continuous outcomes do not break the framework, they just reframe the noise. ([Try other continuous-outcome parameters](play/revenue_ab_runner.py).)
 
 There is one more pattern worth flagging: the bootstrap. For continuous outcomes, especially when the data is skewed (revenue is often skewed, with most users at zero and a few at large amounts), the t-test's assumption of normally-distributed means can fail. The bootstrap is an alternative procedure: instead of computing a confidence interval from a formula, it simulates many resamples of the data and looks at the spread of the simulated mean differences. The bootstrap was introduced for this kind of skewed-data situation in the late 1970s and is now standard. I will keep coming back to it as different statistics need different procedures.
 
@@ -58,7 +58,7 @@ If I run separate tests on the two segments, the power-user test (200 users per 
 
 So the pooled test sees mostly the casual effect. The per-segment tests see the casual effect weakly and the power-user effect not at all. Neither is wrong. They are answering slightly different questions. The pooled test is asking "is the average treatment effect different from zero, integrated across segments?" The per-segment tests are asking "is the treatment effect different from zero in each specific segment?". The first integrates over heterogeneity. The second exposes it.
 
-This is a real tension and shows up in any A/B test where the user base is heterogeneous. There are tools to handle it (Cochran-Mantel-Haenszel for the frequentist combiner, hierarchical Bayes for the partial-pooling approach), and I will pick them up in the segmentation chapter. The point here is that "is it different?" is more subtle when the population is not homogeneous.
+This is a real tension and shows up in any A/B test where the user base is heterogeneous. There are tools to handle it (Cochran-Mantel-Haenszel for the frequentist combiner, hierarchical Bayes for the partial-pooling approach), and I will pick them up in the segmentation chapter. The point here is that "is it different?" is more subtle when the population is not homogeneous. ([Try different segment sizes and lifts](play/stratified_runner.py).)
 
 Now to the decision rule. In this whole chapter I have been showing what the data says, but I have not committed to a rule for how to act on it.
 

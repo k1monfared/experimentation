@@ -22,6 +22,8 @@ The CUPED idea is to use the pre-experiment revenue of each user as a covariate.
 
 The math says: if user-level revenue is highly correlated across time (which it usually is), the variance of the differences is much smaller than the variance of the raw values. The correlation determines the variance reduction. Empirically in big tech A/B tests, correlations of 0.5 to 0.7 are common, giving variance reductions of 25 to 50 percent.
 
+There is one sharp rule to keep the trick honest. The covariate has to be measured before treatment is assigned. If I use a covariate that was itself affected by the treatment, the adjustment can absorb part of the effect I am trying to measure and the comparison becomes biased. Pre-experiment revenue is safe because the experiment had not started yet. Mid-experiment engagement is not safe, even if it looks tempting and predictive.
+
 A 25 percent variance reduction is equivalent to running a 33 percent larger experiment. A 50 percent reduction is equivalent to doubling the sample. In a context where each test is constrained by available traffic, the savings are significant.
 
 The technique generalizes. Anything that predicts the user-level outcome and is measured before the experiment can be used as a covariate. Pre-experiment revenue, demographics, prior engagement level, account tenure, geo. The more covariates that explain the outcome variance, the more the comparison's variance shrinks. Modern variants include stratification, regression adjustment, and machine-learning-based residual prediction.
@@ -32,7 +34,21 @@ A practical metric-quality check: run the same A/B test with two arms drawn from
 
 Mature programs run A/A tests as part of their experimentation pipeline. They check that the metric system reports zero effects when there is no real effect, and they characterize the noise distribution. A metric that fails its A/A tests is not a metric I can use, no matter how much I want to.
 
+There are two different questions buried inside an A/A check, and it is easy to answer the easier one and think I answered the harder one. The easier question is, "does the measured-effect distribution look roughly symmetric around zero?" I can eyeball a histogram and answer that in seconds. The harder question is, "if I run this pipeline at a five percent significance level, does it actually reject about five percent of the time under the null?" That second question is the calibration check, and it demands each trial's own p-value, not just the pooled spread. If I pool effects and then ask what fraction falls beyond about two pooled standard deviations, I will get something near five percent by construction, no matter how the pipeline is built. Useful shape check. Not a calibration check.
+
+![A/A null distribution](images/story/aa_test_distribution.png)
+
+So the real A/A report is the empirical rejection rate with a confidence interval around it. If five thousand A/A trials produce roughly two hundred fifty rejections, the empirical rate is about 0.050 with a 95 percent interval of roughly [0.045, 0.055]. That interval brackets the nominal alpha of 0.05, so the pipeline is calibrated. If it did not bracket alpha, I would have a real problem with assignment, the test, or the independence assumption, and I would not trust any A/B result coming out of the same pipeline until I understood why.
+
 There is a third dimension of metric quality: predictivity, which I touched on in the metric-tree chapter. A metric is high-quality if it is also high-validity (predicting the long-term thing I care about). A metric can be low-noise and irrelevant, or high-noise and important. The combination of low noise and high validity is what makes a metric useful for decision-making.
+
+The way to actually measure predictivity is to line up many past experiments. For each experiment I have a short-term metric effect and a long-term metric effect. The correlation between the two columns is the predictivity score of that short-term metric. At a backlog of two hundred paired experiments the three kinds of short-term metric come cleanly apart: a good proxy lands near r equals plus 0.6 with a 95 percent bootstrap interval of roughly [0.50, 0.69], a noisy proxy lands near zero with an interval of roughly [-0.14, 0.14], and a lying proxy (one that moves opposite the long-term outcome) lands near minus 0.3 with an interval of roughly [-0.42, -0.16]. At thirty paired experiments those three intervals would overlap heavily and I could not tell the good proxy from the noise. Predictivity itself has variance, and I need a reasonable number of past experiments before I can use it to pick a metric.
+
+Why would a short-term proxy ever have negative predictivity? Because of Goodhart's law. When I turn a proxy into the target, the cheapest way to move the proxy is often not the way that also moves the outcome I care about. Clickbait lifts clicks and burns brand. Forced pop-ups lift engagement and bounce users. The proxy rises, the long-term outcome falls, and predictivity comes back negative. The structural fix is to weight short-term metrics by their measured predictivity instead of optimizing them directly.
+
+Two lenses, same verdict, for the A/A check.
+
+If I treat "did this trial reject?" as a coin with unknown rejection rate and put a weak Beta(1, 1) prior on the rate, I can update it with the five thousand A/A outcomes and read off a posterior. That is the Bayesian version of the same calibration check. The posterior mean for the rejection rate comes out to about 0.050 with a 95 percent credible interval of roughly [0.044, 0.056], and the posterior probability that the true rate is above 0.05 is near 0.49, right on the fence. Frequentist Wilson and Bayesian Beta-binomial agree here because the data is plentiful and the prior is weak. At fifty A/A trials instead of five thousand the two would still point the same direction but the Wilson CI would be wide and the posterior would still speak in calibrated belief. The agreement in this chapter is not automatic. It is a consequence of running enough trials.
 
 Now look up from the simulator.
 

@@ -40,7 +40,9 @@ The guaranteed-coverage interval (named Clopper-Pearson, after the 1934 paper) u
 
 The belief-curve interval is the Bayesian equivalent. Take the belief curve over biases (the curve I have been drawing since Chapter 2). Slice off the middle 95 percent. Use the lower and upper edges of the slice as the interval. The construction is different from the others (it starts from "given the data, what do I believe?" rather than "given a candidate bias, would the data have been surprising?"), but the resulting interval often looks numerically similar to the others.
 
-The four procedures often look the same because they are all answering similar questions about the same data. They differ when the sample size is small, the fraction is extreme, or both.
+There is a fifth procedure that belongs in this family, even though I did not draw it on the panels above: the percentile bootstrap. Instead of writing a formula for the interval, I resample the observed tosses (with replacement) many times, compute the fraction on each resample, and use the middle 95 percent of those resampled fractions as the interval. On 60 out of 100, the bootstrap lands right next to the others, around 0.50 to 0.69. It is a useful default when there is no closed-form formula to reach for, but it inherits the same weaknesses as the simple bell-curve interval near 0 and 1, so I will lean on it later (Chapters 8, 13, 16) on statistics that do not have a clean analytic form.
+
+The procedures often look the same because they are all answering similar questions about the same data. They differ when the sample size is small, the fraction is extreme, or both.
 
 Let me push them to those situations and see what happens.
 
@@ -106,7 +108,7 @@ The expects-tails-prior posterior is centered around 0.56. The data has dragged 
 
 So the prior matters. The same data, with different priors, leads to different conclusions. This is the part of Bayesian reasoning that makes some people uncomfortable, because it seems subjective. But the alternative (the frequentist procedure that does not use a prior) is not really prior-free. It implicitly assumes a uniform-style prior, just without naming it. The Bayesian framework just makes the assumption explicit.
 
-A reasonable response is: I should pick a prior that reflects what I actually know, before I see the data. If I am examining a coin from the ATM, the skeptical prior is honest. If I am examining a coin from a magic shop, the expects-something prior is honest. If I am genuinely uncertain, the flat prior is honest. The answer the data gives me will reflect my starting point, and that is the right behavior.
+A reasonable response is: I should pick a prior that reflects what I actually know, before I see the data. If I am examining a coin from the ATM, the skeptical prior is honest. If I am examining a coin from a magic shop, the expects-something prior is honest. If I am genuinely uncertain, the flat prior is honest. The answer the data gives me will reflect my starting point, and that is the right behavior. ([Try other priors and observations yourself](play/prior_playground.py): a flat prior, a sharp skeptical one, a tail-leaning one.)
 
 I have introduced enough Bayesian apparatus by now (the belief curve, the prior, the posterior) that the next chapter will pick it up systematically. Up to here I have been using the simplest version (a flat prior, with the math done by hand on the special-case formulas). The next chapter introduces the general framework: any prior, any model, with the math handled by a computer that simulates the posterior.
 
