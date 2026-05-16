@@ -45,25 +45,25 @@ artifacts:
   chapter: 01-the-coin
   kind: idata
   seed: 1009
-  sha256: b0f3cfffdef3881d32febc3c9f141fe7654681e8e627053a435a9367dca76561
+  sha256: 1ec7bf43d26ad8065eae0274b3109dda61702afb881a3beeedf35193d18365e5
   description: PyMC posterior on p after N=10 fair-coin tosses
 - path: chapters/01-the-coin/data/posterior_n100.nc
   chapter: 01-the-coin
   kind: idata
   seed: 1099
-  sha256: 5b8b0c0885d24be648e56a17aa73cfb90d2485d3938fc4d2ea7899534245fecc
+  sha256: 300ef0a021b92b30938fcab1ca83484959e53cfcb48b5a0d7ca4e55eb0f5e93f
   description: PyMC posterior on p after N=100 fair-coin tosses
 - path: chapters/01-the-coin/data/posterior_n1000.nc
   chapter: 01-the-coin
   kind: idata
   seed: 1999
-  sha256: 574e188aa2b8ede1446f15345e209f80793b2a5d10aaaaa282a5a1cfadb3192a
+  sha256: 73f5942fd7477507585641eebe7d03aaf1a096a7ab862949a2ef44b0f1d586e6
   description: PyMC posterior on p after N=1000 fair-coin tosses
 - path: chapters/01-the-coin/data/posterior_n10000.nc
   chapter: 01-the-coin
   kind: idata
   seed: 10999
-  sha256: af46df01f65a93bb4717353fdcb4b8c3240cbec97616e7e925cb49c0a559ce8b
+  sha256: 18b474d6cc72d4e389d8838618764dd843f80fe6e498318209d901cd1c3dfd76
   description: PyMC posterior on p after N=10000 fair-coin tosses
 - path: chapters/01-the-coin/images/loop_a_three_then_ten.png
   chapter: 01-the-coin
@@ -149,6 +149,12 @@ artifacts:
   seed: derived
   sha256: 53f4bf4f6b1ec7050e387fa2ee6826c4a2bc29da940eaa9863cc270122e6c808
   description: 'Chapter 3 figure: mde_curve.png'
+- path: chapters/03-power/images/peeking_rejection.png
+  chapter: 03-power
+  kind: image
+  seed: derived
+  sha256: 7edd94c8e05f9a5e932f2c3089ae1c99ca7e1c6da4cd005ec04929c571b5bd0f
+  description: 'Chapter 3 figure: peeking_rejection.png'
 - path: chapters/03-power/images/power_curves.png
   chapter: 03-power
   kind: image
@@ -243,7 +249,7 @@ artifacts:
   chapter: 06-bayesian
   kind: idata
   seed: 606
-  sha256: fae9f61c6d6b7e46c193b18ad1ef76e870cf47060756ac78ff499152e679d991
+  sha256: c3727b6ff66bef536b1e76e569ba6ba25d0e65a4e74fd1525f73e5ea88910d5b
   description: Chapter 6 PyMC posterior on p (200 tosses, p=0.55)
 - path: chapters/06-bayesian/images/bayes_factor.png
   chapter: 06-bayesian
@@ -303,7 +309,7 @@ artifacts:
   chapter: 08-from-dice-to-ab
   kind: idata
   seed: 808
-  sha256: 8a9a079cd5117adb47d71106f015b11e8e25080968ddfe7d8a60d80a1b6d509b
+  sha256: 55d1254c4e46a3fcb3237d40f67795e793d69006b116d21ff18b1c03b394e922
   description: Two-arm Beta-Bernoulli PyMC posterior at N=10000
 - path: chapters/08-from-dice-to-ab/images/continuous_outcome.png
   chapter: 08-from-dice-to-ab
@@ -377,11 +383,17 @@ artifacts:
   seed: derived
   sha256: a52ba81ff615704f2b3c278c57727e004b47291bc7fa88a6675f60e30795bc35
   description: 'Chapter 10 figure: guardrails.png'
+- path: chapters/10-industry-experimentation/images/hierarchical_shrinkage.png
+  chapter: 10-industry-experimentation
+  kind: image
+  seed: derived
+  sha256: f035d68091d9bd87f4fde1059cf6426f8abc7385a7da3fea3a68967210e14ddc
+  description: 'Chapter 10 figure: hierarchical_shrinkage.png'
 - path: chapters/11-segmentation/data/hierarchical_posterior.nc
   chapter: 11-segmentation
   kind: idata
   seed: 1115
-  sha256: 7a1d3670b4f7c18964cf28559ab0f5e5e4adb010efd23a4b9ccf3d1953c8dcc3
+  sha256: 3076e466490301689ced1733a59ade14f78301e251b3a32af2aeb8289115237e
   description: Hierarchical Bayesian model on segmented A/B data
 - path: chapters/11-segmentation/data/multiplicity.npy
   chapter: 11-segmentation
@@ -400,7 +412,7 @@ artifacts:
   chapter: 11-segmentation
   kind: image
   seed: derived
-  sha256: 1ecf363fc441662ccef1c2bd28e2630c5b1554cdbd6a60efbb7c5f747bb4aed7
+  sha256: b55dc14e85addce518076fb4213dd6d5e891ed22b0d8a5ac4abbd38525e02437
   description: 'Chapter 11 figure: hierarchical_effects.png'
 - path: chapters/11-segmentation/images/multiplicity.png
   chapter: 11-segmentation
@@ -424,7 +436,7 @@ artifacts:
   chapter: 12-simpsons-paradox
   kind: idata
   seed: 1212
-  sha256: 7850aa6f68891fcd8a5be935d26b52a7d0c7c29d524b856555fa576429a58573
+  sha256: 883bc96525bd9bc6d5ab3709dab1c95066442fbd8d772d647fd0960b663ad981
   description: Hierarchical Bayesian model on the Simpson's-paradox data
 - path: chapters/12-simpsons-paradox/data/paradox_sweep.npy
   chapter: 12-simpsons-paradox
@@ -442,7 +454,7 @@ artifacts:
   chapter: 12-simpsons-paradox
   kind: image
   seed: derived
-  sha256: dc666f43bf5b75f04a284e37f2cb60aeb51904c5ed36bd2a17274437bf0e95e9
+  sha256: 49f69dc63de9a6c7a6114bc7381718987f7bed3919d90ec324a35e4a3b03a8b1
   description: 'Chapter 12 figure: hierarchical_recovery.png'
 - path: chapters/12-simpsons-paradox/images/paradox_construction.png
   chapter: 12-simpsons-paradox
@@ -466,7 +478,7 @@ artifacts:
   chapter: 13-metric-tree
   kind: samples
   seed: 0
-  sha256: 8d3fd092907464d259dee11d2d371422cfdeabd4ace87bec262be4178772f9dc
+  sha256: c66d71701224791f1b4b33f035306249bd06d150dcac7c51dd22af45e36b4f4c
   description: 'Loop C: bootstrap distribution of Pearson r (1000 resamples)'
 - path: chapters/13-metric-tree/data/predictivity_pairs.npy
   chapter: 13-metric-tree
@@ -475,6 +487,12 @@ artifacts:
   sha256: ce9ef2a9bb5ca00f6607e89cb6d687df2cbf12c925e0033891b98cccf6223f16
   description: 'Loop C: short-term vs long-term effect pairs across 200 simulated
     experiments'
+- path: chapters/13-metric-tree/images/goodhart_flip.png
+  chapter: 13-metric-tree
+  kind: image
+  seed: derived
+  sha256: a545f34c9699a04dae4591409d9b266043c9a02d57f358c5d7a2554705cce3e8
+  description: 'Chapter 13 figure: goodhart_flip.png'
 - path: chapters/13-metric-tree/images/metric_tree.png
   chapter: 13-metric-tree
   kind: image
@@ -503,7 +521,7 @@ artifacts:
   chapter: 14-novelty
   kind: samples
   seed: 140
-  sha256: 74500bf2a9a244352136fcfbd4421fcadefe2184fe5ed0c983d3a04be7f97035
+  sha256: fb8c214a3cfe09ce5344003b315f4a5762ade677529d6458b2da6371d7132445
   description: 'Loop A: novelty event log (2,000 users, 40 days)'
 - path: chapters/14-novelty/images/decay_shapes.png
   chapter: 14-novelty
@@ -563,7 +581,7 @@ artifacts:
   chapter: 17-attribution
   kind: idata
   seed: 1717
-  sha256: 5547afb42379163b8f587130f94f1a1a8a063235279271c96a3d2ebb697cd956
+  sha256: 2c77ca3d82702ec1cc722be86d9d74bc2192473caed6619413e7d57576b47cfd
   description: Bayesian multi-touch attribution model posterior
 - path: chapters/17-attribution/images/bayesian_attribution.png
   chapter: 17-attribution
@@ -629,89 +647,89 @@ artifacts:
   chapter: A1-mcmc-diagnostics
   kind: idata
   seed: 11
-  sha256: fddfa3d277c7bbb688a766706ce4ce4b98bb955730c57996275fead0ea5302f8
+  sha256: bd54a8ea6fd32de16b08521477a802f3d938b951c36200f897d573e793d77307
   description: Appendix A1 funnel fit, centered form
 - path: chapters/A1-mcmc-diagnostics/data/funnel_noncentered.nc
   chapter: A1-mcmc-diagnostics
   kind: idata
   seed: 11
-  sha256: fac7b37a824e16b9d954c910f5f5bceed307551ac280e46ca2b30a6b69415ae7
+  sha256: ed122ca991e53322a86fa2f9d294845d0d42483a17dd3f18d481f30eee1643f3
   description: Appendix A1 funnel fit, non-centered form
 - path: chapters/A1-mcmc-diagnostics/data/healthy_chains.nc
   chapter: A1-mcmc-diagnostics
   kind: idata
   seed: 606
-  sha256: 25c6712b78c9292cbb04ec7cf8dde3e7bac49a38bf1c64f106eb2ccd1b13f549
+  sha256: 6a7efa12ed81b845498ffea27a5a000cb65b1e8aea9cf2c27f1ad52142475b3d
   description: Appendix A1 healthy-chain coin posterior
 - path: chapters/A1-mcmc-diagnostics/images/funnel_centered_vs_noncentered.png
   chapter: A1-mcmc-diagnostics
   kind: image
   seed: derived
-  sha256: 9ea9bd1bfa475412f86f31a47ad1cc3aee265a2f4bb95dd0db8b1f1f65230d53
+  sha256: 345e10721565cdd8a9a5355910209417fbad74786f5cd86966492180ee8ae432
   description: 'Appendix A1 figure: funnel_centered_vs_noncentered.png'
 - path: chapters/A1-mcmc-diagnostics/images/healthy_chains.png
   chapter: A1-mcmc-diagnostics
   kind: image
   seed: derived
-  sha256: 8fe40b3db7805ce8612a992e03453cdeab79ef8007feb0ae8ab2136c94bbc09a
+  sha256: 67d43127a22d62dfed776dbf2a8dc4535ed3b2bd042f5710506979e888570cb5
   description: 'Appendix A1 figure: healthy_chains.png'
 - path: chapters/A1-mcmc-diagnostics/images/rhat_ess_curves.png
   chapter: A1-mcmc-diagnostics
   kind: image
   seed: derived
-  sha256: 1c3b3bfc1a159d9e9592860151d0a0d4b8a8a0cd48dbe5e95bd6204b9c254363
+  sha256: a6db2b1a73aeea68afe918d83fdd928430786b363fe6c154cc7e1ff82b390ca4
   description: 'Appendix A1 figure: rhat_ess_curves.png'
 - path: chapters/A2-hierarchical/data/prior_on_tau_0p05.nc
   chapter: A2-hierarchical
   kind: idata
   seed: 49
-  sha256: c51d472656d87808322fe329cdd3315f93c4a3be3e7aea35d451807b8c1bcf73
+  sha256: 5c854c3f3ba9f822e44557c15ad4c5399b0af1cc0acb16fceba6abfb219728c8
   description: A2 prior-on-tau sigma=0.05
 - path: chapters/A2-hierarchical/data/prior_on_tau_0p50.nc
   chapter: A2-hierarchical
   kind: idata
   seed: 94
-  sha256: 28dbb86c47cc356e3a96542ab3ddc80a597fedad10882e716777a5157e823383
+  sha256: 04f12a5a8a4ac5075ba23e8a6448ed0badb6eba3027002643c875c8c5aa3d14d
   description: A2 prior-on-tau sigma=0.5
 - path: chapters/A2-hierarchical/data/tau_scenario_0p005.nc
   chapter: A2-hierarchical
   kind: idata
   seed: 1011
-  sha256: e1a94e5592265939560bcf43a743878eba662d214dbaeb1d7dbb84501570e81a
+  sha256: 9683afe867f42640b0c61a34e1c58af59162adfab1683686444273bfb0992f6d
   description: A2 tau scenario tau_true=0.005
 - path: chapters/A2-hierarchical/data/tau_scenario_0p040.nc
   chapter: A2-hierarchical
   kind: idata
   seed: 2021
-  sha256: 99f8da6e75d235420995675a139efda028f81db2b687aa947e43afaffca983de
+  sha256: fe17cc74cc996aa86ce1d555d5cc2c3c1cba6dc344075905285573ccba04a595
   description: A2 tau scenario tau_true=0.04
 - path: chapters/A2-hierarchical/data/tau_scenario_0p150.nc
   chapter: A2-hierarchical
   kind: idata
   seed: 3031
-  sha256: f8d9232d5df120046e539c76ffd2159b804cf29d5d55c141a3fc900629646c68
+  sha256: 5edf97c626658b108aac548257ce85adf2eaf0bbdd054903a8317057b9832d92
   description: A2 tau scenario tau_true=0.15
 - path: chapters/A2-hierarchical/data/three_pooling_modes.nc
   chapter: A2-hierarchical
   kind: idata
   seed: 2002
-  sha256: 735bbc862aca8aed5168c3f6f6f04d77183a00b9eddbf3ebf24acace2c8e7dc1
+  sha256: c7a95aac3e94bd332b1f05eea35ccb6786f03951f2ae46488c202b089f46b023
   description: A2 three-pooling-modes hierarchical posterior
 - path: chapters/A2-hierarchical/images/prior_on_tau.png
   chapter: A2-hierarchical
   kind: image
   seed: derived
-  sha256: 26dc2e1af5937b9556b89e253df7f200d6d9a563755b231479c3697b0da73579
+  sha256: db32de3dc4e9b4a812820d5f990aaa4682abc75fbaa8b0b9003e355c7f4bf359
   description: 'Appendix A2 figure: prior_on_tau.png'
 - path: chapters/A2-hierarchical/images/tau_learned.png
   chapter: A2-hierarchical
   kind: image
   seed: derived
-  sha256: 7d1d5f23d0cf5cbd09c9250baeb4385ddfe9a8ca2042546228b1c5f7b0716c4b
+  sha256: 17faafea2cabc000e64f1015c847364bb244c7b9e00c1542ce261dcc481fc1bf
   description: 'Appendix A2 figure: tau_learned.png'
 - path: chapters/A2-hierarchical/images/three_pooling_modes.png
   chapter: A2-hierarchical
   kind: image
   seed: derived
-  sha256: aa0c920bcdbdfa01eaa3e9417f408ce1f3827c9d40f6472fb337a2840665308c
+  sha256: 12fe080241b14e5afa53c593b2cb43833d55c0026e82de1bf3b5e093cca3bb38
   description: 'Appendix A2 figure: three_pooling_modes.png'
