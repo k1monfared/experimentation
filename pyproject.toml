@@ -20,6 +20,7 @@ dependencies = [
     "pyarrow>=15",
     "pymc>=5.10",
     "arviz>=0.17",
+    "netcdf4>=1.6",
     "pyyaml>=6",
 ]
 

@@ -70,21 +70,59 @@ _NONDETERMINISTIC_SAMPLE_STATS_VARS = (
 )
 
 
+def _idata_group_names(idata) -> list[str]:
+    """Return plain group names (e.g. ``"posterior"``) for an InferenceData-like object.
+
+    arviz 1.0 replaced ``InferenceData`` with ``xarray.DataTree``: ``.groups`` is
+    no longer a method returning plain names; it is a tuple attribute of unix
+    paths (``"/posterior"``). ``DataTree.children`` exposes the plain names that
+    pre-1.0 ``.groups()`` returned, so we route to it on the new API.
+    """
+    if callable(getattr(idata, "groups", None)):
+        return list(idata.groups())
+    return list(idata.children)
+
+
+def _replace_group(idata, name: str, ds) -> None:
+    """Replace ``idata[name]`` in place across arviz pre-1.0 and 1.0+.
+
+    On pre-1.0 ``InferenceData`` the custom ``__setattr__`` updates the group
+    registry. On 1.0+ ``DataTree`` that path silently sets an instance attribute
+    and leaves the actual child unchanged, so we use item assignment instead.
+    """
+    if callable(getattr(idata, "groups", None)):
+        setattr(idata, name, ds)
+    else:
+        idata[name] = ds
+
+
+def _as_dataset(group):
+    """Return an ``xarray.Dataset`` view of a group regardless of arviz version.
+
+    Pre-1.0 ``InferenceData[group]`` already is a Dataset. 1.0+ returns a
+    ``DataTree``, which does not implement ``Dataset`` methods like
+    ``drop_vars`` directly. ``DataTree.to_dataset()`` exposes the underlying
+    Dataset; on a true Dataset ``to_dataset`` is absent so we pass it through.
+    """
+    return group.to_dataset() if hasattr(group, "to_dataset") else group
+
+
 def _normalize_idata_for_repro(idata):
     """Strip wall-clock timestamps and per-run sample_stats vars (timings, eigval NaNs).
 
     Posterior arrays are seed-deterministic but the netCDF/HDF5 byte layout still
     varies across processes. Stripping these makes the in-memory content stable.
     """
-    for group in idata.groups():
+    names = _idata_group_names(idata)
+    for group in names:
         ds = idata[group]
         for attr in _NONDETERMINISTIC_ATTRS:
             ds.attrs.pop(attr, None)
-    if "sample_stats" in idata.groups():
-        ss = idata.sample_stats
+    if "sample_stats" in names:
+        ss = _as_dataset(idata["sample_stats"])
         drop = [v for v in _NONDETERMINISTIC_SAMPLE_STATS_VARS if v in ss.data_vars]
         if drop:
-            idata.sample_stats = ss.drop_vars(drop)
+            _replace_group(idata, "sample_stats", ss.drop_vars(drop))
 
 
 def _sha256_idata_canonical(idata) -> str:
@@ -97,7 +135,7 @@ def _sha256_idata_canonical(idata) -> str:
     excluded the same way ``_normalize_idata_for_repro`` strips them.
     """
     h = hashlib.sha256()
-    for group_name in sorted(idata.groups()):
+    for group_name in sorted(_idata_group_names(idata)):
         group = idata[group_name]
         h.update(b"\n=group=" + group_name.encode())
         for k in sorted(group.attrs):

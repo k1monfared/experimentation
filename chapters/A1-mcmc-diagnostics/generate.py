@@ -81,7 +81,27 @@ def render_healthy_chains(manifest):
     axes[0].set_title(f"trace (R-hat={rhat:.3f}, ESS={ess:.0f}, div={div})")
     axes[0].legend(fontsize=7, ncol=2)
 
-    az.plot_autocorr(idata, var_names=["p"], ax=axes[1], combined=True)
+    # arviz 1.x removed the `ax=` and `combined=` parameters from plot_autocorr;
+    # it now returns its own PlotCollection and chooses its own axes. We need an
+    # ACF curve inside this specific subplot, so compute lag-k autocorrelation by
+    # hand (averaged across chains) and bar-plot it.
+    max_lag = min(50, p_samples.shape[1] // 4)
+    chain_acfs = []
+    for c in range(p_samples.shape[0]):
+        x = p_samples[c] - p_samples[c].mean()
+        var = (x * x).mean()
+        if var == 0:
+            chain_acfs.append(np.ones(max_lag + 1))
+        else:
+            chain_acfs.append(np.array([
+                (x[: len(x) - k] * x[k:]).sum() / (len(x) * var)
+                for k in range(max_lag + 1)
+            ]))
+    acf = np.mean(chain_acfs, axis=0)
+    axes[1].bar(np.arange(max_lag + 1), acf, width=0.8, color=PALETTE["bayesian"])
+    axes[1].axhline(0, color="black", linewidth=0.5)
+    axes[1].set_xlabel("lag")
+    axes[1].set_ylabel("autocorr")
     axes[1].set_title("autocorrelation by lag")
 
     flat = p_samples.ravel()
