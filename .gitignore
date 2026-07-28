@@ -15,6 +15,7 @@ dist/
 
 # Local AI tooling (must never be committed)
 CLAUDE.md
+AGENTS.md
 .claude/
 .mcp.json
 .mcp/
